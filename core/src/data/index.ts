@@ -71,11 +71,17 @@ export default class Data
     const cur = this.steps.get(stepIndex);
     const pre = this.steps.get(stepIndex - 1);
     
-    // ステップがない場合は差分が取れないので空の配列を返す
-    if(!pre || !cur) { return [] };
-
-    // 現在のコードと前回のコードを比較して差分行の配列を生成する
+    // 差分行番号の配列を生成する
     const diffs:number[] = [];
+
+    // ありえないが、現在のステップがなければ差分もクソもないのでから配列を返して終わり
+    if (!cur) return diffs;
+
+    // 前のステップがない(最初のページ)の場合は、全行を変更扱い
+    if (!pre) {
+      return cur.codeArray.map((v, k) => k + 1)
+    }
+
     const preArray = pre.codeArray;
 
     // 現ステップの１行を前ステップのコードと総当たりチェックする
