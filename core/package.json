@@ -13,6 +13,7 @@
     "@types/markdown-it": "^0.0.7",
     "@types/node": "^11.11.3",
     "parcel-bundler": "^1.12.3",
+    "sass": "^1.17.3",
     "typescript": "^3.3.3333"
   },
   "dependencies": {
