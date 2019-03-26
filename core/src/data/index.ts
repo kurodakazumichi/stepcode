@@ -30,9 +30,10 @@ export default class Data
   }
 
   /** 言語 */
-  public get lang() {
+  public get lang():string {
     const ext = this.filename.split('.').pop();
-    return (!!hljs.getLanguage(ext? ext:""))? ext : "";
+    if (!ext) return "";
+    return (!!hljs.getLanguage(ext))? ext : "";
   }
 
   /** ステップ数 */
