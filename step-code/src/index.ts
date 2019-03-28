@@ -6,22 +6,22 @@ import Header from './header';
 import Editor from './editor';
 import Comment from './comment';
 import Footer from './footer';
-import Step  from '../data/step';
 import * as Config from './config';
-import StepCode from '..';
+
+import Core from '../../core/src/index';
 
 /******************************************************************************
  * UI
  *****************************************************************************/
-export default class UI 
+export default class StepCode
 {
   /** 
    * コンストラクタ 
    */
-  constructor(core:StepCode, selector:string) 
+  constructor(selector:string, datas:any) 
   {
     // StepCode(コア)を保持
-    this.core = core;
+    this.core = new Core(datas);
     
     // ルート要素を取得、保持
     this.root = document.querySelector(selector) as HTMLElement;
@@ -40,6 +40,7 @@ export default class UI
     
     // UIの親子関係を構築
     this.build();
+    this.update();
   }
 
   //---------------------------------------------------------------------------
@@ -48,7 +49,7 @@ export default class UI
   public update() {
 
     // 再生不可能なら更新しない
-    if (!this.core.canPlay) return;
+    if (!this.core.isAvailable) return;
     if (!this.core.current) return;
 
     // ヘッダを更新
@@ -56,7 +57,7 @@ export default class UI
 
     // エディターを更新
     this.editor.update({
-      lang: this.core.lang,
+      lang: "",
       step: this.core.current,
       diffs: this.core.diffs
     });
@@ -66,8 +67,8 @@ export default class UI
 
     // フッタを更新
     this.footer.update({
-      currentNo:this.core.currentPageNum, 
-      totalNo  :this.core.totalPageNum
+      currentNo:this.core.currentNo, 
+      totalNo  :this.core.lastNo
     });
   }
 
@@ -75,7 +76,7 @@ export default class UI
   // private メンバ
 
   /** StepCode本体 */
-  private core:StepCode;
+  private core:Core;
 
   /** UIリスト */
   private root:HTMLElement;

@@ -1,25 +1,20 @@
 {
   "name": "step-code",
   "version": "1.0.0",
-  "main": "./lib/index.js",
+  "main": "index.js",
   "license": "MIT",
   "scripts": {
     "start": "parcel ./src/index.ts",
-    "build": "parcel build ./src/index.ts --out-dir=lib",
-    "test" : "jest --coverage --watch",
-    "build:debug":"tsc -p ./tsconfig.json"
+    "build": "parcel build ./src/index.ts --out-dir=lib"
   },
   "devDependencies": {
     "@types/highlight.js": "^9.12.3",
-    "@types/jest": "^24.0.11",
     "@types/lodash": "^4.14.121",
     "@types/markdown-it": "^0.0.7",
     "@types/node": "^11.11.3",
-    "jest": "^24.5.0",
     "parcel-bundler": "^1.12.3",
     "sass": "^1.17.3",
-    "ts-jest": "^24.0.0",
-    "typescript": "^3.3.4000"
+    "typescript": "^3.3.3333"
   },
   "dependencies": {
     "highlight.js": "^9.15.6",
@@ -28,19 +23,5 @@
     "markdown-it-mark": "^2.0.0",
     "markdown-it-sub": "^1.0.0",
     "markdown-it-sup": "^1.0.0"
-  },
-  "jest": {
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
-    ]
   }
 }

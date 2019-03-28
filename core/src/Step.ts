@@ -1,7 +1,7 @@
 /******************************************************************************
  * import
  *****************************************************************************/
-import _ from 'lodash';
+import _get from 'lodash/get';
 
 /******************************************************************************
  * Step::コードと解説テキストを管理するクラス
@@ -28,6 +28,7 @@ export default class Step
 
   /** 改行コードで分割されたコードの配列を取得する */
   public get codeArray() {
+    if (!this.code) return [];
     return this.code.split(/\r\n|\n/);
   }
 
@@ -51,8 +52,8 @@ export default class Step
    * @param data 1ステップに該当するデータ
    */
   apply(data:any) {
-    this._code = _.get(data, "code", "");
-    this._desc = _.get(data, "desc", "");
+    this._code = _get(data, "code", "");
+    this._desc = _get(data, "desc", "");
   }
 
   //---------------------------------------------------------------------------

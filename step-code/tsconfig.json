@@ -7,23 +7,21 @@
     "noImplicitAny": true,
     "removeComments": true,
     "sourceMap": true,
-    "types": ["node", "jest"],
+    "types": ["node"],
     "lib": ["es5", "dom"],
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "noUnusedLocals": true,
-    "noUnusedParameters": false,
+    "noUnusedParameters": true,
     "strictNullChecks": true,
     "resolveJsonModule": true,
     "pretty":true,
     "experimentalDecorators": true,
     "strict": true,
-    "esModuleInterop": true,
-    "outDir": "./build/"
+    "esModuleInterop": true
   },
   "include": [
-    "src/**/*",
-    "__tests__/**/*"
+    "src/**/*"
   ],
   "exclude": [
     "node_modules",
