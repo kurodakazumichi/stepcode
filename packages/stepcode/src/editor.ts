@@ -3,7 +3,7 @@
  *****************************************************************************/
 import hljs from 'highlight.js';
 import * as Config from './config';
-import Step from '~/data/step';
+import { Step } from 'stepcode-core';
 
 /******************************************************************************
  * Editor

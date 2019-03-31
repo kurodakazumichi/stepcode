@@ -1,0 +1,28 @@
+{
+  "private": true,
+  "workspaces": {
+    "packages": [
+      "packages/*",
+      "examples"
+    ]
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.11",
+    "@types/lodash": "^4.14.121",
+    "@types/node": "^11.11.3",
+    "jest": "^24.5.0",
+    "parcel-bundler": "^1.12.3",
+    "ts-jest": "^24.0.0",
+    "typescript": "next"
+  },
+  "dependencies": {
+    "lodash": "^4.17.11"
+  },
+  "scripts": {
+    "clean": "rm -rf ./packages/*/build ./packages/*/build-es5 ./packages/*/tsconfig.tsbuildinfo",
+    "build": "tsc -b ./packages/stepcode/tsconfig.json",
+    "build:core": "tsc -b ./packages/stepcode-core/tsconfig.json",
+    "watch": "yarn build --watch",
+    "demo": "yarn parcel ./demo/src/index.html"
+  }
+}

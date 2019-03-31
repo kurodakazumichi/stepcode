@@ -1,0 +1,42 @@
+{
+  "compilerOptions": {
+    /* BasicOption */
+    "target" : "es5",
+    "module" : "commonjs",
+    "declaration": true,
+    "declarationMap": true,
+    "composite": true,
+
+    "removeComments": true,
+
+    "types": ["node", "jest"],
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    //"emitDeclarationOnly": true,
+
+    /* Strict Check */
+    "strict": true, // この１行で以下の設定が有効になる
+    // "alwaysStrict"                 : true,
+    // "noImplicitAny"                : true,
+    // "noImplicitThis"               : true,
+    // "strictBindCallApply"          : true,
+    // "strictNullChecks"             : true,
+    // "strictFunctionTypes"          : true,
+    // "strictPropertyInitialization" : true,
+
+    /* Additional Checks */
+    
+    "noUnusedLocals"            : true,
+    "noUnusedParameters"        : false,
+    "noImplicitReturns"         : true,
+    "noFallthroughCasesInSwitch": true,
+  },
+  "exclude": [
+    "node_modules",
+    "**/__tests__/**/*",
+    "**/build/**/*",
+    "demo",
+    "lab",
+    "prototype"
+  ]
+}

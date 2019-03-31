@@ -1,0 +1,17 @@
+{
+  "name": "stepcode",
+  "version": "1.0.0",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/highlight.js": "^9.12.3",
+    "@types/markdown-it": "^0.0.7",
+    "sass": "^1.17.3"
+  },
+  "dependencies": {
+    "highlight.js": "^9.15.6",
+    "markdown-it": "^8.4.2",
+    "markdown-it-mark": "^2.0.0",
+    "markdown-it-sub": "^1.0.0",
+    "markdown-it-sup": "^1.0.0"
+  }
+}

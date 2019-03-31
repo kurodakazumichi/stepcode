@@ -13,6 +13,6 @@
     "typescript": "^3.3.3333"
   },
   "dependencies": {
-    "step-code": "../core"
+    "step-code": "file:../core"
   }
 }

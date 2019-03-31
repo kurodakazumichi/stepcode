@@ -7,8 +7,7 @@ import Editor from './editor';
 import Comment from './comment';
 import Footer from './footer';
 import * as Config from './config';
-
-import Core from '../../core/src/index';
+import Core from 'stepcode-core';
 
 /******************************************************************************
  * UI
