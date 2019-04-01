@@ -24,7 +24,7 @@ const execa = require('execa');
 const { getPackages } = require('./utils');
 
 // ドキュメント出力先のディレクトリパス
-const DOC_DIR = path.resolve('./docs');
+const DOC_DIR = path.resolve('./typedocs');
 
 // パッケージの配列
 const packages = getPackages();
