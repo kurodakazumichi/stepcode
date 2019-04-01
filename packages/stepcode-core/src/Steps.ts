@@ -4,7 +4,8 @@
 import Step from './Step';
 
 /******************************************************************************
- * 前ステップデータを管理するクラス
+ * 全てのステップデータを管理するクラス。
+ * [[Step]] クラスも参照してください。
  *****************************************************************************/
 export default class Steps 
 {
@@ -18,35 +19,31 @@ export default class Steps
   }
 
   //---------------------------------------------------------------------------
+  // privatre プロパティ
+
+  /** 全ステップデータ */
+  private steps:Step[];
+
+  //---------------------------------------------------------------------------
   // public アクセッサ
   
-  /** データ数 */
+  /** ステップの総数を取得します。 */
   public get count() {
     return this.steps.length;
-  }
-
-  /** 指定されたステップデータを持っているか */
-  public has(index:number):boolean{
-    return (!!this.steps[index]);
-  }
-
-  /** 指定されたIndexに該当するデータを返す */
-  public get(index:number) {
-    return (this.has(index))? this.steps[index] : null;
   }
 
   //---------------------------------------------------------------------------
   // public メソッド
 
   /**
-   * データを適用する
+   * 与えられたステップデータをプロパティに適用する。
    * @param datas ステップデータの配列
    */
   public apply(datas:[]) 
   {
     // データが配列じゃなかったらエラー
     if (!Array.isArray(datas)) {
-      console.warn("data error");
+      console.warn("Error: Data must be array.");
       return;
     }
 
@@ -56,9 +53,19 @@ export default class Steps
     });
   }
 
-  //---------------------------------------------------------------------------
-  // private メンバ
+  /**
+   * 指定されたindexに[[Step]]が存在するかを返します。
+   * @param index 存在を確認するステップのIndex値
+   */
+  public has(index:number):boolean{
+    return (!!this.steps[index]);
+  }
 
-  /** 全ステップデータ */
-  private steps:Step[];
+  /**
+   * 指定されたindexに存在する[[Step]]を返します。
+   * @param index 取得したいステップのIndex値
+   */
+  public get(index:number) {
+    return (this.has(index))? this.steps[index] : null;
+  }
 }

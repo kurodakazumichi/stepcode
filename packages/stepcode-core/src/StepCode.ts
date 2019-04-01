@@ -5,13 +5,15 @@ import _get from 'lodash/get';
 import Steps from './Steps';
 
 /******************************************************************************
- * StepCodeのデータクラス
+ * StepCodeで扱う全てのデータを制御するクラス
+ * 
+ * 外部からstepcode-coreを扱う場合、原則としてこのクラスが窓口になります。
  *****************************************************************************/
-export default class Data 
+export default class StepCode 
 {
   /**
-   * コンストラクタ
-   * @param datas データ
+   * プロパティの初期化、および与えられたデータを解析し読み込みます。
+   * @param datas ロードさせるStepCodeのデータ
    */
   constructor(datas:any) 
   {
@@ -25,20 +27,34 @@ export default class Data
   }
 
   //---------------------------------------------------------------------------
+  // privatre properties
+  
+  /** タイトル */
+  private _title:string;
+
+  /** ステップデータ */
+  private _steps:Steps;
+
+  /** 現在のステップを指し示すカーソルです。 */
+  private _cursor:number;
+
+  //---------------------------------------------------------------------------
   // public アクセッサ
 
-  /** タイトル */
+  /** タイトルを取得します。 */
   public get title() {
     return this._title;
   }
 
-  /** ステップ数 */
+  /** ステップの総数を取得します。 */
   public get count() {
     return this._steps.count;
   }
 
   /**
    * StepCodeが利用可能かどうか
+   * 
+   * [[constructor]]、および[[apply]]で読み込んだデータが正しく読み込めなかった場合にfalseを返します。
    */
   public get isAvailable(): boolean {
     if (!this.count) return false;
@@ -46,35 +62,41 @@ export default class Data
   }
 
   /**
-   * 現在のステップデータ
+   * [[_cursor]]が指しているステップのデータを取得します
    */
   public get current() {
     return this._steps.get(this._cursor);
   }
 
   /**
-   * 差分のある行番号の配列
+   * コードに差分のある行番号の配列を返します。
+   * 
+   * [[_cursor]]の指すステップと、その１つ前のステップのコードの差分です。
    */
   public get diffs() {
     return this.getDiffLineNums(this._cursor);
   }
 
-  // 現在のステップ番号
+  /** 現在のステップ番号(現在ページ番号として利用できます) */ 
   public get currentNo() {
     return this._cursor + 1;
   }
 
-  // 最後のステップ番号
+  /** 最後のステップ番号(最後の番号として利用できます) */ 
   public get lastNo() {
     return this.count;
   }
 
-  // 最初です
+  /** 
+   * [[_cursor]]が最初のステップを指している場合にtrueになります
+   */ 
   public get isFirst() {
     return (this._cursor === 0);
   }
 
-  // 最後です
+  /** 
+   * [[_cursor]]が最後のステップを指している場合にtrueになります
+   */ 
   public get isLast() {
     return (this.currentNo === this.lastNo);
   }
@@ -83,8 +105,8 @@ export default class Data
   // public メソッド
 
   /**
-   * データを適用する
-   * @param datas データ
+   * データを適用し、プロパティを初期化する。
+   * @param datas ロードさせるStepCodeのデータ
    */
   apply(datas:any) 
   {  
@@ -97,7 +119,9 @@ export default class Data
   }
 
   /**
-   * cursorを指定する
+   * 指定した位置に[[_cursor]]を移動する。
+   * 範囲外を指定した場合、カーソルは0以上、ステップ数未満に収められます。
+   * 
    * @param point カーソルの位置
    */
   public at(point:number) {
@@ -106,51 +130,39 @@ export default class Data
     this._cursor = point;
   }
 
-  /**
-   * cursorを最初に戻す
+  /** 
+   * [[_cursor]]が先頭に移動します。
    */
   public first() {
     this.at(0);
   }
 
   /** 
-   * cursorを最後に進める 
+   * [[_cursor]]が最後に移動します。
    */
   public last() {
     this.at(this.count - 1);
   }
 
   /**
-   * cursorの値を前へ戻す
+   * [[_cursor]]を1つ前に移動します、移動できない場合は現在の位置に留まります。
    */
   public prev() {
     this.at(this._cursor - 1);
   }
 
   /**
-   * cursorの値を次へ進める
+   * [[_cursor]]を1つ次に移動します、移動できない場合は現在の位置に留まります。
    */
   public next() {
     this.at(this._cursor + 1);
   }
 
   //---------------------------------------------------------------------------
-  // private メンバ
-  
-  /** タイトル */
-  private _title:string;
-
-  /** ステップデータ */
-  private _steps:Steps;
-
-  /** ステップを指し示すカーソル(Index) */
-  private _cursor:number;
-
-  //---------------------------------------------------------------------------
   // private メソッド
 
   /** 
-   * 指定したステップと１つ前のステップに含まれるコードの差分行情報を取得する。
+   * 指定したステップと１つ前のステップに含まれるコードの差分行配列を取得する。
    * @param stepIndex 差分を取得したいステップを指すIndex
    */
   private getDiffLineNums(stepIndex:number):number[] 

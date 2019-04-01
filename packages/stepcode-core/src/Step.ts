@@ -4,12 +4,12 @@
 import _get from 'lodash/get';
 
 /******************************************************************************
- * Step::コードと解説テキストを管理するクラス
+ * 表示するソースコードと解説文を管理するクラス
  *****************************************************************************/
 export default class Step 
 {
   /**
-   * コンストラクタ
+   * 与えらたデータをプロパティに適用する。
    * @param data 1ステップに該当するデータ
    */
   constructor(data:any) {
@@ -19,27 +19,34 @@ export default class Step
   }
 
   //---------------------------------------------------------------------------
+  // private プロパティ
+
+  /** コードテキスト */
+  private _code:string;
+
+  /** 解説テキスト */
+  private _desc:string;
+
+  //---------------------------------------------------------------------------
   // public アクセッサ
 
-  /** コードのアクセッサ */
+  /** コードを返します。 */
   public get code() {
     return this._code;
   }
 
-  /** 改行コードで分割されたコードの配列を取得する */
+  /** 改行コードで分割されたコードの配列を返します。 */
   public get codeArray() {
     if (!this.code) return [];
     return this.code.split(/\r\n|\n/);
   }
 
-  /**
-   * コードの行数
-   */
+  /** コードの行数を返します。　*/
   public get codeLineNum() {
     return this.codeArray.length;
   }
 
-  /** 解説テキストのアクセッサ */
+  /** 解説文を返します。 */
   public get desc() {
     return this._desc;
   }
@@ -48,7 +55,7 @@ export default class Step
   // public メソッド
 
   /**
-   * データを適用する
+   * 与えられたデータをプロパティに適用します。
    * @param data 1ステップに該当するデータ
    */
   apply(data:any) {
@@ -56,12 +63,4 @@ export default class Step
     this._desc = _get(data, "desc", "");
   }
 
-  //---------------------------------------------------------------------------
-  // private メンバ
-
-  /** コードテキスト */
-  private _code:string;
-
-  /** 解説テキスト */
-  private _desc:string;
 }
