@@ -15,7 +15,7 @@ import Core from 'stepcode-core';
 export default class StepCode
 {
   /** 
-   * コンストラクタ 
+   * データのロードとUIの構築を行う。
    */
   constructor(selector:string, datas:any) 
   {
@@ -43,9 +43,43 @@ export default class StepCode
   }
 
   //---------------------------------------------------------------------------
-  // public メンバ
+  // private メンバ
 
-  public update() {
+  /** StepCode本体 */
+  private core:Core;
+
+  /** UI Root */
+  private root:HTMLElement;
+
+  /** UI Header要素 */
+  private header:Header;
+
+  /** UI Editor要素 */
+  private editor:Editor;
+
+  /** UI Comment要素 */
+  private comment:Comment;
+
+  /** UI Footer要素 */
+  private footer:Footer;
+
+  //---------------------------------------------------------------------------
+  // private メソッド
+
+  /**
+   * UIを構築する
+   */
+  private build() {    
+    this.root.appendChild(this.header.node as Node);
+    this.root.appendChild(this.editor.node as Node);
+    this.root.appendChild(this.comment.node as Node);
+    this.root.appendChild(this.footer.node as Node);
+  }
+
+  /**
+   * UIを更新する
+   */
+  private update() {
 
     // 再生不可能なら更新しない
     if (!this.core.isAvailable) return;
@@ -69,35 +103,6 @@ export default class StepCode
       currentNo:this.core.currentNo, 
       totalNo  :this.core.lastNo
     });
-  }
-
-  //---------------------------------------------------------------------------
-  // private メンバ
-
-  /** StepCode本体 */
-  private core:Core;
-
-  /** UIリスト */
-  private root:HTMLElement;
-  private header:Header;
-  private editor:Editor;
-  private comment:Comment;
-  private footer:Footer;
-
-  //---------------------------------------------------------------------------
-  // private メソッド
-
-  /** UIの構築 */
-  private build() {    
-    this.root.appendChild(this.header.node as Node);
-    this.root.appendChild(this.editor.node as Node);
-    this.root.appendChild(this.comment.node as Node);
-    this.root.appendChild(this.footer.node as Node);
-  }
-
-  /** ファイル名を設定する */
-  public setFileName(filename:string) {
-    this.header.titleText = filename;
   }
 
 }
