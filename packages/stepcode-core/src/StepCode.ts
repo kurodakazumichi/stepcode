@@ -27,7 +27,7 @@ export default class StepCode
   }
 
   //---------------------------------------------------------------------------
-  // privatre properties
+  // privatre プロパティ
   
   /** タイトル */
   private _title:string;
