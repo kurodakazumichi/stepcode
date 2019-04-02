@@ -1,7 +1,11 @@
 {
+  "private": true,
   "name": "examples",
-  "version": "1.0.0",
-  "main": "index.js",
-  "license": "MIT",
-  "devDependencies": {}
+  "version": "0.0.0",
+  "dependencies": {
+    "stepcode": "1.0.0"
+  },
+  "devDependencies": {
+    "parcel-bundler": "^1.12.3"
+  }
 }
