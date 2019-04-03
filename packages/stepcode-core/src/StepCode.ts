@@ -42,6 +42,11 @@ export default class StepCode
   //---------------------------------------------------------------------------
   // public アクセッサ
 
+  /** ステップの配列インスタンスを返します。 */
+  public get steps() {
+    return this._steps;
+  }
+
   /** タイトルを取得します。 */
   public get title() {
     return this._title;

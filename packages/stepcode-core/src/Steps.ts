@@ -32,6 +32,20 @@ export default class Steps
     return this.steps.length;
   }
 
+  /**
+   * 先頭の[[Step]]を返します。
+   */
+  public get first() {
+    return this.get(0);
+  }
+
+  /**
+   * 最後の[[Step]]を返します。
+   */
+  public get last() {
+    return this.get(this.count - 1);
+  }
+
   //---------------------------------------------------------------------------
   // public メソッド
 
@@ -67,5 +81,52 @@ export default class Steps
    */
   public get(index:number) {
     return (this.has(index))? this.steps[index] : null;
+  }
+
+  /**
+   * 先頭に[[Step]]を追加します。
+   * @param step 追加する[[Step]]
+   */
+  public unshift(step:Step) {
+    this.steps.unshift(step);
+  }
+
+  /**
+   * 末尾に[[Step]]を追加します。
+   * @param step 追加する[[Step]]
+   */
+  public push(step:Step) {
+    this.steps.push(step);
+  }
+
+  /**
+   * 指定した箇所に[[Step]]を追加します。
+   * @param atIndex 追加する位置
+   * @param step 追加する[[Step]]
+   */
+  public add(atIndex:number, step:Step) {
+    this.steps.splice(atIndex, 0, step);
+  }
+
+  /**
+   * 先頭の[[Step]]を削除します。
+   */
+  public shift() {
+    this.steps.shift();
+  }
+
+  /**
+   * 末尾の[[Step]]を削除します。
+   */
+  public pop() {
+    this.steps.pop();
+  }
+
+  /**
+   * 指定した箇所の[[Step]]を削除します。
+   * @param atIndex 削除する位置
+   */
+  public remove(atIndex:number) {
+    this.steps.splice(atIndex, 1);
   }
 }
