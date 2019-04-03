@@ -7,7 +7,7 @@ import Editor from './editor';
 import Comment from './comment';
 import Footer from './footer';
 import * as Config from './config';
-import Core from 'stepcode-core';
+import Core, { Step } from 'stepcode-core';
 
 /******************************************************************************
  * StepCode本体
@@ -61,6 +61,51 @@ export default class StepCode
 
   /** UI Footer要素 */
   private footer:Footer;
+
+  //---------------------------------------------------------------------------
+  // public メンバ
+
+  /**
+   * データをロードします
+   * @param data ロードするデータ
+   */
+  public load(data:any) {
+    this.core.apply(data);
+  }
+
+  /**
+   * タイトルテキストをセットする
+   * @param title タイトルに設定するテキスト
+   */
+  setTitle(title:string) {
+    this.header.titleText = title;
+  }
+
+  /**
+   * 指定された[[Step]]の内容を設定します。
+   * @param step [[Step]]
+   */
+  setStep(step:Step) {
+    this.setCode(step);
+    this.setComment(step);
+  }
+
+  /**
+   * 指定された[[Step]]のコードが設定されます。
+   * @param step [[Step]]
+   */
+  setCode(step:Step) {
+    const diffs = this.core.calcDiffs(this.core.current, step);    
+    this.editor.update({lang:"", step, diffs});
+  }
+
+  /**
+   * 指定された[[Step]]のコメントが設定されます。
+   * @param step [[Step]]
+   */
+  setComment(step:Step) {
+    this.comment.update(step.desc);
+  }
 
   //---------------------------------------------------------------------------
   // private メソッド

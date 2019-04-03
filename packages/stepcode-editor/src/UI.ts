@@ -44,6 +44,10 @@ export default class UI {
     return this.doms[Config.UIType.EditorCodeAce];
   }
 
+  on(uiType:Config.UIType, name:string, func:EventListenerOrEventListenerObject) {
+    this.doms[uiType].addEventListener(name, func);
+  }
+
   //---------------------------------------------------------------------------
   // private メソッド
 
