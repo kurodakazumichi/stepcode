@@ -13,24 +13,21 @@ import UI from './UI';
  *****************************************************************************/
 export default class StepCodeEditor {
 
+  /**
+   * StepCodeEditorを構築する
+   * @param target ルート要素を取得するセレクター、またはHTML要素
+   */
   constructor(target:string | HTMLElement) 
   {
-    // StepCode(コア)を保持
-    this.core = new Core({});
-
-    console.log(this.core);
-    //this.buildElement();
-
-    this.ui = new UI(target);
-
-    this.stepcode = new StepCode(this.ui.stepcode, {});
-    
-    this.ace = Ace.edit(this.ui.ace);
-    this.ace.getSession().setUseWorker(false);
-    this.ace.setTheme(ThemeGithub);
+    this.core     = new Core({});
+    this.ui       = new UI(target);
+    this.stepcode = this.initStepCode();
+    this.ace      = this.initAce();
 
     // コンパイルエラー対策
+    console.log(this.core);
     console.log(this.stepcode);
+    console.log(this.ace);
   }
 
   //---------------------------------------------------------------------------
@@ -51,7 +48,20 @@ export default class StepCodeEditor {
   //---------------------------------------------------------------------------
   // private メソッド
 
+  /**
+   * StepCodeを初期化(生成)する
+   */
+  private initStepCode() {
+    return new StepCode(this.ui.stepcode, {});
+  }
 
-
-
+  /**
+   * Ace Editorを初期化する
+   */
+  private initAce() {
+    const ace = Ace.edit(this.ui.ace);
+    ace.getSession().setUseWorker(false);
+    ace.setTheme(ThemeGithub);
+    return ace;
+  }
 }
