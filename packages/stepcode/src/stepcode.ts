@@ -10,7 +10,7 @@ import * as Config from './config';
 import Core from 'stepcode-core';
 
 /******************************************************************************
- * UI
+ * StepCode本体
  *****************************************************************************/
 export default class StepCode
 {
