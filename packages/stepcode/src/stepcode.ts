@@ -17,14 +17,13 @@ export default class StepCode
   /** 
    * データのロードとUIの構築を行う。
    */
-  constructor(selector:string, datas:any) 
+  constructor(selector:string | HTMLElement, datas:any) 
   {
     // StepCode(コア)を保持
     this.core = new Core(datas);
     
     // ルート要素を取得、保持
-    this.root = document.querySelector(selector) as HTMLElement;
-    this.root.classList.add(Config.classNames.root);
+    this.root = this.getRoot(selector);
     
     // 各UIの要素を生成
     this.header = new Header();
@@ -65,6 +64,29 @@ export default class StepCode
 
   //---------------------------------------------------------------------------
   // private メソッド
+
+  /**
+   * ルート要素を取得する。
+   * @param target ルート要素を取得するselector、もしくはルート要素
+   */
+  private getRoot(target:string | HTMLElement) : HTMLElement 
+  {
+    let root;
+
+    // targetがHTMLElementであればそのまま
+    if (target instanceof HTMLElement) {
+      root = target;
+    } 
+    
+    // HTMLElementでなければ、selector文字列として処理する
+    else {
+      root = document.querySelector(target) as HTMLElement;
+    }
+
+    // css classを付与して返す。
+    root.classList.add(Config.classNames.root);
+    return root;
+  }
 
   /**
    * UIを構築する
