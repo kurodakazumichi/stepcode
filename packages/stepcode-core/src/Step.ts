@@ -35,6 +35,11 @@ export default class Step
     return this._code;
   }
 
+  /** コードをセットします。 */
+  public set code(v:string) {
+    this._code = v;
+  }
+
   /** 改行コードで分割されたコードの配列を返します。 */
   public get codeArray() {
     if (!this.code) return [];
@@ -49,6 +54,11 @@ export default class Step
   /** 解説文を返します。 */
   public get desc() {
     return this._desc;
+  }
+
+  /** 解説文をセットします */
+  public set desc(v:string) {
+    this._desc = v;
   }
 
   //---------------------------------------------------------------------------

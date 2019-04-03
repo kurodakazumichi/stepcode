@@ -79,4 +79,23 @@ describe('Step', () => {
 
     });
   });
+
+  //===========================================================================
+  // セッターのテスト
+  //===========================================================================
+  describe('セッターのテスト', () => {
+    beforeEach(() => {
+      step = new Step({});
+    })
+
+    it(`this.code = "sample"でcodeに"sample"がセットされること`, () => {
+      step.code = "sample";
+      expect(step.code).toBe("sample");
+    });
+
+    it(`this.desc = "sample"でdescに"sample"がセットされること`, () => {
+      step.desc = "sample";
+      expect(step.desc).toBe("sample");
+    })
+  })
 });
