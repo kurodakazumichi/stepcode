@@ -98,4 +98,32 @@ describe('Step', () => {
       expect(step.desc).toBe("sample");
     })
   })
+
+  //===========================================================================
+  // toJSON()の検証
+  //===========================================================================
+  describe('toJSON()の検証', () => 
+  {
+    let json:any;
+    beforeEach(() => {
+      step = new Step({code:"code", desc:"desc"});
+      json = step.toJSON();
+    })
+
+    it(`codeプロパティを持っている事`, () => {
+      expect(json).toHaveProperty('code');
+    })
+
+    it(`step.toJSON().code と step.code が一致すること`, () => {
+      expect(step.code).toBe(json.code);
+    })
+
+    it(`descプロパティを持っている事`, () => {
+      expect(json).toHaveProperty('desc');
+    });
+
+    it(`step.toJSON().desc と step.desc が一致すること`, () => {
+      expect(step.desc).toBe(json.desc);
+    })
+  })
 });

@@ -73,4 +73,13 @@ export default class Step
     this._desc = _get(data, "desc", "");
   }
 
+  /**
+   * JSONに変換する
+   */
+  public toJSON() {
+    return {
+      code: this._code,
+      desc: this._desc
+    };
+  }
 }

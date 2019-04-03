@@ -150,7 +150,7 @@ export default class StepCode
    * データを適用し、プロパティを初期化する。
    * @param datas ロードさせるStepCodeのデータ
    */
-  apply(datas:any) 
+  public apply(datas:any) 
   {  
     // データの適用
     this._title = _get(datas, "title", "タイトル無し");
@@ -158,6 +158,13 @@ export default class StepCode
 
     // カーソルはデータ適用時にリセットする
     this._cursor = 0;
+  }
+
+  public toJSON() {
+    return {
+      title: this.title,
+      steps: this.steps.toJSON()
+    }
   }
 
   /**

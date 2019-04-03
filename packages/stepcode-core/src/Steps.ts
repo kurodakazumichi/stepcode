@@ -68,6 +68,13 @@ export default class Steps
   }
 
   /**
+   * JSONに変換する
+   */
+  public toJSON() {
+    return this.steps.map((step:Step) => step.toJSON());
+  }
+
+  /**
    * 指定されたindexに[[Step]]が存在するかを返します。
    * @param index 存在を確認するステップのIndex値
    */

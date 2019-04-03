@@ -260,5 +260,15 @@ describe('Steps', () => {
         expect(stepCode.diffs).toEqual(diffs);
       })
     });
+
+    //-------------------------------------------------------------------------
+    describe('toJSONの検証', () => {
+      it('toJSON().title と stepCode.title が一致すること', () => {
+        expect(stepCode.toJSON().title).toBe(stepCode.title);
+      })
+      it('toJSON().steps と stepCode.steps.toJSON() が一致すること', () => {
+        expect(stepCode.toJSON().steps).toEqual(stepCode.steps.toJSON());
+      })
+    })
   });
 });
