@@ -298,16 +298,24 @@ class Progress
 
   /**
    * アイテムの数が最大ページ数分になるように調整する。
-   * @param num 最大ページ数
+   * @param total 最大ページ数
    */
-  private adjustItems(num:number) {
+  private adjustItems(total:number) {
 
-    // すでにアイテムが存在していれば何もしない
-    if (this.items.length === num) return;
+    // 現在のアイテム数と合計のアイテム数が一致していれば何もしない。
+    if (this.items.length === total) return;
 
-    for(let i = 0; i < num; ++i) {
+    // 一旦アイテムを全て削除する
+    for(let i = 0; i < this.items.length; ++i) {
+      this.items[i].remove();
+    }
+    this.items = [];
+
+    // 必要な数だけアイテムを生成する
+    for(let i = 0; i < total; ++i) {
+
       const item = Config.createElement(Config.UIType.ProgressItem);
-      item.style.width = (100/num) + '%';
+      item.style.width = (100/total) + '%';
       this.root.appendChild(item);
       this.items.push(item);
     }
