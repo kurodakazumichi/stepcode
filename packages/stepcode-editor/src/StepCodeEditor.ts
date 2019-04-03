@@ -20,14 +20,22 @@ export default class StepCodeEditor {
    */
   constructor(target:string | HTMLElement) 
   {
-    this.core     = new Core({});
-    this.work     = new Step({});
-    this.ui       = new UI(target);
-    this.stepcode = this.initStepCode();
-    this.ace      = this.initAce();
-    
-    // コンパイルエラー対策
-    console.log(this.core);
+    this.core     = this.createCore();
+    this.work     = this.createWork();
+    this.ui       = this.createUI(target);
+    this.stepcode = this.createStepCode();
+    this.ace      = this.createAce();
+
+    this.stepcode.setStep(this.work);
+    this.ace.setValue(this.work.code);
+    this.ui.md.value = this.work.desc;
+
+    this.ui.on(UIType.EditorMdInput, 'load', (e:Event) => {
+      console.log("Hoge");
+      if(e.target instanceof HTMLTextAreaElement) {
+        e.target.value = this.work.desc;
+      }
+    })
 
     // タイトルが変更された時の処理
     this.ui.on(UIType.EditorTitleText, 'change', (e:Event) => {
@@ -72,16 +80,47 @@ export default class StepCodeEditor {
   // private メソッド
 
   /**
+   * Coreを生成する
+   */
+  private createCore() 
+  {
+    // 初期データ
+    const ini = {
+      steps:[
+        {
+          code:"ここにコードを記述します。", 
+          desc:"ここには解説を記述します。"
+        }
+      ]
+    }
+    return new Core(ini);
+  }
+
+  /**
+   * 作業用データを生成する。[[createCore]]のあとに実行すること。
+   */
+  private createWork() {
+    return new Step(this.core.current);
+  }
+
+  /**
+   * UIを生成する
+   */
+  private createUI(target:string | HTMLElement) {
+    return new UI(target);
+  }
+
+  /**
    * StepCodeを初期化(生成)する
    */
-  private initStepCode() {
+  private createStepCode() {
     return new StepCode(this.ui.stepcode, {});
   }
 
   /**
-   * Ace Editorを初期化する
+   * Ace Editorを初期化(生成)する
    */
-  private initAce() {
+  private createAce() {
     const ace = Ace.edit(this.ui.ace);
     ace.getSession().setUseWorker(false);
     ace.setTheme(ThemeGithub);

@@ -44,6 +44,17 @@ export default class UI {
     return this.doms[Config.UIType.EditorCodeAce];
   }
 
+  /** Markdownの入力に該当するHTMLElementを返します */
+  get md(): HTMLTextAreaElement {
+    return this.doms[Config.UIType.EditorMdInput] as HTMLTextAreaElement;
+  }
+
+  /**
+   * 要素にイベントを追加する
+   * @param uiType UIの種類
+   * @param name イベントの名前
+   * @param func callback関数
+   */
   on(uiType:Config.UIType, name:string, func:EventListenerOrEventListenerObject) {
     this.doms[uiType].addEventListener(name, func);
   }
