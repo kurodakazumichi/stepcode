@@ -1,0 +1,13 @@
+{
+  "name": "stepcode-editor",
+  "version": "1.0.0",
+  "license": "MIT",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "dependencies": {
+    "@types/ace": "^0.0.42",
+    "ace-builds": "^1.4.3",
+    "stepcode":"1.0.0",
+    "stepcode-core":"1.0.0"
+  }
+}
