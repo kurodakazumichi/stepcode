@@ -68,7 +68,8 @@ const config =
     /** ヘッダ */
     [UIType.Header]: {
       tag:"div",
-      className:classNames.header
+      className:classNames.header,
+      innerHTML:"&nbsp;"
     },
 
     /** ヘッダ:タイトル */
