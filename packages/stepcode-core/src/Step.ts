@@ -74,6 +74,13 @@ export default class Step
   }
 
   /**
+   * 同じ情報をもったコピーを生成する
+   */
+  copy() {
+    return new Step({code:this.code, desc:this.desc});
+  }
+
+  /**
    * JSONに変換する
    */
   public toJSON() {
