@@ -3,6 +3,7 @@
  *****************************************************************************/
 import _get from 'lodash/get';
 import Steps from './Steps';
+import Step from './Step';
 
 /******************************************************************************
  * StepCodeで扱う全てのデータを制御するクラス
@@ -101,6 +102,42 @@ export default class StepCode
     return (this.currentNo === this.lastNo);
   }
 
+  /**
+   * 与えられた２つの[[Step]]の差分行を計算する
+   * @param base 比較元となるステップ
+   * @param target 比較先となるステップ
+   */
+  public calcDiffs(base:Step|null, target:Step|null) 
+  {
+    // 差分行番号の配列を生成する
+    const diffs:number[] = [];
+
+    // 比較対象がなければ空配列を返す
+    if (!target) return diffs;
+
+    // 比較元のステップがない(最初のページなど)の場合は、全行を変更扱い
+    if (!base) {
+      return target.codeArray.map((v, k) => k + 1)
+    }
+
+    const preArray = base.codeArray;
+
+    // 現ステップの１行を前ステップのコードと総当たりチェックする
+    target.codeArray.map((curLine, curIndex) => {
+
+      const matchIndex = preArray.indexOf(curLine);
+
+      // マッチする行がなければ新規行か変更行
+      if (matchIndex === -1) {
+        diffs.push(curIndex + 1);
+      } else {
+        preArray.splice(matchIndex, 1);
+      }
+    })
+
+    return diffs;
+  }
+
   //---------------------------------------------------------------------------
   // public メソッド
 
@@ -171,32 +208,6 @@ export default class StepCode
     const cur = this._steps.get(stepIndex);
     const pre = this._steps.get(stepIndex - 1);
     
-    // 差分行番号の配列を生成する
-    const diffs:number[] = [];
-
-    // ありえないが、現在のステップがなければ差分もクソもないのでから配列を返して終わり
-    if (!cur) return diffs;
-
-    // 前のステップがない(最初のページ)の場合は、全行を変更扱い
-    if (!pre) {
-      return cur.codeArray.map((v, k) => k + 1)
-    }
-
-    const preArray = pre.codeArray;
-
-    // 現ステップの１行を前ステップのコードと総当たりチェックする
-    cur.codeArray.map((curLine, curIndex) => {
-
-      const matchIndex = preArray.indexOf(curLine);
-
-      // マッチする行がなければ新規行か変更行
-      if (matchIndex === -1) {
-        diffs.push(curIndex + 1);
-      } else {
-        preArray.splice(matchIndex, 1);
-      }
-    })
-
-    return diffs;
+    return this.calcDiffs(pre, cur);
   }
 }
