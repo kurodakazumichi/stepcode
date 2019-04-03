@@ -61,6 +61,9 @@ export default class Steps
       return;
     }
 
+    // 配列をリセット
+    this.steps = [];
+
     // データの数だけStepクラスを生成
     datas.map((data:any) => {
       this.steps.push(new Step(data));
