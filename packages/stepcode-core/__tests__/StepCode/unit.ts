@@ -32,13 +32,12 @@ const step5_code = `0`;
 
 // StepCodeのモックデータ1
 const mock1 = {
-  title:"sample1",
   steps: [
-    {code:step1_code, desc:"step1"},
-    {code:step2_code, desc:"step2"},
-    {code:step3_code, desc:"step3"},
-    {code:step4_code, desc:"step4"},
-    {code:step5_code, desc:"step5"},
+    {title: "sample1", code:step1_code, desc:"step1"},
+    {title: "sample1", code:step2_code, desc:"step2"},
+    {title: "sample1", code:step3_code, desc:"step3"},
+    {title: "sample1", code:step4_code, desc:"step4"},
+    {title: "sample1", code:step5_code, desc:"step5"},
   ]
 };
 
@@ -60,8 +59,8 @@ describe('Steps', () => {
         stepCode = new StepCode(mock1);
       });
   
-      it(`title = ${mock1.title}になること`, () => {
-        expect(stepCode.title).toBe(mock1.title);
+      it(`title = ${mock1.steps[0].title}になること`, () => {
+        expect(stepCode.title).toBe(mock1.steps[0].title);
       });
   
       it(`count = ${mock1.steps.length}になること`, () => {
@@ -111,11 +110,11 @@ describe('Steps', () => {
 
     describe(`new StepCode(${title})の検証`, () => {
 
-      it(`title = 「タイトル無し」でなること`, () => {
-        expect(stepCode.title).toBe("タイトル無し");
+      it(`title = ""になること`, () => {
+        expect(stepCode.title).toBe("");
       });
   
-      it(`count = 0でなること`, () => {
+      it(`count = 0になること`, () => {
         expect(stepCode.count).toBe(0);
       });
   
@@ -263,9 +262,6 @@ describe('Steps', () => {
 
     //-------------------------------------------------------------------------
     describe('toJSONの検証', () => {
-      it('toJSON().title と stepCode.title が一致すること', () => {
-        expect(stepCode.toJSON().title).toBe(stepCode.title);
-      })
       it('toJSON().steps と stepCode.steps.toJSON() が一致すること', () => {
         expect(stepCode.toJSON().steps).toEqual(stepCode.steps.toJSON());
       })

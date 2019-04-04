@@ -2,8 +2,16 @@
  * import
  *****************************************************************************/
 import _get from 'lodash/get';
-import Steps from './Steps';
+import Steps, { IJSON as StepsJSON } from './Steps';
 import Step from './Step';
+
+/******************************************************************************
+ * Interface
+ *****************************************************************************/
+/** StepCodeのJSONフォーマットインターフェース */
+export interface IJSON {
+  steps: StepsJSON
+}
 
 /******************************************************************************
  * StepCodeで扱う全てのデータを制御するクラス
@@ -20,7 +28,6 @@ export default class StepCode
   {
     // 初期化
     this._cursor = 0;
-    this._title  = "";
     this._steps  = new Steps();
 
     // データの適用
@@ -29,9 +36,6 @@ export default class StepCode
 
   //---------------------------------------------------------------------------
   // privatre プロパティ
-  
-  /** タイトル */
-  private _title:string;
 
   /** ステップデータ */
   private _steps:Steps;
@@ -49,7 +53,7 @@ export default class StepCode
 
   /** タイトルを取得します。 */
   public get title() {
-    return this._title;
+    return (this.current)? this.current.title : "";
   }
 
   /** ステップの総数を取得します。 */
@@ -153,16 +157,17 @@ export default class StepCode
   public apply(datas:any) 
   {  
     // データの適用
-    this._title = _get(datas, "title", "タイトル無し");
     this._steps.apply(_get(datas, "steps", []));
 
     // カーソルはデータ適用時にリセットする
     this._cursor = 0;
   }
 
-  public toJSON() {
+  /**
+   * JSONに変換する
+   */
+  public toJSON() : IJSON {
     return {
-      title: this.title,
       steps: this.steps.toJSON()
     }
   }
