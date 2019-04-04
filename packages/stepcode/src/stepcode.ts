@@ -153,7 +153,7 @@ export default class StepCode
     if (!this.core.current) return;
 
     // ヘッダを更新
-    this.header.update(this.core.title);
+    this.header.update(this.core.current.title);
 
     // エディターを更新
     this.editor.update({
