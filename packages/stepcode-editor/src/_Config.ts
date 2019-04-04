@@ -17,8 +17,7 @@ export const classNames = {
   editorMd           : "sce-editor-md",
   editorMdInput      : "sce-editor-md__input",
   editorFooter       : "sce-editor-footer",
-  menu               : "sce-menu",
-  stepcode           : "sce-stepcode",
+  menu               : "sce-menu"
 }
 
 /******************************************************************************
@@ -39,7 +38,7 @@ export enum UIType {
   EditorFooterLogo    = "EditorFooterLogo",
   Menu                = "Menu",
   MenuSaveButton      = "MenuSaveButton",
-  
+  MenuUpdateButton    = "MenuUpdateButton"
 }
 
 /******************************************************************************
@@ -72,7 +71,7 @@ const config =
     /** メイン領域:プレビュー:ステップコード */
     [UIType.MainPreviewStepCode]:{
       tag:"div",
-      className:classNames.stepcode
+      className:classNames.mainPreviewStepCode
     },
 
     /** エディター:タイトル */
@@ -134,6 +133,12 @@ const config =
     [UIType.MenuSaveButton]: {
       tag:"button",
       innerHTML:"保存"
+    },
+
+    /** メニュー:更新ボタン */
+    [UIType.MenuUpdateButton]: {
+      tag:"button",
+      innerHTML:"更新"
     },
   }
 }
