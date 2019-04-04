@@ -14,7 +14,7 @@
     "typedoc": "^0.14.2"
   },
   "scripts": {
-    "clean": "rm -rf ./packages/*/build ./packages/*/build-es5 ./packages/*/tsconfig.tsbuildinfo",
+    "clean": "rm -rf ./packages/*/build ./packages/*/build-es5 ./packages/*/tsconfig.tsbuildinfo ./node_modules ./packages/*/node_modules",
     "build": "tsc -b ./packages/stepcode/tsconfig.json",
     "build:core": "tsc -b ./packages/stepcode-core/tsconfig.json",
     "build:editor": "tsc -b ./packages/stepcode-editor/tsconfig.json",
