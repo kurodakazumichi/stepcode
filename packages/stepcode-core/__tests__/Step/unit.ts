@@ -1,7 +1,7 @@
 /******************************************************************************
  * import
  *****************************************************************************/
-import Step from '../../src/Step';
+import Step, { IJSON } from '../../src/Step';
 
 /******************************************************************************
  * グローバル変数
@@ -23,10 +23,14 @@ describe('Step', () => {
   `('コンストラクタの正常系テスト', ({title, code, desc, rLineNum}) => {
 
     beforeEach(() => {
-      step = new Step({code, desc});
+      step = new Step({title, code, desc});
     });
 
     describe(`constructor(${title})の時`, () => {
+
+      it(`this.title = ${title}`, () => {
+        expect(step.title).toBe(title);
+      })
 
       it(`this.code = ${code}`, () => {
         expect(step.code).toBe(code);
@@ -61,6 +65,10 @@ describe('Step', () => {
 
     describe(`constructor(${title})の時`, () => {
 
+      it(`this.title = ""`, () => {
+        expect(step.title).toBe("");
+      })
+
       it(`this.code = ""`, () => {
         expect(step.code).toBe("");
       })
@@ -87,6 +95,11 @@ describe('Step', () => {
     beforeEach(() => {
       step = new Step({});
     })
+
+    it(`this.title = "sample"でtitleに"sample"がセットされること`, () => {
+      step.title = "sample";
+      expect(step.title).toBe("sample");
+    });    
 
     it(`this.code = "sample"でcodeに"sample"がセットされること`, () => {
       step.code = "sample";
@@ -117,23 +130,17 @@ describe('Step', () => {
   //===========================================================================
   describe('toJSON()の検証', () => 
   {
-    let json:any;
+    let json:IJSON;
     beforeEach(() => {
       step = new Step({code:"code", desc:"desc"});
       json = step.toJSON();
     })
 
-    it(`codeプロパティを持っている事`, () => {
+    it(`プロパティが足りている事をチェック`, () => {
+      expect(json).toHaveProperty('title');
       expect(json).toHaveProperty('code');
-    })
-
-    it(`step.toJSON().code と step.code が一致すること`, () => {
-      expect(step.code).toBe(json.code);
-    })
-
-    it(`descプロパティを持っている事`, () => {
       expect(json).toHaveProperty('desc');
-    });
+    })
 
     it(`step.toJSON().desc と step.desc が一致すること`, () => {
       expect(step.desc).toBe(json.desc);

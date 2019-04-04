@@ -4,6 +4,16 @@
 import _get from 'lodash/get';
 
 /******************************************************************************
+ * Interface
+ *****************************************************************************/
+/** StepのJSONフォーマットインターフェース */
+export interface IJSON {
+  title:string;
+  code:string;
+  desc:string;
+}
+
+/******************************************************************************
  * 表示するソースコードと解説文を管理するクラス
  *****************************************************************************/
 export default class Step 
@@ -13,13 +23,17 @@ export default class Step
    * @param data 1ステップに該当するデータ
    */
   constructor(data:any) {
-    this._code = "";
-    this._desc = "";
+    this._title = "";
+    this._code  = "";
+    this._desc  = "";
     this.apply(data);
   }
 
   //---------------------------------------------------------------------------
   // private プロパティ
+
+  /** タイトル */
+  private _title:string;
 
   /** コードテキスト */
   private _code:string;
@@ -29,6 +43,16 @@ export default class Step
 
   //---------------------------------------------------------------------------
   // public アクセッサ
+
+  /** タイトルを返します。 */
+  public get title() {
+    return this._title;
+  }
+
+  /** タイトルをセットします。 */
+  public set title(v:string) {
+    this._title = v;
+  }
 
   /** コードを返します。 */
   public get code() {
@@ -69,24 +93,26 @@ export default class Step
    * @param data 1ステップに該当するデータ
    */
   apply(data:any) {
-    this._code = _get(data, "code", "");
-    this._desc = _get(data, "desc", "");
+    this._title = _get(data, "title", "");
+    this._code  = _get(data, "code", "");
+    this._desc  = _get(data, "desc", "");
   }
 
   /**
    * 同じ情報をもったコピーを生成する
    */
   copy() {
-    return new Step({code:this.code, desc:this.desc});
+    return new Step(this.toJSON());
   }
 
   /**
    * JSONに変換する
    */
-  public toJSON() {
+  public toJSON() :IJSON{
     return {
-      code: this._code,
-      desc: this._desc
+      title: this._title,
+      code : this._code,
+      desc : this._desc,
     };
   }
 }
