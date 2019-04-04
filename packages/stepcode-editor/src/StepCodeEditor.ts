@@ -69,13 +69,13 @@ export default class StepCodeEditor {
     })
 
     // 更新ボタンのクリック処理
-    this.ui.on(UIType.MenuUpdateButton, 'click', () => {
-      this.core.at(this.stepcode.currentNo -1);
-      (this.core.current as Step).apply(this.work);
-      const cNo = this.stepcode.currentNo;
-      this.stepcode.load(this.core.toJSON());
-      this.stepcode.setNo(cNo);
-    })
+    // this.ui.on(UIType.MenuUpdateButton, 'click', () => {
+    //   this.core.at(this.stepcode.currentNo -1);
+    //   (this.core.current as Step).apply(this.work);
+    //   const cNo = this.stepcode.currentNo;
+    //   this.stepcode.load(this.core.toJSON());
+    //   this.stepcode.setNo(cNo);
+    // })
 
     this.stepcode.setCallback(StepCode.CallbackType.PrevAfter, (stepcode) => {
       this.syncPreviewToEditor();

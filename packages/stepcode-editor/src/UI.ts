@@ -168,7 +168,6 @@ export default class UI {
     const ui = Config.UIType;
 
     dom[ui.Menu].appendChild(dom[ui.MenuAddStep]);
-    dom[ui.Menu].appendChild(dom[ui.MenuUpdateButton]);
     
   }
 
