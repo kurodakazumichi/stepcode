@@ -1,5 +1,6 @@
 /**
  * StepCode エントリポイント
  */
-import StepCode from './stepcode';
-export default StepCode;
+import { default as Core, ICallbackFunc, CallbackType } from './stepcode';
+export default Core;
+export { ICallbackFunc, CallbackType }

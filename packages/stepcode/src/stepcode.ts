@@ -10,6 +10,23 @@ import * as Config from './config';
 import Core, { Step } from 'stepcode-core';
 
 /******************************************************************************
+ * Enum
+ *****************************************************************************/
+/** 設定可能なcallback関数の種類 */
+export enum CallbackType {
+  PrevBefore,
+  PrevAfter,
+  NextBefore,
+  NextAfter,
+};
+
+/******************************************************************************
+ * Interface
+ *****************************************************************************/
+/** Callback関数のシグネチャ */
+export type ICallbackFunc = (stepcode:StepCode) => void;
+
+/******************************************************************************
  * StepCode本体
  *****************************************************************************/
 export default class StepCode
@@ -30,15 +47,28 @@ export default class StepCode
     this.editor = new Editor();
     this.comment = new Comment();
     this.footer = new Footer();
-
-    this.footer.setEvents({
-      prev: () => { this.core.prev(); this.update(); },
-      next: () => { this.core.next(); this.update(); }
-    });
     
     // UIの親子関係を構築
     this.build();
     this.update();
+
+    // コールバック関数配列を初期化
+    this.callbacks = [];
+
+    this.footer.setEvents({
+      prev: () => { 
+        this.doCallback(CallbackType.PrevBefore);
+        this.core.prev(); 
+        this.doCallback(CallbackType.PrevAfter);
+        this.update(); 
+      },
+      next: () => { 
+        this.doCallback(CallbackType.NextBefore);
+        this.core.next(); 
+        this.doCallback(CallbackType.NextAfter);
+        this.update(); 
+      }
+    });
   }
 
   //---------------------------------------------------------------------------
@@ -62,15 +92,54 @@ export default class StepCode
   /** UI Footer要素 */
   private footer:Footer;
 
+  /** コールバック関数を格納する配列 */
+  private callbacks:ICallbackFunc[];
+
+  //---------------------------------------------------------------------------
+  // public プロパティ
+
+  public get lastNo() {
+    return this.core.lastNo;
+  }
+
+  public get currentNo() {
+    return this.core.currentNo;
+  }
+
+  public get currentIdx() {
+    return Math.max(this.core.currentNo - 1, 0);
+  }
+
+  // TODO: 指定したページを表示する
+  public setNo(no:number){
+    this.core.at(no - 1);
+    this.update();
+  }
+
+  /**
+   * 指定されたステップを表示する
+   * @param no 表示するStep番号
+   */
+  public show(no:number) {
+    this.core.at(no - 1);
+    this.update();
+  }
+
   //---------------------------------------------------------------------------
   // public メンバ
 
   /**
-   * データをロードします
+   * データを新たにロードします。
    * @param data ロードするデータ
    */
-  public load(data:any) {
+  public load(data:any) 
+  {
+    // 新しいデータを適用する。
     this.core.apply(data);
+
+    // UIを再構築する必要がある
+
+    this.update();
   }
 
   /**
@@ -105,6 +174,15 @@ export default class StepCode
    */
   setComment(step:Step) {
     this.comment.update(step.desc);
+  }
+
+  /**
+   * 指定したコールバック関数を設定します。
+   * @param type コールバックの種類
+   * @param func コールバック関数
+   */
+  public setCallback(type:CallbackType, func:ICallbackFunc) {
+    this.callbacks[type] = func;
   }
 
   //---------------------------------------------------------------------------
@@ -170,6 +248,15 @@ export default class StepCode
       currentNo:this.core.currentNo, 
       totalNo  :this.core.lastNo
     });
+  }
+
+  /**
+   * 指定されたコールバック関数を実行する
+   * @param type 実行するコールバックの種類
+   */
+  private doCallback(type:CallbackType) {
+    const func = this.callbacks[type];
+    func && func(this);
   }
 
 }
