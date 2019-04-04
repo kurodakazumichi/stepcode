@@ -14,7 +14,9 @@
     "typedoc": "^0.14.2"
   },
   "scripts": {
-    "clean": "rm -rf ./packages/*/build ./packages/*/build-es5 ./packages/*/tsconfig.tsbuildinfo ./node_modules ./packages/*/node_modules",
+    "clean:pkg": "rm -rf ./packages/*/build ./packages/*/build-es5 ./packages/*/tsconfig.tsbuildinfo",
+    "clean:node": "rm -rf ./node_modules ./*/node_modules ./*/*/node_modules",
+    "clean:demo": "rm -rf ./examples/build ./examples/dist",
     "build": "tsc -b ./packages/stepcode/tsconfig.json",
     "build:core": "tsc -b ./packages/stepcode-core/tsconfig.json",
     "build:editor": "tsc -b ./packages/stepcode-editor/tsconfig.json",
