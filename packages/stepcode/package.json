@@ -17,6 +17,7 @@
     "markdown-it-mark": "^2.0.0",
     "markdown-it-sub": "^1.0.0",
     "markdown-it-sup": "^1.0.0",
-    "stepcode-core":"^1.0.0"
+    "stepcode-core":"^1.0.0",
+    "escape-html": "^1.0.3"
   }
 }

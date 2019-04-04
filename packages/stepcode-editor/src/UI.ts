@@ -103,6 +103,7 @@ export default class UI {
    */
   private createHTMLElements() 
   {
+    console.log(Config.UIType);
     Object.values(Config.UIType).map((uiKey) => {
       this.doms[uiKey] = Config.createElement(uiKey as Config.UIType);
     })
@@ -166,7 +167,9 @@ export default class UI {
     const dom = this.doms;
     const ui = Config.UIType;
 
-    dom[ui.Menu].appendChild(dom[ui.MenuSaveButton]);
+    dom[ui.Menu].appendChild(dom[ui.MenuAddStep]);
+    dom[ui.Menu].appendChild(dom[ui.MenuUpdateButton]);
+    
   }
 
 }

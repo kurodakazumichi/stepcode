@@ -4,6 +4,7 @@
 import hljs from 'highlight.js';
 import * as Config from './config';
 import { Step } from 'stepcode-core';
+import EscapeHtml from 'escape-html';
 
 /******************************************************************************
  * Editor
@@ -233,12 +234,12 @@ class Codes
 
   /** 言語を設定する */
   public set lang(lang:string) {
-    this.code.className = (hljs.getLanguage(lang))? lang : "";
+    this.code.className = (hljs.getLanguage(lang))? lang : "js";
   }
 
   /** ソースコードを設定する */
   public set codetext(codetext:string) {
-    this.code.innerHTML = codetext;
+    this.code.innerHTML = EscapeHtml(codetext);
     hljs.highlightBlock(this.code as hljs.Node);
   }
 

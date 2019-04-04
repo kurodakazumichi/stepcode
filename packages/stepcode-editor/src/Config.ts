@@ -37,7 +37,7 @@ export enum UIType {
   EditorFooter        = "EditorFooter",
   EditorFooterLogo    = "EditorFooterLogo",
   Menu                = "Menu",
-  MenuSaveButton      = "MenuSaveButton",
+  MenuAddStep         = "MenuAddStep",
   MenuUpdateButton    = "MenuUpdateButton"
 }
 
@@ -129,10 +129,10 @@ const config =
       className:classNames.menu
     },
 
-    /** メニュー:保存ボタン */
-    [UIType.MenuSaveButton]: {
+    /** メニュー:ステップ追加ボタン */
+    [UIType.MenuAddStep]: {
       tag:"button",
-      innerHTML:"保存"
+      innerHTML:"ステップを追加"
     },
 
     /** メニュー:更新ボタン */

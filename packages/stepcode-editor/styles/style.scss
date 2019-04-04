@@ -46,6 +46,7 @@
         box-sizing: border-box;
         border:none;
         border-top:1px solid #ddd;
+        font-size: 16px;
       }
     }
 
@@ -63,6 +64,13 @@
 
 
   &-menu {
+    padding:1em;
+    text-align: right;
 
+    button {
+      padding:1em;
+      margin:1em;
+      font-size: 14px;
+    }
   }
 }

@@ -2,12 +2,11 @@
  * import
  *****************************************************************************/
 import Core, { Step } from 'stepcode-core';
-import StepCode from 'stepcode';
+import * as StepCode from 'stepcode';
 import Ace from 'ace-builds';
 import ThemeGithub from 'ace-builds/src-noconflict/theme-github';
 import UI from './UI';
 import { UIType } from './Config';
-import EscapeHtml from 'escape-html';
 
 /******************************************************************************
  * StepCodeEditorの本体
@@ -20,33 +19,34 @@ export default class StepCodeEditor {
    */
   constructor(target:string | HTMLElement) 
   {
+    (window as any).e = this;
     this.core     = this.createCore();
     this.work     = this.createWork();
     this.ui       = this.createUI(target);
     this.stepcode = this.createStepCode();
     this.ace      = this.createAce();
 
-    this.stepcode.setStep(this.work);
+    // UIにデータを設定
+    this.stepcode.load(this.core.toJSON());
     this.ace.setValue(this.work.code);
     this.ui.md.value = this.work.desc;
 
-    this.ui.on(UIType.EditorMdInput, 'load', (e:Event) => {
-      console.log("Hoge");
-      if(e.target instanceof HTMLTextAreaElement) {
-        e.target.value = this.work.desc;
-      }
-    })
-
     // タイトルが変更された時の処理
     this.ui.on(UIType.EditorTitleText, 'change', (e:Event) => {
-      if (e.target instanceof HTMLInputElement)
+      if (e.target instanceof HTMLInputElement) {
         this.stepcode.setTitle(e.target.value);
+      }
+        
     });
 
     // コードが変更された時の処理
     this.ace.on('change', (e) => {
-      this.work.code = EscapeHtml(this.ace.getValue());
-      this.stepcode.setStep(this.work);
+      this.work.code = this.ace.getValue();
+      this.stepcode.setCode(this.work);
+    });
+
+    this.ace.on('blur', (e) => {
+      this.syncEditorToPreview();
     });
 
     // マークダウンが変更された時の処理
@@ -56,6 +56,81 @@ export default class StepCodeEditor {
         this.stepcode.setComment(this.work);
       }
     })
+
+    this.ui.on(UIType.EditorMdInput, 'blur', (e:Event) => {
+      this.syncEditorToPreview();
+    })
+
+    // 保存ボタンのクリック処理
+    this.ui.on(UIType.MenuAddStep, 'click', (e:Event) => {
+      this.core.steps.push(this.work.copy());
+      this.stepcode.load(this.core.toJSON());
+      this.stepcode.setNo(this.stepcode.lastNo);
+    })
+
+    // 更新ボタンのクリック処理
+    this.ui.on(UIType.MenuUpdateButton, 'click', () => {
+      this.core.at(this.stepcode.currentNo -1);
+      (this.core.current as Step).apply(this.work);
+      const cNo = this.stepcode.currentNo;
+      this.stepcode.load(this.core.toJSON());
+      this.stepcode.setNo(cNo);
+    })
+
+    this.stepcode.setCallback(StepCode.CallbackType.PrevAfter, (stepcode) => {
+      this.syncPreviewToEditor();
+    });
+
+    this.stepcode.setCallback(StepCode.CallbackType.NextAfter, (stepcode) => {
+      this.syncPreviewToEditor();
+    });
+    
+
+    // TODO:ステップの削除
+    // TODO:データのダウンロード
+  }
+
+  /**
+   * Editorの入力内容をPreviewと同期する
+   */
+  syncEditorToPreview() {
+
+    // Previewが表示しているIdx、Noを取得
+    const idx = this.stepcode.currentIdx;
+    const no  = this.stepcode.currentNo;
+
+    console.log(idx, no);
+
+    // Coreの方もPreviewと同じ位置に設定する
+    this.core.at(idx);
+    
+    // 入力内容をCoreに適用する
+    (this.core.current as Step).apply(this.work);
+
+    // Coreの内容をPreviewに読み込ませる
+    this.stepcode.load(this.core.toJSON());
+
+    // 表示ページを更新
+    this.stepcode.show(no);
+
+    // TODO: ストレージにデータを保存
+    sessionStorage.setItem("data", JSON.stringify(this.core.toJSON()));
+
+  }
+
+  syncPreviewToEditor() {
+    const idx = this.stepcode.currentIdx;
+
+    
+    const step = this.core.steps.get(idx);
+
+    if (step) {
+      this.ui.md.value = step.desc;
+      this.ace.setValue(step.code);
+      this.ace.clearSelection();
+      this.work.apply(step);
+    }
+    
   }
 
   //---------------------------------------------------------------------------
@@ -68,7 +143,7 @@ export default class StepCodeEditor {
   private ui:UI;
 
   /** StepCode本体 */
-  private stepcode:StepCode;
+  private stepcode:StepCode.default;
 
   /** Ace Editor */
   private ace: Ace.Ace.Editor;
@@ -84,6 +159,7 @@ export default class StepCodeEditor {
    */
   private createCore() 
   {
+    let data:any;
     // 初期データ
     const ini = {
       steps:[
@@ -93,7 +169,16 @@ export default class StepCodeEditor {
         }
       ]
     }
-    return new Core(ini);
+
+    // TODO: ストレージにデータがあればそのデータから復元する
+    let save = sessionStorage.getItem("data");
+    if (save) {
+      data = JSON.parse(save);
+    } else {
+      data = ini;
+    }
+
+    return new Core(data);
   }
 
   /**
@@ -114,7 +199,7 @@ export default class StepCodeEditor {
    * StepCodeを初期化(生成)する
    */
   private createStepCode() {
-    return new StepCode(this.ui.stepcode, {});
+    return new StepCode.default(this.ui.stepcode, {});
   }
 
   /**
@@ -122,6 +207,8 @@ export default class StepCodeEditor {
    */
   private createAce() {
     const ace = Ace.edit(this.ui.ace);
+    ace.container.style.lineHeight = "1.5";
+    ace.container.style.fontSize = "16px";
     ace.getSession().setUseWorker(false);
     ace.setTheme(ThemeGithub);
     return ace;
