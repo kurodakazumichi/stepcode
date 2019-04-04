@@ -30,7 +30,8 @@ function convert(data:{title:string, contents:string[]}) {
   const step = [];
   for(let i = 0; i < contents.length; ++i) {
     step.push({
-      code: escapeHtml(contents[i]),
+      title:escapeHtml(contents[i]),
+      code: contents[++i],
       desc: escapeHtml(contents[++i])
     })
   }
