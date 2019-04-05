@@ -38,6 +38,7 @@ export enum UIType {
   EditorFooterLogo    = "EditorFooterLogo",
   Menu                = "Menu",
   MenuAddStep         = "MenuAddStep",
+  MenuAddStepPrev     = "MenuAddStepPrev",
   MenuDelStep         = "MenuDelStep",
   MenuReset           = "MenuReset",
 }
@@ -146,6 +147,11 @@ const config =
     [UIType.MenuReset]: {
       tag:"button",
       innerHTML:"リセット"
+    },
+    /** メニュー:ステップを前に追加する */
+    [UIType.MenuAddStepPrev]: {
+      tag:"button",
+      innerHTML:"ステップを前に追加する"
     },
   }
 }

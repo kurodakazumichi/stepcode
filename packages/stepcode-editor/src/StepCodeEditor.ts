@@ -104,6 +104,15 @@ export default class StepCodeEditor {
         window.location.reload();
       }
     });
+
+    // ステップを前に追加する
+    this.ui.on(UIType.MenuAddStepPrev, 'click', (e:Event) => {
+      console.log("add");
+      const idx = this.stepcode.currentIdx;
+      this.core.steps.add(idx, this.work.copy());
+      this.stepcode.load(this.core.toJSON());
+      this.stepcode.setNo(idx + 1);
+    })
     // TODO:データのダウンロード
   }
 
