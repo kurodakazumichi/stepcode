@@ -129,6 +129,37 @@ export default class StepCodeEditor {
       anchor.href = url;
       anchor.download = "stepdata.json";
     });
+
+    this.ui.on(UIType.Main, 'dragover', (e:Event) => {
+      console.log("dragover");
+      e.preventDefault();
+    });
+
+    this.ui.on(UIType.Main, 'drop', (e:Event) => {
+      const ev = e as DragEvent;
+
+      ev.preventDefault();
+      if (ev.dataTransfer) {
+        const file = ev.dataTransfer.files.item(0) as File;
+        console.log(file);
+
+        const fr = new FileReader();
+        fr.readAsText(file, 'UTF-8');
+        fr.onload = (evt:ProgressEvent) => {
+          if(evt.target) {
+            const target = evt.target as any;
+            console.log(JSON.parse(target.result));
+            this.stepcode.load(JSON.parse(target.result));
+            this.core.apply(JSON.parse(target.result));
+            this.syncPreviewToEditor();
+          }
+          
+        }
+      }
+        
+      
+      
+    });
   }
 
   /**
