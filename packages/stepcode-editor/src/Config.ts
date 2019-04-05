@@ -37,7 +37,8 @@ export enum UIType {
   EditorFooter        = "EditorFooter",
   EditorFooterLogo    = "EditorFooterLogo",
   Menu                = "Menu",
-  MenuAddStep         = "MenuAddStep"
+  MenuAddStep         = "MenuAddStep",
+  MenuDelStep         = "MenuDelStep",
 }
 
 /******************************************************************************
@@ -132,7 +133,13 @@ const config =
     [UIType.MenuAddStep]: {
       tag:"button",
       innerHTML:"ステップを追加"
-    }
+    },
+
+    /** メニュー:ステップ削除ボタン */
+    [UIType.MenuDelStep]: {
+      tag:"button",
+      innerHTML:"ステップを削除"
+    },
   }
 }
 

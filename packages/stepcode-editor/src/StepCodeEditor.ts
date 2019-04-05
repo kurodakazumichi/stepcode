@@ -84,9 +84,18 @@ export default class StepCodeEditor {
     this.stepcode.setCallback(StepCode.CallbackType.NextAfter, (stepcode) => {
       this.syncPreviewToEditor();
     });
-    
 
     // TODO:ステップの削除
+    this.ui.on(UIType.MenuDelStep, 'click', (e:Event) => {
+      const idx = this.stepcode.currentIdx;
+      this.core.steps.remove(idx);
+      this.core.at(idx);
+      if(this.core.current)
+        this.work.apply(this.core.current.toJSON());
+      this.syncPreviewToEditor();
+      this.syncEditorToPreview();
+
+    });
     // TODO:データのダウンロード
   }
 
