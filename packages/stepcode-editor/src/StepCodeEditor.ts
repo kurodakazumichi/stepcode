@@ -34,9 +34,9 @@ export default class StepCodeEditor {
     // タイトルが変更された時の処理
     this.ui.on(UIType.EditorTitleText, 'change', (e:Event) => {
       if (e.target instanceof HTMLInputElement) {
-        this.stepcode.setTitle(e.target.value);
-      }
-        
+        this.work.title = e.target.value;
+        this.syncEditorToPreview();
+      } 
     });
 
     // コードが変更された時の処理
