@@ -156,9 +156,16 @@ export default class StepCodeEditor {
           
         }
       }
-        
-      
-      
+    });
+
+    // TODO:言語変更時
+    this.ui.on(UIType.EditorHeaderLang, 'change', (e:Event) => {
+      const target = e.target as HTMLOptionElement;
+
+      if(target.value) {
+        this.work.lang = target.value;
+        this.syncEditorToPreview();
+      }
     });
   }
 
