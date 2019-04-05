@@ -1,6 +1,7 @@
 /******************************************************************************
  * import
  *****************************************************************************/
+import StepCode from 'stepcode';
 import * as Config from './Config';
 
 /******************************************************************************
@@ -93,6 +94,7 @@ export default class UI {
    */
   private buildElements() {
     this.createHTMLElements();
+    this.createSelectOptionsOfLanguage();
     this.buildMainElements();
     this.buildEditorElements();
     this.buildPreviewElements();
@@ -111,6 +113,22 @@ export default class UI {
     console.log(Config.UIType);
     Object.values(Config.UIType).map((uiKey) => {
       this.doms[uiKey] = Config.createElement(uiKey as Config.UIType);
+    })
+  }
+
+  // TODO: 言語選択オプションの生成
+  private createSelectOptionsOfLanguage() {
+    const s = this.doms[Config.UIType.EditorHeaderLang] as HTMLSelectElement;
+    
+    const option = document.createElement('option');
+    option.innerHTML = "言語選択(自動)";
+    s.appendChild(option);
+  
+    StepCode.supportLanguages().map((lang) => {
+      const o = document.createElement('option') as HTMLOptionElement;
+      o.innerHTML = lang;
+      o.value     = lang;
+      s.appendChild(o);
     })
   }
 
@@ -135,13 +153,14 @@ export default class UI {
     const ui = Config.UIType;
 
     // エディタ直下
-    dom[ui.MainEditor].appendChild(dom[ui.EditorTitle]);
+    dom[ui.MainEditor].appendChild(dom[ui.EditorHeader]);
     dom[ui.MainEditor].appendChild(dom[ui.EditorCode]);
     dom[ui.MainEditor].appendChild(dom[ui.EditorMd]);
     dom[ui.MainEditor].appendChild(dom[ui.EditorFooter]);
 
     // エディタ:タイトル直下
-    dom[ui.EditorTitle].appendChild(dom[ui.EditorTitleText]);
+    dom[ui.EditorHeader].appendChild(dom[ui.EditorHeaderTitle]);
+    dom[ui.EditorHeader].appendChild(dom[ui.EditorHeaderLang]);
 
     // エディタ:コード直下
     dom[ui.EditorCode].appendChild(dom[ui.EditorCodeAce]);

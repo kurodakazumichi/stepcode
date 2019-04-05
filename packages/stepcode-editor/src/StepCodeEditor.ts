@@ -32,7 +32,7 @@ export default class StepCodeEditor {
     this.ui.md.value = this.work.desc;
 
     // タイトルが変更された時の処理
-    this.ui.on(UIType.EditorTitleText, 'change', (e:Event) => {
+    this.ui.on(UIType.EditorHeaderTitle, 'change', (e:Event) => {
       if (e.target instanceof HTMLInputElement) {
         this.work.title = e.target.value;
         this.syncEditorToPreview();

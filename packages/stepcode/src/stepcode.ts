@@ -2,6 +2,7 @@
  * import
  *****************************************************************************/
 import _ from 'lodash';
+import hljs from 'highlight.js';
 import Header from './header';
 import Editor from './editor';
 import Comment from './comment';
@@ -31,6 +32,19 @@ export type ICallbackFunc = (stepcode:StepCode) => void;
  *****************************************************************************/
 export default class StepCode
 {
+  //---------------------------------------------------------------------------
+  // 静的メンバ
+
+  /**
+   * サポートしている言語の一覧を返します。
+   */
+  public static supportLanguages() {
+    return hljs.listLanguages();
+  }
+
+  //---------------------------------------------------------------------------
+  // コンストラクタ
+  
   /** 
    * データのロードとUIの構築を行う。
    */

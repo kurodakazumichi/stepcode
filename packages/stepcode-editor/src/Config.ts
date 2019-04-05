@@ -11,7 +11,7 @@ export const classNames = {
   mainEditor         : "sce-main__editor",
   mainPreview        : "sce-main__preview",
   mainPreviewStepCode: "sce-main__preview__stepcode",
-  editorTitle        : "sce-editor-title",
+  editorHeader       : "sce-editor-header",
   editorCode         : "sce-editor-code",
   editorCodeAce      : "sce-editor-code__ace",
   editorMd           : "sce-editor-md",
@@ -28,8 +28,9 @@ export enum UIType {
   MainEditor          = "MainEditor",
   MainPreview         = "MainPreview",
   MainPreviewStepCode = "MainPreviewStepCode",
-  EditorTitle         = "EditorTitle",
-  EditorTitleText     = "EditorTitleText",
+  EditorHeader        = "EditorHeader",
+  EditorHeaderTitle   = "EditorHeaderText",
+  EditorHeaderLang    = "EditorHeaderLang",
   EditorCode          = "EditorCode",
   EditorCodeAce       = "EditorCodeAce",
   EditorMd            = "EditorMd",
@@ -78,16 +79,21 @@ const config =
       className:classNames.mainPreviewStepCode
     },
 
-    /** エディター:タイトル */
-    [UIType.EditorTitle]: {
+    /** エディター:ヘッダ */
+    [UIType.EditorHeader]: {
       tag:"div",
-      className:classNames.editorTitle
+      className:classNames.editorHeader
     },
 
-    /** エディター:タイトル:テキスト */
-    [UIType.EditorTitleText]: {
+    /** エディター:ヘッダ:テキスト */
+    [UIType.EditorHeaderTitle]: {
       tag:"input",
-      placeholder:"ファイル名を入れてね"
+      placeholder:"タイトル"
+    },
+
+    /** エディター:ヘッダ:言語 */
+    [UIType.EditorHeaderLang]: {
+      tag:"select",
     },
 
     /** エディター:コード */
