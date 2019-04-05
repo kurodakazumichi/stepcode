@@ -32,7 +32,8 @@ function convert(data:{title:string, contents:string[]}) {
     step.push({
       title:escapeHtml(contents[i]),
       code: contents[++i],
-      desc: escapeHtml(contents[++i])
+      desc: escapeHtml(contents[++i]),
+      lang: ""
     })
   }
 
