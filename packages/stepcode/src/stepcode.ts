@@ -44,7 +44,7 @@ export default class StepCode
 
   //---------------------------------------------------------------------------
   // コンストラクタ
-  
+
   /** 
    * データのロードとUIの構築を行う。
    */
@@ -197,6 +197,14 @@ export default class StepCode
    */
   public setCallback(type:CallbackType, func:ICallbackFunc) {
     this.callbacks[type] = func;
+  }
+
+  /**
+   * TODO Editorのスクロール量を設定する
+   * @param value スクロール量
+   */
+  public setEditorScrollTop(value:number) {
+    this.editor.node.scrollTop = value;
   }
 
   //---------------------------------------------------------------------------

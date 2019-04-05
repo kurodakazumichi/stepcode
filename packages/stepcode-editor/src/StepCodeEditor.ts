@@ -43,6 +43,7 @@ export default class StepCodeEditor {
     this.ace.on('change', (e) => {
       this.work.code = this.ace.getValue();
       this.stepcode.setCode(this.work);
+      this.stepcode.setEditorScrollTop(this.ace.getSession().getScrollTop());
     });
 
     this.ace.on('blur', (e) => {
