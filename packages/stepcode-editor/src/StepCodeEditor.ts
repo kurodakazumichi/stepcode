@@ -122,6 +122,13 @@ export default class StepCodeEditor {
     });
 
     // TODO:データのダウンロード
+    this.ui.on(UIType.MenuDownload, 'click', () => {
+      const blob = new Blob([JSON.stringify(this.core.toJSON())], {type:'application/json'});
+      const url  = URL.createObjectURL(blob);
+      const anchor = this.ui.get<HTMLAnchorElement>(UIType.MenuDownload);
+      anchor.href = url;
+      anchor.download = "stepdata.json";
+    });
   }
 
   /**

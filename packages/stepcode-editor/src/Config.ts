@@ -42,6 +42,7 @@ export enum UIType {
   MenuAddStepAfter    = "MenuAddStepAfter",
   MenuDelStep         = "MenuDelStep",
   MenuReset           = "MenuReset",
+  MenuDownload        = "MenuDownload"
 }
 
 /******************************************************************************
@@ -158,6 +159,11 @@ const config =
     [UIType.MenuAddStepAfter]: {
       tag:"button",
       innerHTML:"ステップを後に追加する"
+    },
+    /** メニュー:ダウンロード */
+    [UIType.MenuDownload]: {
+      tag:"a",
+      innerHTML:"ダウンロード",
     },
   }
 }

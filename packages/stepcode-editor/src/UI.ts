@@ -59,6 +59,11 @@ export default class UI {
     this.doms[uiType].addEventListener(name, func);
   }
 
+  /** 各種要素を取得する */
+  get<T extends HTMLElement>(uiType:Config.UIType): T {
+    return this.doms[uiType] as T;
+  }
+
   //---------------------------------------------------------------------------
   // private メソッド
 
@@ -172,6 +177,7 @@ export default class UI {
     dom[ui.Menu].appendChild(dom[ui.MenuReset]);
     dom[ui.Menu].appendChild(dom[ui.MenuAddStepBefore]);
     dom[ui.Menu].appendChild(dom[ui.MenuAddStepAfter]);
+    dom[ui.Menu].appendChild(dom[ui.MenuDownload]);
   }
 
 }
