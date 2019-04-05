@@ -39,6 +39,7 @@ export enum UIType {
   Menu                = "Menu",
   MenuAddStep         = "MenuAddStep",
   MenuDelStep         = "MenuDelStep",
+  MenuReset           = "MenuReset",
 }
 
 /******************************************************************************
@@ -139,6 +140,12 @@ const config =
     [UIType.MenuDelStep]: {
       tag:"button",
       innerHTML:"ステップを削除"
+    },
+
+    /** メニュー:リセットボタン */
+    [UIType.MenuReset]: {
+      tag:"button",
+      innerHTML:"リセット"
     },
   }
 }

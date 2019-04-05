@@ -96,6 +96,14 @@ export default class StepCodeEditor {
       this.syncEditorToPreview();
 
     });
+
+    // リセットボタン
+    this.ui.on(UIType.MenuReset, 'click', (e:Event) => {
+      if(confirm("内容を全てリセットします、よろしいですか？")) {
+        sessionStorage.clear();
+        window.location.reload();
+      }
+    });
     // TODO:データのダウンロード
   }
 
