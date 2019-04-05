@@ -165,7 +165,7 @@ export default class StepCode
    */
   setCode(step:Step) {
     const diffs = this.core.calcDiffs(this.core.current, step);    
-    this.editor.update({lang:"", step, diffs});
+    this.editor.update({step, diffs});
   }
 
   /**
@@ -235,7 +235,6 @@ export default class StepCode
 
     // エディターを更新
     this.editor.update({
-      lang: "",
       step: this.core.current,
       diffs: this.core.diffs
     });

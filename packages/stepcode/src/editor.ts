@@ -33,15 +33,15 @@ export default class Editor
   // public メソッド
 
   /** 更新 */
-  public update(data:{lang:string, step:Step, diffs:number[]}) {
+  public update(data:{step:Step, diffs:number[]}) {
 
-    const {lang, step, diffs} = data;
+    const {step, diffs} = data;
 
     // 行番号の更新
     this.lines.update(step.codeLineNum, diffs);
 
     // コードの更新
-    this.codes.update(lang, step.code);
+    this.codes.update(step.lang, step.code);
     
   }
 
@@ -234,7 +234,7 @@ class Codes
 
   /** 言語を設定する */
   public set lang(lang:string) {
-    this.code.className = (hljs.getLanguage(lang))? lang : "js";
+    this.code.className = (hljs.getLanguage(lang))? lang : "";
   }
 
   /** ソースコードを設定する */
