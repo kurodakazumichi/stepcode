@@ -17,13 +17,13 @@ describe('Step', () => {
   // 正常系テスト
   //===========================================================================
   describe.each`
-  title       | code      | desc      | rLineNum
-  ${"ケース1"} | ${""}     | ${""}     | ${0}
-  ${"ケース1"} | ${"test"} | ${"test"} | ${1}
-  `('コンストラクタの正常系テスト', ({title, code, desc, rLineNum}) => {
+  title       | code      | desc      | lang    | rLineNum
+  ${"ケース1"} | ${""}     | ${""}     | ${"js"} | ${0}
+  ${"ケース1"} | ${"test"} | ${"test"} | ${"js"} | ${1}
+  `('コンストラクタの正常系テスト', ({title, code, desc, lang, rLineNum}) => {
 
     beforeEach(() => {
-      step = new Step({title, code, desc});
+      step = new Step({title, code, desc, lang});
     });
 
     describe(`constructor(${title})の時`, () => {
@@ -36,12 +36,16 @@ describe('Step', () => {
         expect(step.code).toBe(code);
       })
     
-      it(`this.codeLineNum' = ${rLineNum}`, () => {
+      it(`this.codeLineNum = ${rLineNum}`, () => {
         expect(step.codeLineNum).toBe(rLineNum);
       })
 
       it(`this.desc = ${desc}`, () => {
         expect(step.desc).toBe(desc);
+      })
+
+      it(`this.lang = ${lang}`, () => {
+        expect(step.lang).toBe(lang);
       })
 
     });
@@ -85,6 +89,10 @@ describe('Step', () => {
         expect(step.desc).toBe("");
       })
 
+      it('this.lang = ""', () => {
+        expect(step.lang).toBe("");
+      })
+
     });
   });
 
@@ -109,6 +117,11 @@ describe('Step', () => {
     it(`this.desc = "sample"でdescに"sample"がセットされること`, () => {
       step.desc = "sample";
       expect(step.desc).toBe("sample");
+    })
+
+    it(`this.lang = "js"でlangに"js"がセットされること`, () => {
+      step.lang = "js";
+      expect(step.lang).toBe("js");
     })
   })
 
@@ -136,14 +149,11 @@ describe('Step', () => {
       json = step.toJSON();
     })
 
-    it(`プロパティが足りている事をチェック`, () => {
-      expect(json).toHaveProperty('title');
-      expect(json).toHaveProperty('code');
-      expect(json).toHaveProperty('desc');
-    })
-
-    it(`step.toJSON().desc と step.desc が一致すること`, () => {
+    it(`step.toJSON()とstepの内容 が一致すること`, () => {
+      expect(step.title).toBe(json.title);
+      expect(step.code).toBe(json.code);
       expect(step.desc).toBe(json.desc);
+      expect(step.lang).toBe(json.lang);
     })
   })
 });

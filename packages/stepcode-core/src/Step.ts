@@ -8,9 +8,17 @@ import _get from 'lodash/get';
  *****************************************************************************/
 /** StepのJSONフォーマットインターフェース */
 export interface IJSON {
+  /** タイトル */
   title:string;
+
+  /** ソースコード */
   code:string;
+
+  /** 解説テキスト(マークダウン) */
   desc:string;
+
+  /** 言語の種類 */
+  lang:string;
 }
 
 /******************************************************************************
@@ -26,6 +34,7 @@ export default class Step
     this._title = "";
     this._code  = "";
     this._desc  = "";
+    this._lang  = "";
     this.apply(data);
   }
 
@@ -40,6 +49,9 @@ export default class Step
 
   /** 解説テキスト */
   private _desc:string;
+
+  /** 言語の種類 */
+  private _lang:string;
 
   //---------------------------------------------------------------------------
   // public アクセッサ
@@ -85,6 +97,16 @@ export default class Step
     this._desc = v;
   }
 
+  /** 言語の種類を返します */
+  public get lang() {
+    return this._lang;
+  }
+
+  /** 言語の種類をセットします */
+  public set lang(v:string) {
+    this._lang = v;
+  }
+
   //---------------------------------------------------------------------------
   // public メソッド
 
@@ -96,6 +118,7 @@ export default class Step
     this._title = _get(data, "title", "");
     this._code  = _get(data, "code", "");
     this._desc  = _get(data, "desc", "");
+    this._lang  = _get(data, "lang", "");
   }
 
   /**
@@ -113,6 +136,7 @@ export default class Step
       title: this._title,
       code : this._code,
       desc : this._desc,
+      lang : this._lang
     };
   }
 }
