@@ -107,12 +107,20 @@ export default class StepCodeEditor {
 
     // ステップを前に追加する
     this.ui.on(UIType.MenuAddStepPrev, 'click', (e:Event) => {
-      console.log("add");
       const idx = this.stepcode.currentIdx;
       this.core.steps.add(idx, this.work.copy());
       this.stepcode.load(this.core.toJSON());
       this.stepcode.setNo(idx + 1);
-    })
+    });
+
+    // ステップを後に追加する
+    this.ui.on(UIType.MenuAddStepAfter, 'click', (e:Event) => {
+      const idx = this.stepcode.currentIdx + 1;
+      this.core.steps.add(idx, this.work.copy());
+      this.stepcode.load(this.core.toJSON());
+      this.stepcode.setNo(idx + 1);
+    });
+
     // TODO:データのダウンロード
   }
 

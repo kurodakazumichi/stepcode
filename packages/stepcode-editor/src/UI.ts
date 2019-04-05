@@ -171,6 +171,7 @@ export default class UI {
     dom[ui.Menu].appendChild(dom[ui.MenuDelStep]);
     dom[ui.Menu].appendChild(dom[ui.MenuReset]);
     dom[ui.Menu].appendChild(dom[ui.MenuAddStepPrev]);
+    dom[ui.Menu].appendChild(dom[ui.MenuAddStepAfter]);
   }
 
 }
