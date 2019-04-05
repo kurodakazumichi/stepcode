@@ -38,7 +38,7 @@ export enum UIType {
   EditorFooterLogo    = "EditorFooterLogo",
   Menu                = "Menu",
   MenuAddStep         = "MenuAddStep",
-  MenuAddStepPrev     = "MenuAddStepPrev",
+  MenuAddStepBefore   = "MenuAddStepBefore",
   MenuAddStepAfter    = "MenuAddStepAfter",
   MenuDelStep         = "MenuDelStep",
   MenuReset           = "MenuReset",
@@ -150,7 +150,7 @@ const config =
       innerHTML:"リセット"
     },
     /** メニュー:ステップを前に追加する */
-    [UIType.MenuAddStepPrev]: {
+    [UIType.MenuAddStepBefore]: {
       tag:"button",
       innerHTML:"ステップを前に追加する"
     },
