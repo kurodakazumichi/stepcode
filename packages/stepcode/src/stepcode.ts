@@ -121,7 +121,7 @@ export default class StepCode
   }
 
   public get currentIdx() {
-    return Math.max(this.core.currentNo - 1, 0);
+    return Math.max(this.core.cursor);
   }
 
   // TODO: 指定したページを表示する

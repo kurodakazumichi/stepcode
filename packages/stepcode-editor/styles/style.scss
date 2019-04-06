@@ -3,6 +3,30 @@
     width:100vw;
   }
 
+  &-guide {
+    border:1px solid #000;
+    height:60px;
+    display: flex;
+    align-items: center;
+
+    &__item {
+      width:60px;
+      height:40px;
+      text-align: center;
+      line-height: 40px;
+      border:1px solid #000;
+      overflow: hidden;
+
+      &--selected {
+        background:#abcdef;
+      }
+      &--inserted {
+        animation-name: sce-zoom;
+        animation-duration: 1s;
+      }
+    }
+  }
+
   &-main {
     width:100%;
     display: flex;
@@ -72,5 +96,17 @@
       margin:1em;
       font-size: 14px;
     }
+  }
+}
+
+@keyframes sce-zoom {
+  0% {
+    width:0;
+    text-indent: -100px;
+  }
+
+  100% {
+    width:60px;
+    text-indent: 0;
   }
 }

@@ -61,6 +61,11 @@ export default class StepCode
     return this._steps.count;
   }
 
+  /** カーソルの位置を取得します */
+  public get cursor() {
+    return this._cursor;
+  }
+
   /**
    * StepCodeが利用可能かどうか
    * 

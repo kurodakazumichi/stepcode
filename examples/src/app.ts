@@ -1,7 +1,8 @@
 /**
  * import
  */
-import Sample01 from './datas/sample01';
+//import Sample01 from './datas/sample01';
+import Sample02 from './datas/sample02';
 
 import StepCode from 'stepcode';
 import 'stepcode/styles/style.scss';
@@ -48,4 +49,5 @@ function convert(data:{title:string, contents:string[]}) {
  */
 
 
-new StepCode("#container", convert(Sample01));
+//new StepCode("#container", convert(Sample01));
+new StepCode("#container", Sample02);

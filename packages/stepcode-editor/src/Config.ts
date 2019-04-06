@@ -17,7 +17,11 @@ export const classNames = {
   editorMd           : "sce-editor-md",
   editorMdInput      : "sce-editor-md__input",
   editorFooter       : "sce-editor-footer",
-  menu               : "sce-menu"
+  menu               : "sce-menu",
+  guide              : "sce-guide",
+  guideItem          : "sce-guide__item",
+  guideItemSelected  : "sce-guide__item--selected",
+  guideItemInserted  : "sce-guide__item--inserted",
 }
 
 /******************************************************************************
@@ -43,7 +47,9 @@ export enum UIType {
   MenuAddStepAfter    = "MenuAddStepAfter",
   MenuDelStep         = "MenuDelStep",
   MenuReset           = "MenuReset",
-  MenuDownload        = "MenuDownload"
+  MenuDownload        = "MenuDownload",
+  Guide               = "Guide",
+  GuideItem           = "GuideItem",
 }
 
 /******************************************************************************
@@ -171,6 +177,16 @@ const config =
       tag:"a",
       innerHTML:"ダウンロード",
     },
+    /** ガイド */
+    [UIType.Guide]: {
+      tag:"div",
+      className: classNames.guide
+    },
+    /** ガイド:アイテム */
+    [UIType.GuideItem]: {
+      tag:"div",
+      className: classNames.guideItem
+    }
   }
 }
 

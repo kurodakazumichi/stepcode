@@ -30,6 +30,8 @@ export default class StepCodeEditor {
     this.stepcode.load(this.core.toJSON());
     this.ace.setValue(this.work.code);
     this.ui.md.value = this.work.desc;
+    this.ui.adjustGuideItem(this.core.count);
+    this.ui.selectedGuideItem(this.stepcode.currentIdx);
 
     // タイトルが変更された時の処理
     this.ui.on(UIType.EditorHeaderTitle, 'change', (e:Event) => {
@@ -62,11 +64,12 @@ export default class StepCodeEditor {
       this.syncEditorToPreview();
     })
 
-    // 保存ボタンのクリック処理
+    // ステップ追加をクリック
     this.ui.on(UIType.MenuAddStep, 'click', (e:Event) => {
       this.core.steps.push(this.work.copy());
       this.stepcode.load(this.core.toJSON());
       this.stepcode.setNo(this.stepcode.lastNo);
+      this.adjustGuide(true);
     })
 
     // 更新ボタンのクリック処理
@@ -80,10 +83,12 @@ export default class StepCodeEditor {
 
     this.stepcode.setCallback(StepCode.CallbackType.PrevAfter, (stepcode) => {
       this.syncPreviewToEditor();
+      this.adjustGuide();
     });
 
     this.stepcode.setCallback(StepCode.CallbackType.NextAfter, (stepcode) => {
       this.syncPreviewToEditor();
+      this.adjustGuide();
     });
 
     // TODO:ステップの削除
@@ -95,7 +100,7 @@ export default class StepCodeEditor {
         this.work.apply(this.core.current.toJSON());
       this.syncPreviewToEditor();
       this.syncEditorToPreview();
-
+      this.adjustGuide();
     });
 
     // リセットボタン
@@ -112,6 +117,7 @@ export default class StepCodeEditor {
       this.core.steps.add(idx, this.work.copy());
       this.stepcode.load(this.core.toJSON());
       this.stepcode.setNo(idx + 1);
+      this.adjustGuide(true);
     });
 
     // ステップを後に追加する
@@ -120,6 +126,7 @@ export default class StepCodeEditor {
       this.core.steps.add(idx, this.work.copy());
       this.stepcode.load(this.core.toJSON());
       this.stepcode.setNo(idx + 1);
+      this.adjustGuide(true);
     });
 
     // TODO:データのダウンロード
@@ -168,6 +175,15 @@ export default class StepCodeEditor {
         this.syncEditorToPreview();
       }
     });
+  }
+
+  private adjustGuide(isInsert = false){
+    this.ui.adjustGuideItem(this.core.steps.count);
+    this.ui.clearGuideItemClass();
+    this.ui.selectedGuideItem(this.stepcode.currentIdx);
+
+    if(isInsert)
+      this.ui.insertedGuideItem(this.stepcode.currentIdx);
   }
 
   /**

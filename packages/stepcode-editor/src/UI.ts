@@ -32,6 +32,7 @@ export default class UI {
   /** StepCodeEditorの全HTMLElementリスト */
   private doms:{[key:string]:HTMLElement};
 
+
   //---------------------------------------------------------------------------
   // private プロパティ
 
@@ -102,6 +103,7 @@ export default class UI {
 
     // ルート要素の階層構築
     this.root.appendChild(this.doms[Config.UIType.Main]);
+    this.root.appendChild(this.doms[Config.UIType.Guide]);
     this.root.appendChild(this.doms[Config.UIType.Menu]);
   }
 
@@ -110,9 +112,15 @@ export default class UI {
    */
   private createHTMLElements() 
   {
-    console.log(Config.UIType);
+    // TODO: この方法はなんとかしないと
+    const ignores = [
+      Config.UIType.GuideItem
+    ]
+
     Object.values(Config.UIType).map((uiKey) => {
-      this.doms[uiKey] = Config.createElement(uiKey as Config.UIType);
+      if(ignores.indexOf(uiKey) === -1){
+        this.doms[uiKey] = Config.createElement(uiKey as Config.UIType);
+      }
     })
   }
 
@@ -199,4 +207,105 @@ export default class UI {
     dom[ui.Menu].appendChild(dom[ui.MenuDownload]);
   }
 
+  public adjustGuideItem(num:number) {
+    this.adjustGuideItem2(num);
+    // const guide = this.doms[Config.UIType.Guide];
+
+    // const makeCount = num - guide.childElementCount;
+    // console.log(makeCount);
+
+    // if(makeCount === 0) return;
+
+    // if(0 < makeCount) {
+    //   for(let i = 0; i < makeCount; ++i) {
+    //     const item = Config.createElement(Config.UIType.GuideItem);
+    //     guide.appendChild(item);
+    //   }
+    // }
+
+    // if (makeCount < 0) {
+    //   for(let i = 0; i < Math.abs(makeCount); ++i) {
+    //     if(guide.firstChild) {
+    //       guide.removeChild(guide.firstChild);
+    //     }
+    //   }
+
+    // }
+
+    // for(let i = 0; i < guide.childElementCount; ++i) {
+    //   if(guide.children[i]) {
+    //     guide.children[i].innerHTML = (i + 1).toString();
+    //   }
+    // }
+    
+
+  }
+
+  public adjustGuideItem2(num:number) {
+    const guide = this.doms[Config.UIType.Guide];
+
+
+    const count = num;
+    const removecount = guide.childElementCount;
+    for(let i = 0; i < removecount; ++i) {
+      if(guide.firstChild) {
+        guide.removeChild(guide.firstChild);
+      }
+    }
+
+    for(let i = 0; i < count; ++i) {
+      const item = Config.createElement(Config.UIType.GuideItem);
+      item.innerHTML = (i + 1).toString();
+      guide.appendChild(item);
+    }
+    
+  }
+
+  public clearGuideItemClass() {
+    const guide = this.doms[Config.UIType.Guide];
+    guide.childNodes.forEach((node) => {
+      (node as HTMLElement).classList.remove(Config.classNames.guideItemSelected);
+      (node as HTMLElement).classList.remove(Config.classNames.guideItemInserted);
+    })
+  }
+
+  public selectedGuideItem(idx:number) {
+    const guide = this.doms[Config.UIType.Guide];
+    const target = guide.children[idx];
+    
+    if(target) {
+      target.classList.add(Config.classNames.guideItemSelected);
+    }
+  }
+
+  public insertedGuideItem(idx:number) {
+    const guide = this.doms[Config.UIType.Guide];
+    const target = guide.children[idx];
+    
+    if(target) {
+      target.classList.add(Config.classNames.guideItemInserted);
+    }
+  }
+  // /**
+  //  * ガイドアイテムを追加する
+  //  * @param idx アイテムを追加する位置
+  //  */
+  // public addGuideItem(idx:number) {
+  //   //const item = Config.createElement(Config.UIType.GuideItem);
+  //   const guide = this.doms[Config.UIType.Guide];
+  //   const children = guide.querySelectorAll(`.${Config.classNames.guideItem}`);
+  //   console.log(children.length);
+
+  //   const item = Config.createElement(Config.UIType.GuideItem);
+  //   item.innerHTML = idx.toString();
+  //   item.classList.add(Config.classNames.guideItemInserted);
+
+  //   if(children[idx])
+  //     children[idx].after(item);
+  //   else
+  //     guide.appendChild(item);
+
+    
+    
+  // }
 }
