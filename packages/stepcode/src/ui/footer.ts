@@ -4,6 +4,19 @@
 import * as Config from './config';
 
 /******************************************************************************
+ * Enum
+ *****************************************************************************/
+/** 設定可能なイベントの種類 */
+export enum EventType {
+  /** 前に戻るイベント */
+  Prev,
+  /** 次へ進むイベント */
+  Next,
+  /** ページジャンプイベント */
+  Jump,
+}
+
+/******************************************************************************
  * Footer
  *****************************************************************************/
 export default class Footer 
@@ -11,13 +24,16 @@ export default class Footer
   /**
    * コンストラクタ
    */
-  constructor() {
+  constructor() 
+  {
+    // Footerの要素を生成
     this.root     = Config.createElement(Config.UIType.Footer);
     this.logo     = Config.createElement(Config.UIType.FooterLogo);
     this.buttons  = new Buttons();
     this.pager    = new Pager();
     this.progress = new Progress();
 
+    // 階層構造を構築
     this.build();
   }
 
@@ -32,8 +48,11 @@ export default class Footer
   //---------------------------------------------------------------------------
   // public メソッド
 
-  /** 更新 */
-  public update(data:{currentNo:number, totalNo:number}) {
+  /** 
+   * 更新 
+   */
+  public update(data:{currentNo:number, totalNo:number}) 
+  {
     this.buttons.update(data.currentNo, data.totalNo);
     this.pager.update(data.currentNo, data.totalNo);
     this.progress.update(data.currentNo, data.totalNo);
@@ -43,8 +62,12 @@ export default class Footer
    * Footerのイベント処理を設定する
    * @param events イベント処理が格納されたオブジェクト
    */
-  public setEvents(events:{prev:Function, next:Function}){
-    this.buttons.setEvent(events);
+  public setEvent(type:EventType, func:Function){
+    switch(type) {
+      case EventType.Prev: this.buttons.setEvent('prev', func); break;
+      case EventType.Next: this.buttons.setEvent('next', func); break;
+      case EventType.Jump: this.progress.setEvent(func); break;
+    }
   }
 
   //---------------------------------------------------------------------------
@@ -121,10 +144,18 @@ class Buttons
 
   }
 
+  /**
+   * 指定されたボタンを有効にする
+   * @param button ボタン要素
+   */
   private enable(button:HTMLElement) {
     button.classList.remove(Config.classNames.buttonsItemDisable);
   }
 
+  /**
+   * 指定されたボタンを無効にする
+   * @param button ボタン要素
+   */
   private disable(button:HTMLElement) {
     button.classList.add(Config.classNames.buttonsItemDisable);
   }
@@ -133,8 +164,8 @@ class Buttons
    * ボタンに割り当てるイベントを設定する
    * @param events イベントを格納したオブジェクト
    */
-  public setEvent(events:{prev:Function, next:Function}) {
-    this.events = events;
+  public setEvent(type:'prev'|'next', func:Function) {
+    this.events[type] = func;
   }
 
   //---------------------------------------------------------------------------
@@ -169,15 +200,37 @@ class Buttons
   /**
    * 戻るが押された時の処理
    */
-  private onClickPrev() {
-    this.events.prev();
+  private onClickPrev(e:Event) 
+  {
+    // ボタンが有効なら戻る処理を実行
+    if(this.isEnable(e.target)) {
+      this.events.prev();
+    } 
   }
 
   /**
    * 次へが押された時の処理
    */
-  private onClickNext() {
-    this.events.next();
+  private onClickNext(e:Event) {
+    // ボタンが有効なら次への処理を実行
+    if (this.isEnable(e.target)) {
+      this.events.next();
+    }
+  }
+
+  /**
+   * ボタンが有効になっているかを調べる
+   * @param maybeButton 多分ボタン要素
+   */
+  private isEnable(maybeButton:any) 
+  {
+    // 対象が存在しない、HTML要素ではない場合は終了
+    if (!maybeButton || !(maybeButton instanceof HTMLElement)) 
+      return;
+
+    // ボタンが有効か調べる
+    const button = maybeButton as HTMLElement;
+    return !button.classList.contains(Config.classNames.buttonsItemDisable);
   }
 
 }
@@ -265,6 +318,7 @@ class Progress
   constructor() {
     this.root  = Config.createElement(Config.UIType.Progress);
     this.items = [];
+    this.clickCallback = () => {};
   }
 
   //---------------------------------------------------------------------------
@@ -284,6 +338,14 @@ class Progress
     this.fill(current);
   }
 
+  /**
+   * 進捗バーがクリックされた時の処理を設定する。
+   * @param func コールバック関数
+   */
+  public setEvent(func:Function) {
+   this.clickCallback = func; 
+  }
+
   //---------------------------------------------------------------------------
   // private メンバ
 
@@ -292,6 +354,9 @@ class Progress
 
   /** 進捗要素 */
   private items:HTMLElement[];
+
+  /** 進捗バーのアイテムがクリックされた際のコールバック */
+  private clickCallback: Function;
 
   //---------------------------------------------------------------------------
   // private メソッド
@@ -311,10 +376,14 @@ class Progress
     }
     this.items = [];
 
-    // 必要な数だけアイテムを生成する
-    for(let i = 0; i < total; ++i) {
-
+    // 必要な数だけ進捗アイテムを生成する
+    // 各アイテムには割り当たっているページのIndexをdatasetに持たせておく。
+    for(let i = 0; i < total; ++i) 
+    {
+      // ページ数の数だけ進捗アイテムを生成する
       const item = Config.createElement(Config.UIType.ProgressItem);
+      item.addEventListener('click', this.onClickItem.bind(this));
+      item.dataset.idx = i.toString();
       item.style.width = (100/total) + '%';
       this.root.appendChild(item);
       this.items.push(item);
@@ -349,5 +418,15 @@ class Progress
    */
   private inactive(item:HTMLElement) {
     item.classList.remove(Config.classNames.progressItemActive);
+  }
+
+  /**
+   * 進捗バーの要素がクリックされた時のイベント
+   * @param e イベントオブジェクト
+   */
+  private onClickItem(e:Event) {
+    if (e.target) {
+      this.clickCallback((e.target as HTMLElement).dataset.idx);  
+    }
   }
 }

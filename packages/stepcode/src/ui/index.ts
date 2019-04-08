@@ -5,18 +5,22 @@ import _ from 'lodash';
 import Header from './header';
 import Editor from './editor';
 import Comment from './comment';
-import Footer from './footer';
+import Footer, { EventType as FooterEventType } from './footer';
 import * as Config from './config';
 import Core, { Step } from 'stepcode-core';
 
 /******************************************************************************
  * Enum
  *****************************************************************************/
-/** 設定可能なEventの種類 */
+/** 設定可能なイベントの種類 */
 export enum EventType {
+  /** 前に戻るイベント */
   Prev,
-  Next
-};
+  /** 次へ進むイベント */
+  Next,
+  /** ページジャンプイベント */
+  Jump,
+}
 
 /******************************************************************************
  * UI
@@ -35,10 +39,10 @@ export default class UI{
     this.root = this.getRoot(selector);
     
     // 各UIの要素を生成
-    this.header = new Header();
-    this.editor = new Editor();
+    this.header  = new Header();
+    this.editor  = new Editor();
     this.comment = new Comment();
-    this.footer = new Footer();
+    this.footer  = new Footer();
     
     // UIの親子関係を構築
     this.build();
@@ -65,14 +69,24 @@ export default class UI{
   //---------------------------------------------------------------------------
   // public メソッド
 
+  /** リセット */
+  public reset() {
+    this.header.update("");
+    this.editor.update({step:new Step(null), diffs:[]});
+    this.comment.update("");
+    this.footer.update({currentNo:0, totalNo:0});
+  }
+
   /**
    * 指定されたCoreの内容でUIを更新する
    */
   public update(core:Core) {
 
-    // 再生不可能なら更新しない
-    if (!core.isAvailable) return;
-    if (!core.current) return;
+    // データが存在しない場合はUIをリセットして終了
+    if(!core.isAvailable || !core.current) {
+      this.reset();
+      return;
+    }
 
     // ヘッダを更新
     this.header.update(core.current.title);
@@ -125,11 +139,17 @@ export default class UI{
     this.editor.node.scrollTop = value;
   }
 
-  // TODO
-  public setEvent(events:{prev:Function, next:Function}) {
-    
-    this.footer.setEvents(events);
-
+  /**
+   * イベントを設定する
+   * @param type イベントの種類
+   * @param func コールバック関数
+   */
+  public setEvent(type:EventType, func:Function) {
+    switch(type) {
+      case EventType.Prev: this.footer.setEvent(FooterEventType.Prev, func); break;
+      case EventType.Next: this.footer.setEvent(FooterEventType.Next, func); break;
+      case EventType.Jump: this.footer.setEvent(FooterEventType.Jump, func); break;
+    }
   }
 
   //---------------------------------------------------------------------------
@@ -167,7 +187,4 @@ export default class UI{
     this.root.appendChild(this.comment.node as Node);
     this.root.appendChild(this.footer.node as Node);
   }
-
-
-
 }

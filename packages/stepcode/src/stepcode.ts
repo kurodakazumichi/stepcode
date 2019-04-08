@@ -4,17 +4,25 @@
 import _ from 'lodash';
 import hljs from 'highlight.js';
 import Core, { Step } from 'stepcode-core';
-import UI from './ui';
+import UI, { EventType } from './ui';
 
 /******************************************************************************
  * Enum
  *****************************************************************************/
 /** 設定可能なcallback関数の種類 */
 export enum CallbackType {
+  /** 前へボタンの処理が実行される直前に呼ばれるイベント */
   PrevBefore,
+  /** 前へボタンの処理が実行される直後に呼ばれるイベント */
   PrevAfter,
+  /** 次へボタンの処理が実行される直前に呼ばれるイベント */
   NextBefore,
+  /** 次へボタンの処理が実行される直後に呼ばれるイベント */
   NextAfter,
+  /** ページジャンプ処理が実行される直前に呼ばれるイベント */
+  JumpBefore,
+  /** ページジャンプ処理が実行される直後に呼ばれるイベント */
+  JumpAfter,
 };
 
 /******************************************************************************
@@ -55,21 +63,11 @@ export default class StepCode
     // ルート要素を取得、保持
     this.ui = new UI(selector);
     this.updateUI();
-    
-    this.ui.setEvent({
-      prev: () => { 
-        this.doCallback(CallbackType.PrevBefore);
-        this.core.prev(); 
-        this.doCallback(CallbackType.PrevAfter);
-        this.updateUI(); 
-      },
-      next: () => { 
-        this.doCallback(CallbackType.NextBefore);
-        this.core.next(); 
-        this.doCallback(CallbackType.NextAfter);
-        this.updateUI(); 
-      }
-    })
+
+    // イベントの割り当て
+    this.ui.setEvent(EventType.Prev, this.prev.bind(this));
+    this.ui.setEvent(EventType.Next, this.next.bind(this));
+    this.ui.setEvent(EventType.Jump, this.jump.bind(this));
   }
 
   //---------------------------------------------------------------------------
@@ -78,18 +76,18 @@ export default class StepCode
   /** StepCode本体 */
   private core:Core;
 
-  /** コールバック関数を格納する配列 */
-  private callbacks:ICallbackFunc[];
-
   /** UI */
   private ui:UI;
+
+  /** コールバック関数を格納する配列 */
+  private callbacks:ICallbackFunc[];
 
   //---------------------------------------------------------------------------
   // public プロパティ
 
   /** 現在ページのIndexを返します。 */
   public get currentIdx() {
-    return Math.max(this.core.cursor);
+    return Math.max(this.core.cursor, 0);
   }
 
   /** 現在ページの番号を返します。 */
@@ -114,8 +112,8 @@ export default class StepCode
     // 新しいデータを適用する。
     this.core.apply(data);
 
-    // TODO:UIを再構築する必要がある
-    this.ui.update(this.core);
+    // UIを更新
+    this.updateUI();
   }
 
   /**
@@ -148,23 +146,20 @@ export default class StepCode
    * @param step [[Step]]
    */
   previewStep(step:Step) {
+    this.previewTitle(step.title);
     this.previewCode(step);
     this.previewComment(step);
   }
-
 
   /**
    * 指定されたステップを表示する
    * @param no 表示するStep番号
    */
   public show(no:number) {
+    // coreは配列のindexを使うので-1してUIを更新。
     this.core.at(no - 1);
     this.updateUI();
   }
-
-
-
-
 
   /**
    * 指定したコールバック関数を設定します。
@@ -176,18 +171,50 @@ export default class StepCode
   }
 
   /**
-   * TODO Editorのスクロール量を設定する
+   * Editorのスクロールトップの量を設定する
    * @param value スクロール量
    */
   public setEditorScrollTop(value:number) {
     this.ui.setEditorScrollTop(value);
   }
 
+  /**
+   * ページを前へ進める処理
+   */
+  public prev() {
+    this.doCallback(CallbackType.PrevBefore);
+    this.core.prev(); 
+    this.doCallback(CallbackType.PrevAfter);
+    this.updateUI(); 
+  }
+
+  /**
+   * ページを次へ進める処理
+   */
+  public next() {
+    this.doCallback(CallbackType.NextBefore);
+    this.core.next(); 
+    this.doCallback(CallbackType.NextAfter);
+    this.updateUI(); 
+  }
+
+  /**
+   * ページジャンプの処理
+   * @param toIndex 異動先のページIndex
+   */
+  public jump(toIndex:number) {
+    this.doCallback(CallbackType.JumpBefore);
+    this.core.at(toIndex);
+    this.doCallback(CallbackType.JumpAfter);
+    this.updateUI();
+  }
+
   //---------------------------------------------------------------------------
   // private メソッド
 
-
-
+  /**
+   * UIを更新する
+   */
   private updateUI() {
     this.ui.update(this.core);
   }
