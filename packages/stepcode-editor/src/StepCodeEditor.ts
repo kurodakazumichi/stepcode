@@ -34,7 +34,7 @@ export default class StepCodeEditor {
     this.ui.selectedGuideItem(this.stepcode.currentIdx);
 
     // タイトルが変更された時の処理
-    this.ui.on(UIType.EditorHeaderTitle, 'change', (e:Event) => {
+    this.ui.on(UIType.EditorHeaderTitle, 'input', (e:Event) => {
       if (e.target instanceof HTMLInputElement) {
         this.work.title = e.target.value;
         this.syncEditorToPreview();
@@ -68,18 +68,9 @@ export default class StepCodeEditor {
     this.ui.on(UIType.MenuAddStep, 'click', (e:Event) => {
       this.core.steps.push(this.work.copy());
       this.stepcode.load(this.core.toJSON());
-      this.stepcode.setNo(this.stepcode.lastNo);
+      this.stepcode.show(this.stepcode.lastNo);
       this.adjustGuide(true);
     })
-
-    // 更新ボタンのクリック処理
-    // this.ui.on(UIType.MenuUpdateButton, 'click', () => {
-    //   this.core.at(this.stepcode.currentNo -1);
-    //   (this.core.current as Step).apply(this.work);
-    //   const cNo = this.stepcode.currentNo;
-    //   this.stepcode.load(this.core.toJSON());
-    //   this.stepcode.setNo(cNo);
-    // })
 
     this.stepcode.setCallback(StepCode.CallbackType.PrevAfter, (stepcode) => {
       this.syncPreviewToEditor();
@@ -116,7 +107,7 @@ export default class StepCodeEditor {
       const idx = this.stepcode.currentIdx;
       this.core.steps.add(idx, this.work.copy());
       this.stepcode.load(this.core.toJSON());
-      this.stepcode.setNo(idx + 1);
+      this.stepcode.show(idx + 1);
       this.adjustGuide(true);
     });
 
@@ -125,7 +116,7 @@ export default class StepCodeEditor {
       const idx = this.stepcode.currentIdx + 1;
       this.core.steps.add(idx, this.work.copy());
       this.stepcode.load(this.core.toJSON());
-      this.stepcode.setNo(idx + 1);
+      this.stepcode.show(idx + 1);
       this.adjustGuide(true);
     });
 
@@ -287,7 +278,7 @@ export default class StepCodeEditor {
   /**
    * UIを生成する
    */
-  private createUI(target:string | HTMLElement) {
+  private createUI(target:string |  HTMLElement) {
     return new UI(target);
   }
 
