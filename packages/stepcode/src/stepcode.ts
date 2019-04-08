@@ -3,12 +3,8 @@
  *****************************************************************************/
 import _ from 'lodash';
 import hljs from 'highlight.js';
-import Header from './header';
-import Editor from './editor';
-import Comment from './comment';
-import Footer from './footer';
-import * as Config from './config';
 import Core, { Step } from 'stepcode-core';
+import UI from './ui';
 
 /******************************************************************************
  * Enum
@@ -50,26 +46,17 @@ export default class StepCode
    */
   constructor(selector:string |  HTMLElement, datas:any) 
   {
+    // コールバック関数配列を初期化
+    this.callbacks = [];
+
     // StepCode(コア)を保持
     this.core = new Core(datas);
     
     // ルート要素を取得、保持
-    this.root = this.getRoot(selector);
-    
-    // 各UIの要素を生成
-    this.header = new Header();
-    this.editor = new Editor();
-    this.comment = new Comment();
-    this.footer = new Footer();
-    
-    // UIの親子関係を構築
-    this.build();
+    this.ui = new UI(selector);
     this.updateUI();
-
-    // コールバック関数配列を初期化
-    this.callbacks = [];
-
-    this.footer.setEvents({
+    
+    this.ui.setEvent({
       prev: () => { 
         this.doCallback(CallbackType.PrevBefore);
         this.core.prev(); 
@@ -82,7 +69,7 @@ export default class StepCode
         this.doCallback(CallbackType.NextAfter);
         this.updateUI(); 
       }
-    });
+    })
   }
 
   //---------------------------------------------------------------------------
@@ -91,23 +78,11 @@ export default class StepCode
   /** StepCode本体 */
   private core:Core;
 
-  /** UI Root */
-  private root:HTMLElement;
-
-  /** UI Header要素 */
-  private header:Header;
-
-  /** UI Editor要素 */
-  private editor:Editor;
-
-  /** UI Comment要素 */
-  private comment:Comment;
-
-  /** UI Footer要素 */
-  private footer:Footer;
-
   /** コールバック関数を格納する配列 */
   private callbacks:ICallbackFunc[];
+
+  /** UI */
+  private ui:UI;
 
   //---------------------------------------------------------------------------
   // public プロパティ
@@ -140,7 +115,7 @@ export default class StepCode
     this.core.apply(data);
 
     // TODO:UIを再構築する必要がある
-    this.updateUI();
+    this.ui.update(this.core);
   }
 
   /**
@@ -148,7 +123,7 @@ export default class StepCode
    * @param title タイトルに設定するテキスト
    */
   previewTitle(title:string) {
-    this.header.titleText = title;
+    this.ui.previewTitle(title);
   }
 
   /**
@@ -157,7 +132,7 @@ export default class StepCode
    */
   previewCode(step:Step) {
     const diffs = this.core.calcDiffs(this.core.current, step);    
-    this.editor.update({step, diffs});
+    this.ui.previewCode(step, diffs);
   }
 
   /**
@@ -165,7 +140,7 @@ export default class StepCode
    * @param step [[Step]]
    */
   previewComment(step:Step) {
-    this.comment.update(step.desc);
+    this.ui.previewComment(step);
   }
 
   /**
@@ -205,71 +180,16 @@ export default class StepCode
    * @param value スクロール量
    */
   public setEditorScrollTop(value:number) {
-    this.editor.node.scrollTop = value;
+    this.ui.setEditorScrollTop(value);
   }
 
   //---------------------------------------------------------------------------
   // private メソッド
 
-  /**
-   * ルート要素を取得する。
-   * @param target ルート要素を取得するselector、もしくはルート要素
-   */
-  private getRoot(target:string |  HTMLElement) : HTMLElement 
-  {
-    let root;
 
-    // targetがHTMLElementであればそのまま
-    if (target instanceof HTMLElement) {
-      root = target;
-    } 
-    
-    // HTMLElementでなければ、selector文字列として処理する
-    else {
-      root = document.querySelector(target) as HTMLElement;
-    }
 
-    // css classを付与して返す。
-    root.classList.add(Config.classNames.root);
-    return root;
-  }
-
-  /**
-   * UIを構築する
-   */
-  private build() {    
-    this.root.appendChild(this.header.node as Node);
-    this.root.appendChild(this.editor.node as Node);
-    this.root.appendChild(this.comment.node as Node);
-    this.root.appendChild(this.footer.node as Node);
-  }
-
-  /**
-   * TODO:UIを更新する
-   */
   private updateUI() {
-
-    // 再生不可能なら更新しない
-    if (!this.core.isAvailable) return;
-    if (!this.core.current) return;
-
-    // ヘッダを更新
-    this.header.update(this.core.current.title);
-
-    // エディターを更新
-    this.editor.update({
-      step: this.core.current,
-      diffs: this.core.diffs
-    });
-
-    // コメントを更新
-    this.comment.update(this.core.current.desc);
-
-    // フッタを更新
-    this.footer.update({
-      currentNo:this.core.currentNo, 
-      totalNo  :this.core.lastNo
-    });
+    this.ui.update(this.core);
   }
 
   /**
