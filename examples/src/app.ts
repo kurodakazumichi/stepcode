@@ -50,4 +50,4 @@ function convert(data:{title:string, contents:string[]}) {
 
 
 //new StepCode("#container", convert(Sample01));
-new StepCode("#container", Sample02);
+(window as any).e = new StepCode("#container", Sample02);
