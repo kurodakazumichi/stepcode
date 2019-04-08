@@ -13,7 +13,7 @@ export default class UI {
    * StepCodeEditorに必要な全てのHTMLElementを生成・構築する
    * @param target ルート要素を取得するセレクター、またはHTML要素
    */
-  constructor(target:string | HTMLElement) 
+  constructor(target:string |  HTMLElement) 
   {
     // ルート要素を取得、保持
     this.root = this.getRoot(target);
@@ -73,7 +73,7 @@ export default class UI {
    * ルート要素を取得する。
    * @param target ルート要素を取得するselector、もしくはルート要素
    */
-  private getRoot(target:string | HTMLElement) : HTMLElement 
+  private getRoot(target:string |  HTMLElement) : HTMLElement 
   {
     let root;
 
@@ -208,6 +208,9 @@ export default class UI {
   }
 
   public adjustGuideItem(num:number) {
+    // DOMを使い回しするとCSSの付け替えが反映されないことがあるので
+    // 全削除、全作成方式に変えた。
+    // パフォーマンス的には微妙なのでなんとかしたいところ
     this.adjustGuideItem2(num);
     // const guide = this.doms[Config.UIType.Guide];
 
@@ -256,6 +259,31 @@ export default class UI {
     for(let i = 0; i < count; ++i) {
       const item = Config.createElement(Config.UIType.GuideItem);
       item.innerHTML = (i + 1).toString();
+
+      // ドラッグの参考
+      // item.draggable = true;
+      
+      // item.addEventListener('dragover', (e:Event) => {
+      //   e.preventDefault();
+      //   if(e.target) {
+      //     (e.target as HTMLElement).style.background = "#12948a";
+      //   }
+      // });
+      // item.addEventListener('dragleave', (e:Event) => {
+      //   e.preventDefault();
+      //   if(e.target) {
+      //     (e.target as HTMLElement).style.background = "";
+      //   }
+      // })
+      // item.addEventListener('drop', (e:DragEvent) => {
+        
+      //   e.preventDefault();
+      //   console.log(item.innerHTML);
+
+      //   // Core.swap(dragIndex, dropIndex);
+
+      // })
+
       guide.appendChild(item);
     }
     

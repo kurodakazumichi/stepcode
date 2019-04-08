@@ -48,7 +48,7 @@ export default class StepCode
   /** 
    * データのロードとUIの構築を行う。
    */
-  constructor(selector:string | HTMLElement, datas:any) 
+  constructor(selector:string |  HTMLElement, datas:any) 
   {
     // StepCode(コア)を保持
     this.core = new Core(datas);
@@ -208,7 +208,7 @@ export default class StepCode
    * ルート要素を取得する。
    * @param target ルート要素を取得するselector、もしくはルート要素
    */
-  private getRoot(target:string | HTMLElement) : HTMLElement 
+  private getRoot(target:string |  HTMLElement) : HTMLElement 
   {
     let root;
 
