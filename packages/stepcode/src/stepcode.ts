@@ -124,12 +124,6 @@ export default class StepCode
     return Math.max(this.core.cursor);
   }
 
-  // TODO: 指定したページを表示する
-  public setNo(no:number){
-    this.core.at(no - 1);
-    this.update();
-  }
-
   /**
    * 指定されたステップを表示する
    * @param no 表示するStep番号
