@@ -44,7 +44,7 @@ export default class StepCodeEditor {
     // コードが変更された時の処理
     this.ace.on('change', (e) => {
       this.work.code = this.ace.getValue();
-      this.stepcode.setCode(this.work);
+      this.stepcode.previewComment(this.work);
       this.stepcode.setEditorScrollTop(this.ace.getSession().getScrollTop());
     });
 
@@ -56,7 +56,7 @@ export default class StepCodeEditor {
     this.ui.on(UIType.EditorMdInput, 'input', (e:Event) => {
       if (e.target instanceof HTMLTextAreaElement){
         this.work.desc = e.target.value;
-        this.stepcode.setComment(this.work);
+        this.stepcode.previewStep(this.work);
       }
     })
 

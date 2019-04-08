@@ -38,7 +38,7 @@ export default class StepCode
   /**
    * サポートしている言語の一覧を返します。
    */
-  public static supportLanguages() {
+  public static get supportLanguages() {
     return hljs.listLanguages();
   }
 
@@ -64,7 +64,7 @@ export default class StepCode
     
     // UIの親子関係を構築
     this.build();
-    this.update();
+    this.updateUI();
 
     // コールバック関数配列を初期化
     this.callbacks = [];
@@ -74,13 +74,13 @@ export default class StepCode
         this.doCallback(CallbackType.PrevBefore);
         this.core.prev(); 
         this.doCallback(CallbackType.PrevAfter);
-        this.update(); 
+        this.updateUI(); 
       },
       next: () => { 
         this.doCallback(CallbackType.NextBefore);
         this.core.next(); 
         this.doCallback(CallbackType.NextAfter);
-        this.update(); 
+        this.updateUI(); 
       }
     });
   }
@@ -112,17 +112,71 @@ export default class StepCode
   //---------------------------------------------------------------------------
   // public プロパティ
 
-  public get lastNo() {
-    return this.core.lastNo;
+  /** 現在ページのIndexを返します。 */
+  public get currentIdx() {
+    return Math.max(this.core.cursor);
   }
 
+  /** 現在ページの番号を返します。 */
   public get currentNo() {
     return this.core.currentNo;
   }
 
-  public get currentIdx() {
-    return Math.max(this.core.cursor);
+  /** 最終ページの番号を返します。 */
+  public get lastNo() {
+    return this.core.lastNo;
   }
+
+  //---------------------------------------------------------------------------
+  // public メソッド
+
+  /**
+   * データを新たにロードします。
+   * すでに読み込まれているデータがある場合は破棄されます。
+   * @param data ロードするデータ
+   */
+  public load(data:any) {
+    // 新しいデータを適用する。
+    this.core.apply(data);
+
+    // TODO:UIを再構築する必要がある
+    this.updateUI();
+  }
+
+  /**
+   * 指定されたタイトルテキストをプレビューします。(実際のデータは変更されません)
+   * @param title タイトルに設定するテキスト
+   */
+  previewTitle(title:string) {
+    this.header.titleText = title;
+  }
+
+  /**
+   * 指定された[[Step]]のコードをプレビューします。(実際のデータは変更されません)
+   * @param step [[Step]]
+   */
+  previewCode(step:Step) {
+    const diffs = this.core.calcDiffs(this.core.current, step);    
+    this.editor.update({step, diffs});
+  }
+
+  /**
+   * 指定された[[Step]]のコメントをプレビューします。(実際のデータは変更されません)
+   * @param step [[Step]]
+   */
+  previewComment(step:Step) {
+    this.comment.update(step.desc);
+  }
+
+  /**
+   * 指定された[[Step]]の内容をプレビューします。(実際のデータは変更されません)
+   * @param step [[Step]]
+   */
+  previewStep(step:Step) {
+    this.previewCode(step);
+    this.previewComment(step);
+  }
+
 
   /**
    * 指定されたステップを表示する
@@ -130,59 +184,12 @@ export default class StepCode
    */
   public show(no:number) {
     this.core.at(no - 1);
-    this.update();
+    this.updateUI();
   }
 
-  //---------------------------------------------------------------------------
-  // public メンバ
 
-  /**
-   * データを新たにロードします。
-   * @param data ロードするデータ
-   */
-  public load(data:any) 
-  {
-    // 新しいデータを適用する。
-    this.core.apply(data);
 
-    // UIを再構築する必要がある
 
-    this.update();
-  }
-
-  /**
-   * タイトルテキストをセットする
-   * @param title タイトルに設定するテキスト
-   */
-  setTitle(title:string) {
-    this.header.titleText = title;
-  }
-
-  /**
-   * 指定された[[Step]]の内容を設定します。
-   * @param step [[Step]]
-   */
-  setStep(step:Step) {
-    this.setCode(step);
-    this.setComment(step);
-  }
-
-  /**
-   * 指定された[[Step]]のコードが設定されます。
-   * @param step [[Step]]
-   */
-  setCode(step:Step) {
-    const diffs = this.core.calcDiffs(this.core.current, step);    
-    this.editor.update({step, diffs});
-  }
-
-  /**
-   * 指定された[[Step]]のコメントが設定されます。
-   * @param step [[Step]]
-   */
-  setComment(step:Step) {
-    this.comment.update(step.desc);
-  }
 
   /**
    * 指定したコールバック関数を設定します。
@@ -238,9 +245,9 @@ export default class StepCode
   }
 
   /**
-   * UIを更新する
+   * TODO:UIを更新する
    */
-  private update() {
+  private updateUI() {
 
     // 再生不可能なら更新しない
     if (!this.core.isAvailable) return;

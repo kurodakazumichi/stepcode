@@ -132,7 +132,7 @@ export default class UI {
     option.innerHTML = "言語選択(自動)";
     s.appendChild(option);
   
-    StepCode.supportLanguages().map((lang) => {
+    StepCode.supportLanguages.map((lang) => {
       const o = document.createElement('option') as HTMLOptionElement;
       o.innerHTML = lang;
       o.value     = lang;
