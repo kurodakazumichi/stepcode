@@ -84,6 +84,20 @@ export default class StepCode
   }
 
   /**
+   * 最初の[[Step]]を取得します
+   */
+  public get first() {
+    return this.steps.first;
+  }
+
+  /**
+   * 最後の[[Step]]を取得します
+   */
+  public get last() {
+    return this.steps.last;
+  }
+
+  /**
    * コードに差分のある行番号の配列を返します。
    * 
    * [[_cursor]]の指すステップと、その１つ前のステップのコードの差分です。
@@ -183,7 +197,7 @@ export default class StepCode
    * 
    * @param point カーソルの位置
    */
-  public at(point:number) {
+  public to(point:number) {
     point = Math.max(0, point);
     point = Math.min(this.count - 1, point);
     this._cursor = point;
@@ -192,29 +206,29 @@ export default class StepCode
   /** 
    * [[_cursor]]が先頭に移動します。
    */
-  public first() {
-    this.at(0);
+  public toFirst() {
+    this.to(0);
   }
 
   /** 
    * [[_cursor]]が最後に移動します。
    */
-  public last() {
-    this.at(this.count - 1);
+  public toLast() {
+    this.to(this.count - 1);
   }
 
   /**
    * [[_cursor]]を1つ前に移動します、移動できない場合は現在の位置に留まります。
    */
-  public prev() {
-    this.at(this._cursor - 1);
+  public toPrev() {
+    this.to(this._cursor - 1);
   }
 
   /**
    * [[_cursor]]を1つ次に移動します、移動できない場合は現在の位置に留まります。
    */
-  public next() {
-    this.at(this._cursor + 1);
+  public toNext() {
+    this.to(this._cursor + 1);
   }
 
   //---------------------------------------------------------------------------

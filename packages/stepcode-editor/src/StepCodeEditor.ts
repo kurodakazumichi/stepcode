@@ -115,7 +115,7 @@ export default class StepCodeEditor {
     if (!this.canDeleteStep) return false;
 
     this.core.steps.remove(delIndex);
-    this.core.at(delIndex);
+    this.core.to(delIndex);
     this.work.apply(this.core.current);
     this.ui.update(this.core);
     return true;
@@ -160,7 +160,7 @@ export default class StepCodeEditor {
    */
   private addStep(index:number, step:Step) {
     this.core.steps.add(index, step.clone());
-    this.core.at(index);
+    this.core.to(index);
     this.ui.updateStepCode(this.core);
     this.ui.updateGuide(this.core, true);
   }
@@ -322,11 +322,7 @@ export default class StepCodeEditor {
    * ダウンロードがクリックされた時の処理
    */
   private onClickDownload() {
-    const blob = new Blob([JSON.stringify(this.core.toJSON())], {type:'application/json'});
-    const url  = URL.createObjectURL(blob);
-    const anchor = this.ui.get<HTMLAnchorElement>(Config.UIType.MenuDownload);
-    anchor.href = url;
-    anchor.download = "stepdata.json";
+    this.ui.download(this.core);
   }
 
   //---------------------------------------------------------------------------
@@ -352,7 +348,7 @@ export default class StepCodeEditor {
   {
     // StepCodeの現在位置をCoreに反映
     const idx = stepcode.currentIdx;
-    this.core.at(idx);
+    this.core.to(idx);
 
     // エディターとガイドを更新
     this.ui.updateEditor(this.core);

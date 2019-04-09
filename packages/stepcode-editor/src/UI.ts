@@ -413,4 +413,28 @@ export default class UI {
       this.insertedGuideItem(core.cursor);
     }
   }
+
+  /**
+   * 指定したコアのデータをダウンロードさせる
+   * @param core コア
+   */
+  public download(core:Core) 
+  {
+    // ダウンロード用のリンクを取得
+    const anchor = this.get<HTMLAnchorElement>(Config.UIType.MenuDownload);
+
+    // ダウンロードURLを生成
+    const blob = new Blob(
+      [JSON.stringify(core.toJSON())], 
+      {type:'application/json'}
+    );
+    const url = URL.createObjectURL(blob);
+    
+    // タイトルを取得
+    const title = (core.first && core.first.title)? core.first.title : "notitle";
+    
+    // リンクにダウンロードプロパティを設定
+    anchor.href = url;
+    anchor.download = title + ".stepdata.json";
+  }
 }

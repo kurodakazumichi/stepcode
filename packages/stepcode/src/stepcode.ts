@@ -157,7 +157,7 @@ export default class StepCode
    */
   public show(no:number) {
     // coreは配列のindexを使うので-1してUIを更新。
-    this.core.at(no - 1);
+    this.core.to(no - 1);
     this.updateUI();
   }
 
@@ -183,7 +183,7 @@ export default class StepCode
    */
   public prev() {
     this.doCallback(CallbackType.PrevBefore);
-    this.core.prev(); 
+    this.core.toPrev(); 
     this.doCallback(CallbackType.PrevAfter);
     this.updateUI(); 
   }
@@ -193,7 +193,7 @@ export default class StepCode
    */
   public next() {
     this.doCallback(CallbackType.NextBefore);
-    this.core.next(); 
+    this.core.toNext(); 
     this.doCallback(CallbackType.NextAfter);
     this.updateUI(); 
   }
@@ -204,7 +204,7 @@ export default class StepCode
    */
   public jump(toIndex:number) {
     this.doCallback(CallbackType.JumpBefore);
-    this.core.at(toIndex);
+    this.core.to(toIndex);
     this.doCallback(CallbackType.JumpAfter);
     this.updateUI();
   }
