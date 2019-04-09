@@ -1,8 +1,6 @@
 /******************************************************************************
  * import
  *****************************************************************************/
-import Ace from 'ace-builds';
-import ThemeGithub from 'ace-builds/src-noconflict/theme-github';
 import Core, { Step } from 'stepcode-core';
 import * as StepCode from 'stepcode';
 import UI from './UI';
@@ -45,7 +43,6 @@ export default class StepCodeEditor {
     this.core     = this.createCore();
     this.work     = this.createWork();
     this.ui       = this.createUI(target);
-    this.ace      = this.createAce();
 
     // UIにデータを設定
     this.updateUI(this.core);
@@ -60,9 +57,6 @@ export default class StepCodeEditor {
 
   /** 全てのHTMLELementをもつUIインスタンス */
   private ui:UI;
-
-  /** Ace Editor */
-  private ace: Ace.Ace.Editor;
 
   /** 作業中の内容 */
   private work:Step;
@@ -185,20 +179,6 @@ export default class StepCodeEditor {
     return new UI(target);
   }
 
-
-
-  /**
-   * Ace Editorを初期化(生成)する
-   */
-  private createAce() {
-    const ace = Ace.edit(this.ui.ace);
-    ace.container.style.lineHeight = "1.5";
-    ace.container.style.fontSize = "16px";
-    ace.getSession().setUseWorker(false);
-    ace.setTheme(ThemeGithub);
-    return ace;
-  }
-
   //---------------------------------------------------------------------------
   // UI関連
 
@@ -222,9 +202,9 @@ export default class StepCodeEditor {
    */
   private updateEditor(core: Core) {
     const step = core.current;
-    this.ace.setValue(step? step.code : DEF_CODE_TEXT);
+    this.ui.ace.setValue(step? step.code : DEF_CODE_TEXT);
     this.ui.md.value = (step? step.desc : DEF_DESC_TEXT);
-    this.ace.clearSelection();
+    this.ui.ace.clearSelection();
   }
 
   /**
@@ -271,8 +251,8 @@ export default class StepCodeEditor {
 
     //-------------------------------------------------------------------------
     // コードが変更された時の処理
-    this.ace.on('change', this.onChangeAce.bind(this));
-    this.ace.on('blur', this.reflectEditorToStepCode.bind(this));
+    this.ui.ace.on('change', this.onChangeAce.bind(this));
+    this.ui.ace.on('blur', this.reflectEditorToStepCode.bind(this));
 
     //-------------------------------------------------------------------------
     // マークダウンが変更された時の処理
@@ -371,9 +351,9 @@ export default class StepCodeEditor {
   private onChangeAce() 
   {
     // work.code、プレビューを更新
-    this.work.code = this.ace.getValue();
+    this.work.code = this.ui.ace.getValue();
     this.ui.stepcode.previewCode(this.work);
-    this.ui.stepcode.setEditorScrollTop(this.ace.getSession().getScrollTop());
+    this.ui.stepcode.setEditorScrollTop(this.ui.ace.getSession().getScrollTop());
 
     // セッションストレージに保存
     this.saveWorkToStorage();

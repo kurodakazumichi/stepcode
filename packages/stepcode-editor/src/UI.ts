@@ -1,6 +1,8 @@
 /******************************************************************************
  * import
  *****************************************************************************/
+import Ace from 'ace-builds';
+import ThemeGithub from 'ace-builds/src-noconflict/theme-github';
 import StepCode from 'stepcode';
 import * as Config from './Config';
 
@@ -23,6 +25,7 @@ export default class UI {
     this.buildElements();
 
     this._stepcode = new StepCode(this.doms[Config.UIType.MainPreviewStepCode], {});
+    this._ace = this.createAce();
   }
 
   //---------------------------------------------------------------------------
@@ -37,18 +40,21 @@ export default class UI {
   /** StepCode本体 */
   private _stepcode:StepCode;
 
+  /** Ace Editor */
+  private _ace:Ace.Ace.Editor;
+
 
   //---------------------------------------------------------------------------
   // private プロパティ
 
-  /** StepCodeに該当するHTMLElementを返します */
+  /** StepCodeを返します */
   get stepcode():StepCode {
     return this._stepcode;
   }
 
-  /** AceEditorに該当するHTMLElementを返します */
-  get ace():HTMLElement {
-    return this.doms[Config.UIType.EditorCodeAce];
+  /** AceEditorを返します */
+  get ace():Ace.Ace.Editor {
+    return this._ace;
   }
 
   /** Markdownの入力に該当するHTMLElementを返します */
@@ -341,4 +347,16 @@ export default class UI {
     
     
   // }
+
+  /**
+   * Ace Editorを初期化(生成)する
+   */
+  private createAce() {
+    const ace = Ace.edit(this.doms[Config.UIType.EditorCodeAce]);
+    ace.container.style.lineHeight = "1.5";
+    ace.container.style.fontSize = "16px";
+    ace.getSession().setUseWorker(false);
+    ace.setTheme(ThemeGithub);
+    return ace;
+  }
 }
