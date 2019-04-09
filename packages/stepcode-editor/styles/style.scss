@@ -3,20 +3,23 @@ $editorHeight: 400px;
 $commentHeight:200px;
 /* 色の定義 */
 $mainColor: #444;
+$mainColor2: #00A3C7;
 $borderColor: #718288;
 
 .sce {
   &-root {
-    width:100vw;
+    width:80vw;
+    margin: 0 auto;
   }
 
   &-main {
     width:100%;
+    margin-bottom: 1em;
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
 
     &__editor, &__preview {
-      width:45%;
+      width:48%;
     }
 
     &__editor {
@@ -48,6 +51,17 @@ $borderColor: #718288;
       color: white;
       padding: 0.4em;
       border-bottom: 1px solid $borderColor;
+      display: flex;
+      justify-content: space-between;
+
+      input {
+        width:100%;
+        margin-right: 1em;
+      }
+
+      select {
+        height:20px;
+      }
     }
 
     &-code {
@@ -83,23 +97,43 @@ $borderColor: #718288;
   }
 
   &-menu {
-    padding:1em;
     text-align: right;
+    display:flex;
+    justify-content: space-between;
 
-    button {
-      padding:1em;
-      margin:1em;
-      font-size: 14px;
+    button, a {
+      position: relative;
+      display: inline-block;
+      padding: 0.25em 0.5em;
+      text-decoration: none;
+      background: #00BCD4;/*背景色*/
+      color: #eee;/*=背景色*/
+      box-shadow: inset 0 2px 0 rgba(255,255,255,0.2);
+      border-bottom: solid 2px #118e9e;
+      border-radius: 4px;
+      font-weight: bold;
+      text-shadow: -1px -1px rgba(255, 255, 255, 0.44), 1px 1px rgba(0, 0, 0, 0.38);
+      outline: none;
+      line-height: 1.5em;
+      cursor:pointer;
+
+      button:active {
+        border-bottom: solid 2px #00BCD4;
+        box-shadow: none;
+        text-shadow: -1px -1px rgba(255, 255, 255, 0.3), 1px 1px rgba(0, 0, 0, 0.3);
+      }
     }
   }
 
   &-guide {
-    border:1px solid $borderColor;
+    
     height:60px;
     display: flex;
     align-items: center;
-
+    overflow-x:auto;
+    
     &__item {
+      flex-shrink: 0;
       width:60px;
       height:40px;
       margin-left: 1em;
@@ -110,13 +144,18 @@ $borderColor: #718288;
       border-radius: 3px;
 
       &--selected {
-        background:#abcdef;
-        border:1px solid #00A3C7;
-        box-shadow: 0 0 2px 1px #00A3C7;
+        background:$mainColor2;
+        color:white;
+        border:1px solid #3b86a3;
+        box-shadow: 0 0 2px 1px #7fbcd4;
       }
       &--inserted {
         animation-name: sce-zoom;
         animation-duration: 0.5s;
+      }
+
+      &:first-child{
+        margin-left: 0;
       }
     }
   }

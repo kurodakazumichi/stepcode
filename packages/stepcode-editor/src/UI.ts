@@ -135,6 +135,7 @@ export default class UI {
     this.root.appendChild(this.doms[Config.UIType.Main]);
     this.root.appendChild(this.doms[Config.UIType.Guide]);
     this.root.appendChild(this.doms[Config.UIType.Menu]);
+
   }
 
   /** 
@@ -229,12 +230,13 @@ export default class UI {
     const dom = this.doms;
     const ui = Config.UIType;
 
-    dom[ui.Menu].appendChild(dom[ui.MenuAddStep]);
-    dom[ui.Menu].appendChild(dom[ui.MenuDelStep]);
-    dom[ui.Menu].appendChild(dom[ui.MenuReset]);
     dom[ui.Menu].appendChild(dom[ui.MenuAddStepBefore]);
     dom[ui.Menu].appendChild(dom[ui.MenuAddStepAfter]);
+    dom[ui.Menu].appendChild(dom[ui.MenuAddStepLast]);
+    dom[ui.Menu].appendChild(dom[ui.MenuDelStep]);
     dom[ui.Menu].appendChild(dom[ui.MenuDownload]);
+    dom[ui.Menu].appendChild(dom[ui.MenuReset]);
+    
   }
 
   public adjustGuideItem(num:number) {

@@ -63,7 +63,7 @@ export enum UIType {
   EditorFooter        = "EditorFooter",
   EditorFooterLogo    = "EditorFooterLogo",
   Menu                = "Menu",
-  MenuAddStep         = "MenuAddStep",
+  MenuAddStepLast     = "MenuAddStepLast",
   MenuAddStepBefore   = "MenuAddStepBefore",
   MenuAddStepAfter    = "MenuAddStepAfter",
   MenuDelStep         = "MenuDelStep",
@@ -166,10 +166,20 @@ const config =
       className:classNames.menu
     },
 
-    /** メニュー:ステップ追加ボタン */
-    [UIType.MenuAddStep]: {
+    /** メニュー:ステップを最後に追加ボタン */
+    [UIType.MenuAddStepLast]: {
       tag:"button",
-      innerHTML:"ステップを追加"
+      innerHTML:"ステップを最後に追加"
+    },
+    /** メニュー:ステップを前に追加する */
+    [UIType.MenuAddStepBefore]: {
+      tag:"button",
+      innerHTML:"ステップを前に追加"
+    },
+    /** メニュー:ステップを後ろに追加する */
+    [UIType.MenuAddStepAfter]: {
+      tag:"button",
+      innerHTML:"ステップを後ろに追加"
     },
 
     /** メニュー:ステップ削除ボタン */
@@ -182,16 +192,6 @@ const config =
     [UIType.MenuReset]: {
       tag:"button",
       innerHTML:"リセット"
-    },
-    /** メニュー:ステップを前に追加する */
-    [UIType.MenuAddStepBefore]: {
-      tag:"button",
-      innerHTML:"ステップを前に追加する"
-    },
-    /** メニュー:ステップを後ろに追加する */
-    [UIType.MenuAddStepAfter]: {
-      tag:"button",
-      innerHTML:"ステップを後に追加する"
     },
     /** メニュー:ダウンロード */
     [UIType.MenuDownload]: {

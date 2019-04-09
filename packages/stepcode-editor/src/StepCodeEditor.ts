@@ -96,18 +96,6 @@ export default class StepCodeEditor {
   }
 
   /**
-   * 現在のステップを削除する
-   */
-  public delStepCurrent() {
-    if (!this.canDeleteStep) {
-      alert("このステップは削除できません。");
-      return;
-    }
-    
-    this.deleteStep(this.core.cursor);
-  }
-
-  /**
    * 指定した[[Step]]を削除する
    * @param delIndex 削除するステップの位置
    */
@@ -194,7 +182,7 @@ export default class StepCodeEditor {
 
     //-------------------------------------------------------------------------
     // ステップ追加をクリック
-    this.ui.on(Config.UIType.MenuAddStep, 'click', this.addStepLast.bind(this));
+    this.ui.on(Config.UIType.MenuAddStepLast, 'click', this.addStepLast.bind(this));
 
     // ステップを前に追加する
     this.ui.on(Config.UIType.MenuAddStepBefore, 'click', this.addStepBefore.bind(this));
@@ -203,7 +191,7 @@ export default class StepCodeEditor {
     this.ui.on(Config.UIType.MenuAddStepAfter, 'click', this.addStepAfter.bind(this));
 
     // ステップの削除
-    this.ui.on(Config.UIType.MenuDelStep, 'click', this.delStepCurrent.bind(this));
+    this.ui.on(Config.UIType.MenuDelStep, 'click', this.onClickDelStep.bind(this));
 
     // リセットボタン
     this.ui.on(Config.UIType.MenuReset, 'click', this.onClickReset.bind(this));
@@ -299,6 +287,22 @@ export default class StepCodeEditor {
 
     // セッションステレーじに保存
     this.saveWorkToStorage();
+  }
+
+  /**
+   * 現在のステップを削除する
+   */
+  public onClickDelStep() {
+    if (!this.canDeleteStep) {
+      alert("このステップは削除できません。");
+      return;
+    }
+
+    if (!confirm(`Step${this.core.currentNo}を削除します。`)){
+      return;
+    }
+    
+    this.deleteStep(this.core.cursor);
   }
 
   /**

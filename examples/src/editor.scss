@@ -1,4 +1,28 @@
-html, body {
+html, body, button {
   font-family: "M PLUS Rounded 1c"; 
   font-size: 20px;
 }
+
+header, footer {
+  height:40px;
+  display: flex;
+  background:black;
+  color:white;
+  line-height: 40px;
+  justify-content: space-between;
+  padding:0 0.5em;
+  a {
+    color:white;
+    text-decoration: none;
+  }
+}
+
+header {
+  margin-bottom:2em;
+}
+
+footer {
+  margin-top:2em;
+}
+
+$color:#00A3C7;
