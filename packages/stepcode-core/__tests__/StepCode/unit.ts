@@ -74,6 +74,14 @@ describe('Steps', () => {
       it(`currentが最初のステップを指していること`, () => {
         expect(stepCode.current).toEqual(new Step(mock1.steps[0]));
       });
+
+      it(`firstが最初のステップを指していること`, () => {
+        expect(stepCode.first).toEqual(new Step(mock1.steps[0]));
+      });
+
+      it(`lastが最後のステップを指していること`, () => {
+        expect(stepCode.last).toEqual(new Step(mock1.steps[4]));
+      });
   
       it(`currentNoは1になること`, () => {
         expect(stepCode.currentNo).toBe(1);
@@ -124,6 +132,14 @@ describe('Steps', () => {
   
       it(`current = nullになること`, () => {
         expect(stepCode.current).toEqual(null);
+      });
+
+      it(`first = nullになること`, () => {
+        expect(stepCode.first).toEqual(null);
+      });
+
+      it(`last = nullになること`, () => {
+        expect(stepCode.last).toEqual(null);
       });
   
       it(`currentNo = 1になること`, () => {
@@ -184,62 +200,62 @@ describe('Steps', () => {
     ${3}  | ${4}
     ${4}  | ${5}
     ${5}  | ${5}
-    `('at(point)の検証', ({point, currentNo}) => {
+    `('to(point)の検証', ({point, currentNo}) => {
 
       it(`at(${point})を指定するとcurrentNoが${currentNo}になること`, () => {
-        stepCode.at(point);
+        stepCode.to(point);
         expect(stepCode.currentNo).toBe(currentNo);
       })
 
     })
 
     //-------------------------------------------------------------------------
-    describe(`last()の検証`, () => {
-      it(`last()を実行するとcurrentNoが${mock1.steps.length}になること`, () => {
-        stepCode.last();
+    describe(`toLast()の検証`, () => {
+      it(`toLast()を実行するとcurrentNoが${mock1.steps.length}になること`, () => {
+        stepCode.toLast();
         expect(stepCode.currentNo).toBe(mock1.steps.length);
       });
     });
 
     //-------------------------------------------------------------------------
-    describe(`first()の検証`, () => {
-      it('first()を実行するとcurrentNoが1に戻ること', () => {
-        stepCode.last();
-        stepCode.first();
+    describe(`toFirst()の検証`, () => {
+      it('toFirst()を実行するとcurrentNoが1に戻ること', () => {
+        stepCode.toLast();
+        stepCode.toFirst();
         expect(stepCode.currentNo).toBe(1);
       })
     });
 
     //-------------------------------------------------------------------------
-    describe(`prev()の検証`, () => {
-      it(`先頭でprev()を実行しても前に戻ら無いこと`, () => {
-        stepCode.first();
+    describe(`toPrev()の検証`, () => {
+      it(`先頭でtoPrev()を実行しても前に戻ら無いこと`, () => {
+        stepCode.toFirst();
         const no = stepCode.currentNo;
-        stepCode.prev();
+        stepCode.toPrev();
         expect(stepCode.currentNo).toBe(no);
       });
 
-      it(`prev()を実行すると前に戻ること`, () => {
-        stepCode.last();
+      it(`toPrev()を実行すると前に戻ること`, () => {
+        stepCode.toLast();
         const no = stepCode.currentNo;
-        stepCode.prev();
+        stepCode.toPrev();
         expect(stepCode.currentNo).toBe(no - 1);
       })
     });
 
     //-------------------------------------------------------------------------
-    describe(`next()の検証`, () => {
-      it(`next()を実行すると次に進むこと`, () => {
-        stepCode.first();
+    describe(`toNext()の検証`, () => {
+      it(`toNext()を実行すると次に進むこと`, () => {
+        stepCode.toFirst();
         const no = stepCode.currentNo;
-        stepCode.next();
+        stepCode.toNext();
         expect(stepCode.currentNo).toBe(no + 1);
       });
 
-      it(`最後のページでnext()をしても次に進まないこと`, () => {
-        stepCode.last();
+      it(`最後のページでtoNext()をしても次に進まないこと`, () => {
+        stepCode.toLast();
         const no = stepCode.currentNo;
-        stepCode.next();
+        stepCode.toNext();
         expect(stepCode.currentNo).toBe(no);
       })
     });
@@ -254,8 +270,8 @@ describe('Steps', () => {
     ${4}  | ${[1]}
     `(`diffsの検証`, ({point, diffs}) => {
 
-      it(`at(${point})のdiffsは[${diffs}]になること`, () => {
-        stepCode.at(point);
+      it(`to(${point})のdiffsは[${diffs}]になること`, () => {
+        stepCode.to(point);
         expect(stepCode.diffs).toEqual(diffs);
       })
     });

@@ -133,8 +133,8 @@ describe('Step', () => {
       step = new Step({code:"code", desc:"desc"});
     })
 
-    it(`stepとstep.copy()が同じ内容であること`, () => {
-      expect(step.copy()).toEqual(step);
+    it(`stepとstep.clone()が同じ内容であること`, () => {
+      expect(step.clone()).toEqual(step);
     })
   });
   
