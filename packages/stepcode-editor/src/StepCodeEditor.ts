@@ -19,13 +19,11 @@ export default class StepCodeEditor {
   constructor(target:string | HTMLElement) 
   {
     (window as any).e = this;
-    this.core     = this.createCore();
-    this.work     = this.createWork();
-    this.ui       = this.createUI(target);
-
-    // UIにデータを設定
-    this.ui.update(this.core);
+    this.core     = new Core({});
+    this.work     = new Step({});
+    this.ui       = new UI(target);
     this.attachEvent();
+    this.load(this.getInitData());    
   }
 
   //---------------------------------------------------------------------------
@@ -58,10 +56,17 @@ export default class StepCodeEditor {
   /**
    * リセット処理(初期状態にする)
    */
-  public reset() 
+  public reset() {
+    this.load(Config.INIT_DATA);
+  }
+
+  /**
+   * データをロードする。
+   * @param data StepCodeのデータ
+   */
+  public load(data:any) 
   {
-    // Core、Workを初期状態にする
-    this.core.apply(Config.INIT_DATA);
+    this.core.apply(data);
     this.work.apply(this.core.current);
 
     // セッションストレージをクリア
@@ -112,30 +117,11 @@ export default class StepCodeEditor {
   //---------------------------------------------------------------------------
   // private メソッド
 
-  /**
-   * Coreを生成する
-   */
-  private createCore() 
-  {
+  private getInitData() {
     // ストレージにデータがあればストレージのデータを、なければ初期データを使用する
     const savedata = Util.storage.savedata;
     const data     = (savedata)? savedata : Config.INIT_DATA;
-
-    return new Core(data);
-  }
-
-  /**
-   * 作業用データを生成する。[[createCore]]のあとに実行すること。
-   */
-  private createWork() {
-    return new Step(this.core.current);
-  }
-
-  /**
-   * UIを生成する
-   */
-  private createUI(target:string |  HTMLElement) {
-    return new UI(target);
+    return data;
   }
 
   //---------------------------------------------------------------------------
@@ -199,34 +185,8 @@ export default class StepCodeEditor {
     // データのダウンロード
     this.ui.on(Config.UIType.MenuDownload, 'click', this.onClickDownload.bind(this));
 
-    //-------------------------------------------------------------------------
-    this.ui.on(Config.UIType.Main, 'dragover', (e:Event) => {
-      console.log("dragover");
-      e.preventDefault();
-    });
-
-    this.ui.on(Config.UIType.Main, 'drop', (e:Event) => {
-      const ev = e as DragEvent;
-
-      ev.preventDefault();
-      if (ev.dataTransfer) {
-        const file = ev.dataTransfer.files.item(0) as File;
-        console.log(file);
-
-        const fr = new FileReader();
-        fr.readAsText(file, 'UTF-8');
-        fr.onload = (evt:ProgressEvent) => {
-          if(evt.target) {
-            const target = evt.target as any;
-            console.log(JSON.parse(target.result));
-            this.ui.stepcode.load(JSON.parse(target.result));
-            this.core.apply(JSON.parse(target.result));
-            this.reflectStepCodeToEditor(this.ui.stepcode);
-          }
-          
-        }
-      }
-    });
+    // ファイルが読み込まれた時
+    this.ui.on(Config.UIType.MenuLoadFileInput, 'change', this.onChangeFile.bind(this));
 
     this.ui.stepcode.setCallback(StepCode.CallbackType.PrevAfter, this.onChangeStepCode.bind(this));
     this.ui.stepcode.setCallback(StepCode.CallbackType.NextAfter, this.onChangeStepCode.bind(this));
@@ -327,6 +287,15 @@ export default class StepCodeEditor {
    */
   private onClickDownload() {
     this.ui.download(this.core);
+  }
+
+  /**
+   * ファイルが選択された時の処理
+   */
+  private onChangeFile(e:Event) {
+    Util.readFile(e, (file:any) => {
+      this.load(JSON.parse(file));
+    });
   }
 
   //---------------------------------------------------------------------------

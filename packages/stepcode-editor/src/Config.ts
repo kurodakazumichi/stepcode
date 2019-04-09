@@ -69,6 +69,8 @@ export enum UIType {
   MenuDelStep         = "MenuDelStep",
   MenuReset           = "MenuReset",
   MenuDownload        = "MenuDownload",
+  MenuLoadFile        = "MenuLoadFile",
+  MenuLoadFileInput   = "MenuLoadFileInput",
   Guide               = "Guide",
   GuideItem           = "GuideItem",
 }
@@ -198,6 +200,18 @@ const config =
       tag:"a",
       innerHTML:"ダウンロード",
     },
+    /** メニュー:ファイルのロード */
+    [UIType.MenuLoadFile]: {
+      tag:"label",
+      innerHTML:"ファイルを読み込む",
+      htmlFor:"sce-fileload"
+    },
+    /** メニュー:ファイルのロード(Input) */
+    [UIType.MenuLoadFileInput]: {
+      tag:"input",
+      type:"file",
+      id:"sce-fileload"
+    },
     /** ガイド */
     [UIType.Guide]: {
       tag:"div",
@@ -229,8 +243,19 @@ export function createElement(uiType:UIType) :HTMLElement
   e.className = (data.className)? data.className : "";
   e.innerHTML = (data.innerHTML)? data.innerHTML : "";
 
-  if (data.placeholder) {
-    (e as HTMLInputElement).placeholder = data.placeholder;
+  // Input要素の設定
+  if (data.tag === "input") {
+    const input = e as HTMLInputElement;
+    data.placeholder && (input.placeholder = data.placeholder);
+    data.type        && (input.type = data.type);
+    data.id          && (input.id = data.id);
   }
+
+  // Label要素の設定
+  if (data.tag === "label") {
+    const label = e as HTMLLabelElement;
+    data.htmlFor && (label.htmlFor = data.htmlFor);
+  }
+  
   return e;
 }

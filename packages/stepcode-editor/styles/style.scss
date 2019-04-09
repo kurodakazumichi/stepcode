@@ -100,8 +100,11 @@ $borderColor: #718288;
     text-align: right;
     display:flex;
     justify-content: space-between;
-
-    button, a {
+    input {
+      display: none;
+    }
+    button, a, label {
+      text-align: center;
       position: relative;
       display: inline-block;
       padding: 0.25em 0.5em;

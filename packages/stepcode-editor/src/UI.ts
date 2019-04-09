@@ -236,6 +236,8 @@ export default class UI {
     dom[ui.Menu].appendChild(dom[ui.MenuDelStep]);
     dom[ui.Menu].appendChild(dom[ui.MenuDownload]);
     dom[ui.Menu].appendChild(dom[ui.MenuReset]);
+    dom[ui.Menu].appendChild(dom[ui.MenuLoadFile]);
+    dom[ui.Menu].appendChild(dom[ui.MenuLoadFileInput]);
     
   }
 
