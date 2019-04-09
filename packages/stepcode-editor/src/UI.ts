@@ -21,6 +21,8 @@ export default class UI {
     // 各種要素を作成・構築
     this.doms = {};
     this.buildElements();
+
+    this._stepcode = new StepCode(this.doms[Config.UIType.MainPreviewStepCode], {});
   }
 
   //---------------------------------------------------------------------------
@@ -32,13 +34,16 @@ export default class UI {
   /** StepCodeEditorの全HTMLElementリスト */
   private doms:{[key:string]:HTMLElement};
 
+  /** StepCode本体 */
+  private _stepcode:StepCode;
+
 
   //---------------------------------------------------------------------------
   // private プロパティ
 
   /** StepCodeに該当するHTMLElementを返します */
-  get stepcode():HTMLElement {
-    return this.doms[Config.UIType.MainPreviewStepCode];
+  get stepcode():StepCode {
+    return this._stepcode;
   }
 
   /** AceEditorに該当するHTMLElementを返します */
