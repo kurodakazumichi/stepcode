@@ -235,6 +235,29 @@ describe('Steps', () => {
       expect(steps.first).toEqual(mockStep[0]);
       expect(steps.last).toEqual(mockStep[2]);
     })
+
+    it(`Stepsの指定した箇所が入れ替わること`, () => {
+      // 要素を２つ追加
+      steps.push(mockStep[0]);
+      steps.push(mockStep[1]);
+
+      // 要素を入れ替え
+      expect(steps.swap(0, 1)).toBe(true);
+      expect(steps.first).toEqual(mockStep[1]);
+      expect(steps.last).toEqual(mockStep[0]);
+    })
+
+    it(`入れ替えられる対象がない場合、Steps.swapが失敗すること`, () => {
+      expect(steps.swap(0, 0)).toBe(false);
+
+      // 要素を２つ追加
+      steps.push(mockStep[0]);
+      steps.push(mockStep[1]);
+
+      expect(steps.swap(0,2)).toBe(false);
+      expect(steps.swap(1,2)).toBe(false);
+      expect(steps.swap(2,3)).toBe(false);
+    })
   })
 
   //===========================================================================

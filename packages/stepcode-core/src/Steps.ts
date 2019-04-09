@@ -145,4 +145,21 @@ export default class Steps
   public remove(atIndex:number) {
     this.steps.splice(atIndex, 1);
   }
+
+  /**
+   * 指定されたidx1とidx2の要素を交換する
+   * @param idx1 入れ替え元を指定
+   * @param idx2 入れ替え先を指定
+   */
+  public swap(idx1:number, idx2:number) {
+    const from = this.get(idx1);
+    const to   = this.get(idx2);
+
+    // 入れ替え対象が存在しない場合は入れ替え失敗
+    if (!from || !to) return false;
+
+    this.steps.splice(idx1, 1, to);
+    this.steps.splice(idx2, 1, from);
+    return true;
+  }
 }
