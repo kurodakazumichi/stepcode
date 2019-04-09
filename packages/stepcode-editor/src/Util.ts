@@ -3,6 +3,22 @@ import Core, { Step } from 'stepcode-core';
 export const getValue = (elm:any) => {
   return (elm && elm.value)? elm.value : "";
 }
+export const getData = (elm:any, key:string, def:string):string => {
+  if (!(elm instanceof HTMLElement)) return def;
+
+  if (!elm.dataset) return def;
+
+  const data = elm.dataset[key];
+  return (data)? data : def;
+}
+
+export const setData = (elm:any, key:string, value:string) => {
+  if (!(elm instanceof HTMLElement)) return false;
+
+  elm.dataset[key] = value;
+  return true;
+}
+
 export const readFile = (e:Event, onloadCallback:Function) => 
 {
   // targetがHTMLInputElementでなければ終了
@@ -31,6 +47,14 @@ export const readFile = (e:Event, onloadCallback:Function) =>
 }
 
 export const storage = {
+  save(core:Core) {
+    this.clear();
+    this.saveMeta(core);
+    for(let i = 0; i < core.count; ++i) {
+      const step = core.steps.get(i);
+      step && this.saveStep(i, step)
+    }
+  },
   saveStep(index:number, step:Step) {
     sessionStorage.setItem(index.toString(), JSON.stringify(step.toJSON()));
   },

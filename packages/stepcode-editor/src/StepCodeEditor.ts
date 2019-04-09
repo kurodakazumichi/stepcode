@@ -69,8 +69,8 @@ export default class StepCodeEditor {
     this.core.apply(data);
     this.work.apply(this.core.current);
 
-    // セッションストレージをクリア
-    Util.storage.clear();
+    // セッションストレージにCoreを保存
+    Util.storage.save(this.core);
 
     // UIを更新
     this.ui.update(this.core);
@@ -135,6 +135,7 @@ export default class StepCodeEditor {
   private addStep(index:number, step:Step) {
     this.core.steps.add(index, step.clone());
     this.core.to(index);
+    Util.storage.save(this.core);
     this.ui.updateStepCode(this.core);
     this.ui.updateGuide(this.core, true);
   }
@@ -191,6 +192,16 @@ export default class StepCodeEditor {
     this.ui.stepcode.setCallback(StepCode.CallbackType.PrevAfter, this.onChangeStepCode.bind(this));
     this.ui.stepcode.setCallback(StepCode.CallbackType.NextAfter, this.onChangeStepCode.bind(this));
     this.ui.stepcode.setCallback(StepCode.CallbackType.JumpAfter, this.onChangeStepCode.bind(this));
+
+    this.ui.tmpClick = (idx:number) => { this.jump(idx); }
+    this.ui.tmpSwapEvent = this.onSwapStep.bind(this);
+    this.ui.tmpDragOver = (idx:number) => { this.ui.stepcode.show(idx + 1)}
+    this.ui.tmpDragStart = (idx:number) => {
+      this.ui.clearGuideItemClass();
+      this.ui.selectedGuideItem(idx);
+      this.core.to(idx);
+      this.ui.updateEditor(this.core);
+    }
   }
 
   /**
@@ -296,6 +307,21 @@ export default class StepCodeEditor {
     Util.readFile(e, (file:any) => {
       this.load(JSON.parse(file));
     });
+  }
+
+  /**
+   * ステップが入れ替えられた時の処理
+   */
+  public onSwapStep(fromIdx:number, toIdx:number) {
+
+    if (!this.core.steps.swap(fromIdx, toIdx)) return;
+    this.core.to(toIdx);
+    this.work.apply(this.core.current);
+    this.ui.update(this.core);
+  }
+
+  public jump(idx:number) {
+    this.ui.stepcode.jump(idx);
   }
 
   //---------------------------------------------------------------------------

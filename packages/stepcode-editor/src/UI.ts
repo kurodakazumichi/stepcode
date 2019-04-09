@@ -6,6 +6,7 @@ import ThemeGithub from 'ace-builds/src-noconflict/theme-github';
 import Core from 'stepcode-core';
 import StepCode from 'stepcode';
 import * as Config from './Config';
+import * as Util from './Util';
 
 /******************************************************************************
  * StepCodeで必要な全てのHTMLElementを管理するクラス
@@ -278,6 +279,11 @@ export default class UI {
 
   }
 
+  public tmpSwapEvent:any;
+  public tmpDragOver:any;
+  public tmpDragStart:Function = () => {};
+  public tmpClick:Function = () => {};
+
   public adjustGuideItem2(num:number) {
     const guide = this.doms[Config.UIType.Guide];
 
@@ -293,30 +299,49 @@ export default class UI {
     for(let i = 0; i < count; ++i) {
       const item = Config.createElement(Config.UIType.GuideItem);
       item.innerHTML = (i + 1).toString();
-
-      // ドラッグの参考
-      // item.draggable = true;
+      Util.setData(item, 'index', i.toString());
       
-      // item.addEventListener('dragover', (e:Event) => {
-      //   e.preventDefault();
-      //   if(e.target) {
-      //     (e.target as HTMLElement).style.background = "#12948a";
-      //   }
-      // });
-      // item.addEventListener('dragleave', (e:Event) => {
-      //   e.preventDefault();
-      //   if(e.target) {
-      //     (e.target as HTMLElement).style.background = "";
-      //   }
-      // })
-      // item.addEventListener('drop', (e:DragEvent) => {
+      //ドラッグの参考
+      item.draggable = true;
+
+      item.addEventListener('click', (e:Event) => {
+        if (!e.target) return;
         
-      //   e.preventDefault();
-      //   console.log(item.innerHTML);
+        const idx = Util.getData(e.target, 'index', '0');
+        this.tmpClick(idx);
+      });
+      
+      item.addEventListener('dragstart', (e:DragEvent) => {
+        if (!e.dataTransfer) return;
+        e.dataTransfer.setData('text', Util.getData(e.target, 'index', '0'));
+        this.tmpDragStart(Util.getData(e.target, 'index', '0'));
+      })
+      item.addEventListener('dragover', (e:Event) => {
+        e.preventDefault();
+        if(e.target) {
+          (e.target as HTMLElement).style.background = "#12948a";
+        }
+        if(this.tmpDragOver) {
+          this.tmpDragOver(Number(Util.getData(e.target, 'index', '0')))
+        }
+      });
+      item.addEventListener('dragleave', (e:Event) => {
+        e.preventDefault();
+        if(e.target) {
+          (e.target as HTMLElement).style.background = "";
+        }
+      })
+      item.addEventListener('drop', (e:DragEvent) => {
+        if (!e.dataTransfer) return;
+        e.preventDefault();
+        const fromIdx = Number(e.dataTransfer.getData('text'));
+        const toIdx   = Number(Util.getData(e.target, 'index', '0'));
+        
+        if(this.tmpSwapEvent) {
+          this.tmpSwapEvent(fromIdx, toIdx);
+        }
 
-      //   // Core.swap(dragIndex, dropIndex);
-
-      // })
+      })
 
       guide.appendChild(item);
     }
