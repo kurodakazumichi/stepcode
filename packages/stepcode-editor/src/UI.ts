@@ -3,6 +3,7 @@
  *****************************************************************************/
 import Ace from 'ace-builds';
 import ThemeGithub from 'ace-builds/src-noconflict/theme-github';
+import Core from 'stepcode-core';
 import StepCode from 'stepcode';
 import * as Config from './Config';
 
@@ -45,7 +46,7 @@ export default class UI {
 
 
   //---------------------------------------------------------------------------
-  // private プロパティ
+  // public プロパティ
 
   /** StepCodeを返します */
   get stepcode():StepCode {
@@ -61,6 +62,24 @@ export default class UI {
   get md(): HTMLTextAreaElement {
     return this.doms[Config.UIType.EditorMdInput] as HTMLTextAreaElement;
   }
+
+  get code() {
+    return this.ace.getValue();
+  }
+  set code(v:string) {
+    this.ace.setValue(v);
+    this.ace.clearSelection();
+  }
+
+  get mdText() {
+    return this.md.value;
+  }
+  set mdText(v:string) {
+    this.md.value = v;;
+  }
+  
+  //---------------------------------------------------------------------------
+  // public メソッド
 
   /**
    * 要素にイベントを追加する
@@ -358,5 +377,40 @@ export default class UI {
     ace.getSession().setUseWorker(false);
     ace.setTheme(ThemeGithub);
     return ace;
+  }
+
+  /**
+   * Coreの内容でUIを更新する
+   * @param core Core
+   */
+  public update(core: Core) 
+  {
+    this.updateEditor(core);
+    this.updateGuide(core);
+    this.updateStepCode(core);
+  }
+
+  public updateEditor(core:Core) {
+    const step = core.current;
+    this.code = (step? step.code : Config.DEF_CODE_TEXT);
+    this.mdText = (step? step.desc : Config.DEF_DESC_TEXT);
+  }
+
+  /**
+   * ステップコードを更新する
+   * @param core コア
+   */
+  public updateStepCode(core:Core) {
+    this.stepcode.load(core.toJSON());
+    this.stepcode.show(core.currentNo);
+  }
+
+  public updateGuide(core:Core, isInsert = false) {
+    this.adjustGuideItem(core.count);
+    this.clearGuideItemClass();
+    this.selectedGuideItem(core.cursor);
+    if(isInsert) {
+      this.insertedGuideItem(core.cursor);
+    }
   }
 }
