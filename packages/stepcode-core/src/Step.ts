@@ -122,9 +122,9 @@ export default class Step
   }
 
   /**
-   * 同じ情報をもったコピーを生成する
+   * 同じ情報をもったクローンを生成する
    */
-  copy() {
+  clone() {
     return new Step(this.toJSON());
   }
 

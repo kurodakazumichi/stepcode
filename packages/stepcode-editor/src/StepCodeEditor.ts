@@ -74,12 +74,16 @@ export default class StepCodeEditor {
 
     //-------------------------------------------------------------------------
     // ステップ追加をクリック
-    this.ui.on(UIType.MenuAddStep, 'click', (e:Event) => {
-      this.core.steps.push(this.work.copy());
-      this.stepcode.load(this.core.toJSON());
-      this.stepcode.show(this.stepcode.lastNo);
-      this.adjustGuide(true);
-    })
+    this.ui.on(UIType.MenuAddStep, 'click', this.addStepLast.bind(this));
+
+    // ステップを前に追加する
+    this.ui.on(UIType.MenuAddStepBefore, 'click', this.addStepBefore.bind(this));
+
+    // ステップを後に追加する
+    this.ui.on(UIType.MenuAddStepAfter, 'click', this.addStepAfter.bind(this));
+
+    // リセットボタン
+    this.ui.on(UIType.MenuReset, 'click', this.onClickReset.bind(this));
 
     // TODO:ステップの削除
     this.ui.on(UIType.MenuDelStep, 'click', (e:Event) => {
@@ -90,30 +94,8 @@ export default class StepCodeEditor {
         this.work.apply(this.core.current.toJSON());
       this.syncPreviewToEditor();
       this.syncEditorToPreview();
-      this.adjustGuide();
+      this.updateGuide();
     });
-
-    // リセットボタン
-    this.ui.on(UIType.MenuReset, 'click', this.onClickReset.bind(this));
-
-    // ステップを前に追加する
-    this.ui.on(UIType.MenuAddStepBefore, 'click', (e:Event) => {
-      const idx = this.stepcode.currentIdx;
-      this.core.steps.add(idx, this.work.copy());
-      this.stepcode.load(this.core.toJSON());
-      this.stepcode.show(idx + 1);
-      this.adjustGuide(true);
-    });
-
-    // ステップを後に追加する
-    this.ui.on(UIType.MenuAddStepAfter, 'click', (e:Event) => {
-      const idx = this.stepcode.currentIdx + 1;
-      this.core.steps.add(idx, this.work.copy());
-      this.stepcode.load(this.core.toJSON());
-      this.stepcode.show(idx + 1);
-      this.adjustGuide(true);
-    });
-
     // TODO:データのダウンロード
     this.ui.on(UIType.MenuDownload, 'click', () => {
       const blob = new Blob([JSON.stringify(this.core.toJSON())], {type:'application/json'});
@@ -154,23 +136,23 @@ export default class StepCodeEditor {
 
     this.stepcode.setCallback(StepCode.CallbackType.PrevAfter, (stepcode) => {
       this.syncPreviewToEditor();
-      this.adjustGuide();
+      this.updateGuide();
     });
 
     this.stepcode.setCallback(StepCode.CallbackType.NextAfter, (stepcode) => {
       this.syncPreviewToEditor();
-      this.adjustGuide();
+      this.updateGuide();
     });
 
     this.stepcode.setCallback(StepCode.CallbackType.JumpAfter, (stepcode) => {
       this.syncPreviewToEditor();
-      this.adjustGuide();
+      this.updateGuide();
     });
 
  
   }
 
-  private adjustGuide(isInsert = false){
+  private updateGuide(isInsert = false){
     this.ui.adjustGuideItem(this.core.steps.count);
     this.ui.clearGuideItemClass();
     this.ui.selectedGuideItem(this.stepcode.currentIdx);
@@ -235,6 +217,30 @@ export default class StepCodeEditor {
 
     // UIを更新
     this.updateUI(this.core);
+  }
+
+  /**
+   * ステップを末尾に追加する
+   */
+  public addStepLast() {
+    const addIndex = this.core.count;
+    this.addStep(addIndex, this.work);
+  }
+
+  /**
+   * ステップを前に追加する
+   */
+  public addStepBefore() {
+    const addIndex = this.stepcode.currentIdx;
+    this.addStep(addIndex, this.work);
+  }
+
+  /**
+   * ステップを後ろに追加する
+   */
+  public addStepAfter() {
+    const addIndex = this.stepcode.currentIdx + 1;
+    this.addStep(addIndex, this.work);
   }
 
   //---------------------------------------------------------------------------
@@ -389,7 +395,6 @@ export default class StepCodeEditor {
     Util.storage.saveStep(this.core.cursor, this.work);
   }
 
-
   /**
    * Workの内容をCoreのcurrentステップに同期する
    */
@@ -398,7 +403,6 @@ export default class StepCodeEditor {
       this.core.current.apply(this.work);
     }
   }
-
 
   /**
    * Coreの内容でUIを更新する
@@ -415,6 +419,18 @@ export default class StepCodeEditor {
 
     // ステップコードを再ロード
     this.stepcode.load(core.toJSON());
+  }
+
+  /**
+   * ステップを追加しUIを更新する
+   * @param index ステップを追加する位置
+   * @param step 追加するステップ
+   */
+  private addStep(index:number, step:Step) {
+    this.core.steps.add(index, step.clone());
+    this.stepcode.load(this.core.toJSON());
+    this.stepcode.show(index + 1);
+    this.updateGuide(true);
   }
 
 }
