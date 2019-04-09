@@ -193,15 +193,15 @@ export default class StepCodeEditor {
     this.ui.stepcode.setCallback(StepCode.CallbackType.NextAfter, this.onChangeStepCode.bind(this));
     this.ui.stepcode.setCallback(StepCode.CallbackType.JumpAfter, this.onChangeStepCode.bind(this));
 
-    this.ui.tmpClick = (idx:number) => { this.jump(idx); }
-    this.ui.tmpSwapEvent = this.onSwapStep.bind(this);
-    this.ui.tmpDragOver = (idx:number) => { this.ui.stepcode.show(idx + 1)}
-    this.ui.tmpDragStart = (idx:number) => {
+    this.ui.setCbOnClickGuideItem((idx:number) => { this.jump(idx); console.log(idx); });
+    this.ui.setCbOnSwapGuideItem(this.onSwapStep.bind(this));
+    this.ui.setCbOnDragOverGuideItem((idx:number) => { this.ui.stepcode.show(idx + 1)});
+    this.ui.setCbOnDragStartGuideItem((idx:number) => {
       this.ui.clearGuideItemClass();
       this.ui.selectedGuideItem(idx);
       this.core.to(idx);
       this.ui.updateEditor(this.core);
-    }
+    });
   }
 
   /**

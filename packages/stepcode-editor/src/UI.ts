@@ -9,6 +9,14 @@ import * as Config from './Config';
 import * as Util from './Util';
 
 /******************************************************************************
+ * 型定義
+ *****************************************************************************/
+type GuideItemOnClickFunction = (clickIndex:number) => void;
+type GuideItemOnSwapFunction = (fromIndex:number, toIndex:number) => void;
+type GuideItemOnDragOverFunction = (overIndex:number, underIndex:number) => void;
+type GuideItemOnDragStartFunction = (startIndex:number) => void;
+
+/******************************************************************************
  * StepCodeで必要な全てのHTMLElementを管理するクラス
  *****************************************************************************/
 export default class UI {
@@ -242,47 +250,107 @@ export default class UI {
     
   }
 
-  public adjustGuideItem(num:number) {
-    // DOMを使い回しするとCSSの付け替えが反映されないことがあるので
-    // 全削除、全作成方式に変えた。
-    // パフォーマンス的には微妙なのでなんとかしたいところ
-    this.adjustGuideItem2(num);
-    // const guide = this.doms[Config.UIType.Guide];
-
-    // const makeCount = num - guide.childElementCount;
-    // console.log(makeCount);
-
-    // if(makeCount === 0) return;
-
-    // if(0 < makeCount) {
-    //   for(let i = 0; i < makeCount; ++i) {
-    //     const item = Config.createElement(Config.UIType.GuideItem);
-    //     guide.appendChild(item);
-    //   }
-    // }
-
-    // if (makeCount < 0) {
-    //   for(let i = 0; i < Math.abs(makeCount); ++i) {
-    //     if(guide.firstChild) {
-    //       guide.removeChild(guide.firstChild);
-    //     }
-    //   }
-
-    // }
-
-    // for(let i = 0; i < guide.childElementCount; ++i) {
-    //   if(guide.children[i]) {
-    //     guide.children[i].innerHTML = (i + 1).toString();
-    //   }
-    // }
+  createGuideItem(idx:number) {
+    const item = Config.createElement(Config.UIType.GuideItem);
+    item.innerHTML = (idx + 1).toString();
+    Util.setData(item, 'index', idx.toString());
     
+    //ドラッグの参考
+    item.draggable = true;
 
+    item.addEventListener('click', (e:Event) => {
+      if (!e.target) return;
+      
+      const idx = Util.getData(e.target, 'index', '0');
+      this.cbOnClickGuideItem(Number(idx));
+    });
+    
+    
+    item.addEventListener('dragstart', (e:DragEvent) => {
+      if (!e.dataTransfer) return;
+      const idx = Util.getData(e.target, 'index', '0');
+      e.dataTransfer.setData('text', idx);
+      //this.tmpDragStart(Util.getData(e.target, 'index', '0'));
+      
+      this.cbOnDragStartGuideItem(Number(idx));
+      console.log(idx);
+    })
+    item.addEventListener('dragover', (e:Event) => {
+      e.preventDefault();
+      if(e.target) {
+        (e.target as HTMLElement).style.background = "#12948a";
+      }
+
+      this.cbOnDragOverGuideItem(Number(Util.getData(e.target, 'index', '0')), 0);
+      
+    });
+    item.addEventListener('dragleave', (e:Event) => {
+      e.preventDefault();
+      if(e.target) {
+        (e.target as HTMLElement).style.background = "";
+      }
+    })
+    item.addEventListener('drop', (e:DragEvent) => {
+      if (!e.dataTransfer) return;
+      e.preventDefault();
+      const fromIdx = Number(e.dataTransfer.getData('text'));
+      const toIdx   = Number(Util.getData(e.target, 'index', '0'));
+      
+      (e.target as HTMLElement).style.background = "";
+      this.cbOnSwapGuideItem(fromIdx, toIdx);
+
+    })
+
+    return item;
+  }
+  public adjustGuideItem(num:number) {
+    const guide = this.doms[Config.UIType.Guide];
+
+    const makeCount = num - guide.childElementCount;
+
+    if(makeCount === 0) return;
+
+    if(0 < makeCount) {
+      for(let i = 0; i < makeCount; ++i) {
+        const item = this.createGuideItem(i);
+        guide.appendChild(item);
+      }
+    }
+
+    if (makeCount < 0) {
+      for(let i = 0; i < Math.abs(makeCount); ++i) {
+        if(guide.firstChild) {
+          guide.removeChild(guide.firstChild);
+        }
+      }
+
+    }
+
+    for(let i = 0; i < guide.childElementCount; ++i) {
+      if(guide.children[i]) {
+        guide.children[i].innerHTML = (i + 1).toString();
+        Util.setData(guide.children[i], 'index', i.toString());
+      }
+    }
   }
 
-  public tmpSwapEvent:any;
-  public tmpDragOver:any;
-  public tmpDragStart:Function = () => {};
-  public tmpClick:Function = () => {};
+  setCbOnClickGuideItem(callback:GuideItemOnClickFunction) {
+    this.cbOnClickGuideItem = callback;
+  }
+  setCbOnSwapGuideItem(callback:GuideItemOnSwapFunction) {
+    this.cbOnSwapGuideItem = callback;
+  }
+  setCbOnDragStartGuideItem(callback:GuideItemOnDragStartFunction) {
+    this.cbOnDragStartGuideItem = callback;
+  }
+  setCbOnDragOverGuideItem(callback:GuideItemOnDragOverFunction) {
+    this.cbOnDragOverGuideItem = callback;
+  }
+
+  private cbOnClickGuideItem: GuideItemOnClickFunction = () => {}
+  private cbOnSwapGuideItem:GuideItemOnSwapFunction = () => {};
+  private cbOnDragStartGuideItem: GuideItemOnDragStartFunction = () => {};
+  private cbOnDragOverGuideItem: GuideItemOnDragOverFunction = () => {};
 
   public adjustGuideItem2(num:number) {
     const guide = this.doms[Config.UIType.Guide];
@@ -297,52 +365,7 @@ export default class UI {
     }
 
     for(let i = 0; i < count; ++i) {
-      const item = Config.createElement(Config.UIType.GuideItem);
-      item.innerHTML = (i + 1).toString();
-      Util.setData(item, 'index', i.toString());
-      
-      //ドラッグの参考
-      item.draggable = true;
-
-      item.addEventListener('click', (e:Event) => {
-        if (!e.target) return;
-        
-        const idx = Util.getData(e.target, 'index', '0');
-        this.tmpClick(idx);
-      });
-      
-      item.addEventListener('dragstart', (e:DragEvent) => {
-        if (!e.dataTransfer) return;
-        e.dataTransfer.setData('text', Util.getData(e.target, 'index', '0'));
-        this.tmpDragStart(Util.getData(e.target, 'index', '0'));
-      })
-      item.addEventListener('dragover', (e:Event) => {
-        e.preventDefault();
-        if(e.target) {
-          (e.target as HTMLElement).style.background = "#12948a";
-        }
-        if(this.tmpDragOver) {
-          this.tmpDragOver(Number(Util.getData(e.target, 'index', '0')))
-        }
-      });
-      item.addEventListener('dragleave', (e:Event) => {
-        e.preventDefault();
-        if(e.target) {
-          (e.target as HTMLElement).style.background = "";
-        }
-      })
-      item.addEventListener('drop', (e:DragEvent) => {
-        if (!e.dataTransfer) return;
-        e.preventDefault();
-        const fromIdx = Number(e.dataTransfer.getData('text'));
-        const toIdx   = Number(Util.getData(e.target, 'index', '0'));
-        
-        if(this.tmpSwapEvent) {
-          this.tmpSwapEvent(fromIdx, toIdx);
-        }
-
-      })
-
+      const item = this.createGuideItem(i);
       guide.appendChild(item);
     }
     
@@ -369,8 +392,20 @@ export default class UI {
     const guide = this.doms[Config.UIType.Guide];
     const target = guide.children[idx];
     
+    if(!target) return;
+
+
     if(target) {
-      target.classList.add(Config.classNames.guideItemInserted);
+      const index = Number(Util.getData(target, 'index', '0'));
+      const item = this.createGuideItem(index);
+      target.classList.forEach((v) => {
+        item.classList.add(v);
+      })
+      item.classList.add(Config.classNames.guideItemInserted);
+      
+      
+      target.after(item);
+      target.remove();
     }
   }
   // /**
