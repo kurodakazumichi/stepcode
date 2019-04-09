@@ -239,7 +239,7 @@ class Codes
 
   /** ソースコードを設定する */
   public set codetext(codetext:string) {
-    this.code.innerHTML = EscapeHtml(codetext);
+    this.code.innerHTML = EscapeHtml(codetext+'\n');
     hljs.highlightBlock(this.code as hljs.Node);
   }
 

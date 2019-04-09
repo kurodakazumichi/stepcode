@@ -1,7 +1,9 @@
+/* 色の定義 */
 $mainColor: #00A3C7;
 $textColor: white;
 $borderColor: #718288;
 $markColor:#81D674;
+
 .sc {
   &-root {
     border:1px solid $borderColor;
@@ -10,7 +12,6 @@ $markColor:#81D674;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    height:70vh;
   }
 
   &-header {
@@ -21,19 +22,20 @@ $markColor:#81D674;
   }
 
   &-editor {
-    height:100%;
     display: flex;
     font-size: 16px;
     line-height: 1.5em;
     overflow-y:scroll;
+    overflow-x:hidden;
 
     &__lines {
       list-style-type: none;
       text-indent: 0.2em;
       font-size: 12px;
-      width:30px;
+      min-width:30px;
       padding:0;
       margin:0;
+      border-right: 1px solid $borderColor;
       &__item {
         padding:0;
         margin:0;
@@ -47,7 +49,7 @@ $markColor:#81D674;
     &__codes {
       width:100%;
       height:100%;
-      border-left: 1px solid $borderColor;
+      
       pre {
         padding:0;
         margin:0;
@@ -55,6 +57,7 @@ $markColor:#81D674;
       code {
         margin:0;
         padding:0;
+        padding-left: 0.3em;
       }
 
     }
@@ -64,9 +67,8 @@ $markColor:#81D674;
     border-top:1px solid $borderColor;
     border-bottom:1px solid $borderColor;
     padding:0.5em;
-    min-height: 150px;
-    max-height: 150px;
     overflow-y:auto;
+    box-sizing: border-box;
 
     p{
       padding:0;
@@ -92,7 +94,7 @@ $markColor:#81D674;
   }
 
   &-footer {
-    height:80px;
+    height:45px;
     background-color:$mainColor;
     display: flex;
     flex-wrap: nowrap;

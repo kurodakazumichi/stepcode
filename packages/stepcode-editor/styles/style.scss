@@ -1,30 +1,13 @@
+$headerHeight: 20px;
+$editorHeight: 400px;
+$commentHeight:200px;
+/* 色の定義 */
+$mainColor: #444;
+$borderColor: #718288;
+
 .sce {
   &-root {
     width:100vw;
-  }
-
-  &-guide {
-    border:1px solid #000;
-    height:60px;
-    display: flex;
-    align-items: center;
-
-    &__item {
-      width:60px;
-      height:40px;
-      text-align: center;
-      line-height: 40px;
-      border:1px solid #000;
-      overflow: hidden;
-
-      &--selected {
-        background:#abcdef;
-      }
-      &--inserted {
-        animation-name: sce-zoom;
-        animation-duration: 1s;
-      }
-    }
   }
 
   &-main {
@@ -39,53 +22,65 @@
     &__editor {
       border-radius: 6px;
       overflow: hidden;
-      border:1px solid #999;
+      border:1px solid $borderColor;
     }
 
     &__preview {
+      & .sc-header {
+        height: $headerHeight;
+      }
+
+      & .sc-editor {
+        height: $editorHeight;
+      }
+
+      & .sc-comment {
+        height: $commentHeight;
+      }
 
     }
   }
 
   &-editor {
     &-header {
-      background-color: #ddd;
+      height:$headerHeight;
+      background-color: $mainColor;
       color: white;
       padding: 0.4em;
-      border-bottom: 1px solid #718288;
+      border-bottom: 1px solid $borderColor;
     }
 
     &-code {
       &__ace {
         width:100%; 
-        height: 403px;
+        height: $editorHeight;
       }
     }
 
     &-md {
+      height: $commentHeight;
       &__input {
+        resize:none;
         width:100%;
-        min-height: 160px;
-        padding: 0;
+        height:100%;
+        padding: 0.5em;
         box-sizing: border-box;
         border:none;
-        border-top:1px solid #ddd;
+        border-top:1px solid $borderColor;
         font-size: 16px;
       }
     }
 
     &-footer {
-      background-color:#ddd;
-      height:50px;
+      background-color:$mainColor;
+      height:45px;
       color:white;
       font-weight: bold;
-      line-height: 48px;
+      line-height: 45px;
       text-align: right;
       padding-right: 20px;
     }
   }
-
-
 
   &-menu {
     padding:1em;
@@ -97,12 +92,40 @@
       font-size: 14px;
     }
   }
+
+  &-guide {
+    border:1px solid $borderColor;
+    height:60px;
+    display: flex;
+    align-items: center;
+
+    &__item {
+      width:60px;
+      height:40px;
+      margin-left: 1em;
+      text-align: center;
+      line-height: 40px;
+      background-color:#eee;
+      overflow: hidden;
+      border-radius: 3px;
+
+      &--selected {
+        background:#abcdef;
+        border:1px solid #00A3C7;
+        box-shadow: 0 0 2px 1px #00A3C7;
+      }
+      &--inserted {
+        animation-name: sce-zoom;
+        animation-duration: 0.5s;
+      }
+    }
+  }
 }
 
 @keyframes sce-zoom {
   0% {
     width:0;
-    text-indent: -100px;
+    text-indent: -200px;
   }
 
   100% {
