@@ -2,6 +2,8 @@
  * UIの構成情報を定義したファイル
  *****************************************************************************/
 
+import ThemeGithub from 'ace-builds/src-noconflict/theme-github';
+
 /******************************************************************************
  * 定数
  *****************************************************************************/
@@ -204,7 +206,7 @@ const config =
     },
     /** メニュー:ダウンロード */
     [UIType.MenuDownload]: {
-      tag:"a",
+      tag:"button",
       innerHTML:"ダウンロード",
     },
     /** メニュー:ファイルのロード */
@@ -229,6 +231,17 @@ const config =
       tag:"div",
       className: classNames.guideItem
     }
+  },
+
+  /**
+   * Aceの設定
+   */
+  ace: {
+    style: {
+      lineHeight: "1.5",
+      fontSize: "16px",
+    },
+    theme:ThemeGithub
   }
 }
 
@@ -247,22 +260,9 @@ export function createElement(uiType:UIType) :HTMLElement
   }
   
   const e = document.createElement(data.tag);
-  e.className = (data.className)? data.className : "";
-  e.innerHTML = (data.innerHTML)? data.innerHTML : "";
-
-  // Input要素の設定
-  if (data.tag === "input") {
-    const input = e as HTMLInputElement;
-    data.placeholder && (input.placeholder = data.placeholder);
-    data.type        && (input.type = data.type);
-    data.id          && (input.id = data.id);
-  }
-
-  // Label要素の設定
-  if (data.tag === "label") {
-    const label = e as HTMLLabelElement;
-    data.htmlFor && (label.htmlFor = data.htmlFor);
-  }
+  Object.assign(e, data);
   
   return e;
 }
+
+export const ace = config.ace;

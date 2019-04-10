@@ -2,7 +2,7 @@
  * import
  *****************************************************************************/
 import Ace from 'ace-builds';
-import ThemeGithub from 'ace-builds/src-noconflict/theme-github';
+//import ThemeGithub from 'ace-builds/src-noconflict/theme-github';
 import Core from 'stepcode-core';
 import StepCode from 'stepcode';
 import * as Config from './Config';
@@ -16,7 +16,13 @@ type GuideItemOnSwapFunction = (fromIndex:number, toIndex:number) => void;
 type GuideItemOnDragOverFunction = (overIndex:number, underIndex:number) => void;
 type GuideItemOnDragStartFunction = (startIndex:number) => void;
 
-export enum TargetType {
+/******************************************************************************
+ * enum
+ *****************************************************************************/
+/**
+ * UIの要素の種類
+ */
+export enum ElementType {
   Title,
   Lang,
   Desc,
@@ -34,8 +40,6 @@ export enum TargetType {
  *****************************************************************************/
 export default class UI {
 
-
-
   /**
    * StepCodeEditorに必要な全てのHTMLElementを生成・構築する
    * @param target ルート要素を取得するセレクター、またはHTML要素
@@ -45,12 +49,18 @@ export default class UI {
     // ルート要素を取得、保持
     this.root = this.getRoot(target);
 
+    // rootが取得できなければこの後の処理は基本的に失敗するのでエラーを表示して終了
+    if (!this.root) {
+      console.error(`指定された要素がみつかりませんでした。`);
+    }
+
     // 各種要素を作成・構築
     this.doms = {};
     this.buildElements();
 
-    this._stepcode = new StepCode(this.doms[Config.UIType.MainPreviewStepCode], {});
-    this._ace = this.createAce();
+    // サードパーティ製のUIライブラリを生成
+    this._stepcode = this.createStepCode();
+    this._ace      = this.createAce();
   }
 
   //---------------------------------------------------------------------------
@@ -73,37 +83,44 @@ export default class UI {
   // public プロパティ
 
   /** StepCodeを返します */
-  get stepcode():StepCode {
+  public get stepcode():StepCode {
     return this._stepcode;
   }
 
   /** AceEditorを返します */
-  get ace():Ace.Ace.Editor {
+  public get ace():Ace.Ace.Editor {
     return this._ace;
   }
 
-  /** Markdownの入力に該当するHTMLElementを返します */
-  get md(): HTMLTextAreaElement {
-    return this.doms[Config.UIType.EditorMdInput] as HTMLTextAreaElement;
-  }
-
-  get code() {
+  /** Ace Editorに入力されている内容を取得する */
+  public get code() {
     return this.ace.getValue();
   }
-  set code(v:string) {
+
+  /** Ace Editorに指定した内容を設定する */
+  public set code(v:string) {
     this.ace.setValue(v);
     this.ace.clearSelection();
   }
 
-  get mdText() {
+  /** 解説テキストに入力されている内容を取得する */
+  public get desc() {
     return this.md.value;
   }
-  set mdText(v:string) {
+
+  /** 解説テキストに指定した内容を設定する */
+  public set desc(v:string) {
     this.md.value = v;;
   }
-  
+
+  /** EditorのFooterに表示される現在表示しているステップの番号を設定する */
+  public set footerInfo(no:number) {
+    const info = this.get(Config.UIType.EditorFooterInfo);
+    info.innerHTML = `Step ${no}`;
+  }
+
   //---------------------------------------------------------------------------
-  // public メソッド
+  // イベント関連
 
   /**
    * 要素にイベントを追加する
@@ -111,163 +128,63 @@ export default class UI {
    * @param name イベントの名前
    * @param func callback関数
    */
-  on(target:TargetType, name:string, func:EventListenerOrEventListenerObject) {
+  public on(target:ElementType, name:string, func:EventListenerOrEventListenerObject) {
     this.getElementByTarget(target).addEventListener(name, func);
   }
 
-  /** 各種要素を取得する */
-  get<T extends HTMLElement>(uiType:Config.UIType): T|null {
-    return this.doms[uiType] as T;
-  }
-
   //---------------------------------------------------------------------------
-  // private メソッド
+  // UIの更新
 
   /**
-   * ルート要素を取得する。
-   * @param target ルート要素を取得するselector、もしくはルート要素
+   * Coreの内容でUIを更新する
+   * @param core StepCode Core
    */
-  private getRoot(target:string |  HTMLElement) : HTMLElement 
-  {
-    let root;
-
-    // targetがHTMLElementであればそのまま
-    if (target instanceof HTMLElement) {
-      root = target;
-    } 
-    
-    // HTMLElementでなければ、selector文字列として処理する
-    else {
-      root = document.querySelector(target) as HTMLElement;
-    }
-
-    return root;
+  public update(core: Core) {
+    this.updateEditor(core);
+    this.updateStepCode(core);
+    this.updateGuide(core);
   }
 
   /**
-   * HTMLElementを生成し、階層構造を構築する
+   * Coreの内容でEditorを更新する
+   * @param core StepCode Core
    */
-  private buildElements() {
-    this.createHTMLElements();
-    this.createSelectOptionsOfLanguage();
-    this.buildMainElements();
-    this.buildEditorElements();
-    this.buildPreviewElements();
-    this.buildMenuElements();
-
-    // ルート要素の階層構築
-    this.root.appendChild(this.doms[Config.UIType.Main]);
-    this.root.appendChild(this.doms[Config.UIType.Guide]);
-    this.root.appendChild(this.doms[Config.UIType.Menu]);
-
-  }
-
-  /** 
-   * 全てのHTMLElementを生成する 
-   */
-  private createHTMLElements() 
-  {
-    // TODO: この方法はなんとかしないと
-    const ignores = [
-      Config.UIType.GuideItem
-    ]
-
-    Object.values(Config.UIType).map((uiKey) => {
-      if(ignores.indexOf(uiKey) === -1){
-        this.doms[uiKey] = Config.createElement(uiKey as Config.UIType);
-      }
-    })
-  }
-
-  // TODO: 言語選択オプションの生成
-  private createSelectOptionsOfLanguage() {
-    const s = this.doms[Config.UIType.EditorHeaderLang] as HTMLSelectElement;
-    
-    const option = document.createElement('option');
-    option.innerHTML = "言語選択(自動)";
-    s.appendChild(option);
-  
-    StepCode.supportLanguages.map((lang) => {
-      const o = document.createElement('option') as HTMLOptionElement;
-      o.innerHTML = lang;
-      o.value     = lang;
-      s.appendChild(o);
-    })
+  public updateEditor(core:Core) {
+    const step = core.current;
+    this.code = (step? step.code : Config.DEF_CODE_TEXT);
+    this.desc = (step? step.desc : Config.DEF_DESC_TEXT);
+    this.footerInfo = core.currentNo;
   }
 
   /**
-   *  メイン要素の階層構造を構築する 
+   * Coreの内容でステップコードを更新する
+   * @param core StepCode Core
    */
-  private buildMainElements() 
-  {
-    const dom = this.doms;
-    const ui = Config.UIType;
-   
-    dom[ui.Main].appendChild(dom[ui.MainEditor]);
-    dom[ui.Main].appendChild(dom[ui.MainPreview]);
+  public updateStepCode(core:Core) {
+    this.stepcode.load(core.toJSON());
+    this.stepcode.show(core.currentNo);
   }
 
-  /** 
-   * エディター要素の階層構造を構築する 
+  /**
+   * Coreの内容でガイドを更新する
+   * @param core StepCode Core
    */
-  private buildEditorElements() 
+  public updateGuide(core:Core) 
   {
-    const dom = this.doms;
-    const ui = Config.UIType;
+    // ガイドアイテムの数を調整する
+    this.adjustGuideItem(core.count);
 
-    // エディタ直下
-    dom[ui.MainEditor].appendChild(dom[ui.EditorHeader]);
-    dom[ui.MainEditor].appendChild(dom[ui.EditorCode]);
-    dom[ui.MainEditor].appendChild(dom[ui.EditorMd]);
-    dom[ui.MainEditor].appendChild(dom[ui.EditorFooter]);
+    // スタイルを破棄する
+    this.clearGuideItemClass();
 
-    // エディタ:タイトル直下
-    dom[ui.EditorHeader].appendChild(dom[ui.EditorHeaderTitle]);
-    dom[ui.EditorHeader].appendChild(dom[ui.EditorHeaderLang]);
-
-    // エディタ:コード直下
-    dom[ui.EditorCode].appendChild(dom[ui.EditorCodeAce]);
-    
-    // エディタ:マークダウン直下
-    dom[ui.EditorMd].appendChild(dom[ui.EditorMdInput]);
-    
-    // エディタ:フッター直下
-    dom[ui.EditorFooter].appendChild(dom[ui.EditorFooterInfo]);
-    dom[ui.EditorFooter].appendChild(dom[ui.EditorFooterLogo]);
-  }
-
-  /** 
-   * プレビュー要素の階層構造を構築 
-   */
-  private buildPreviewElements() 
-  {
-    const dom = this.doms;
-    const ui = Config.UIType;
-
-    dom[ui.MainPreview].appendChild(dom[ui.MainPreviewStepCode]);
-  }
-
-  /** 
-   * メニュー要素の階層構造を構築 
-   */
-  private buildMenuElements() 
-  {
-    const dom = this.doms;
-    const ui = Config.UIType;
-
-    dom[ui.Menu].appendChild(dom[ui.MenuAddStepBefore]);
-    dom[ui.Menu].appendChild(dom[ui.MenuAddStepAfter]);
-    dom[ui.Menu].appendChild(dom[ui.MenuAddStepLast]);
-    dom[ui.Menu].appendChild(dom[ui.MenuDelStep]);
-    dom[ui.Menu].appendChild(dom[ui.MenuDownload]);
-    dom[ui.Menu].appendChild(dom[ui.MenuReset]);
-    dom[ui.Menu].appendChild(dom[ui.MenuLoadFile]);
-    dom[ui.Menu].appendChild(dom[ui.MenuLoadFileInput]);
-    
+    // 現在のステップを選択状態にする
+    this.selectedGuideItem(core.currentIdx);
   }
 
   //---------------------------------------------------------------------------
   // ガイドアイテム関連
+
+
 
   createGuideItem(idx?:number) {
     const item = Config.createElement(Config.UIType.GuideItem);
@@ -353,9 +270,6 @@ export default class UI {
     this.reNumberingGuideItem();
   }
 
-  private get guide() {
-    return this.doms[Config.UIType.Guide];
-  }
 
   private createGuideItems(count:number) {
     
@@ -505,113 +419,251 @@ export default class UI {
     item && item.classList.add(Config.classNames.guideItemSelected);
   }
     
-  //---------------------------------------------------------------------------
-  // FooterInfo
 
-  public updateFooterInfo(no:number) {
-    const info = this.get(Config.UIType.EditorFooterInfo);
-    info && (info.innerHTML = `Step ${no}`);
+
+
+
+  //---------------------------------------------------------------------------
+  // HTMLElement生成関連(1度しか実行しないもの)
+
+  /** 
+   * StepCode Editorで使用する主要なHTMLElementを生成する。
+   * この関数は１度だけ実行する。
+   */
+  private createHTMLElements() 
+  {
+
+    // 生成から除外する要素のリストを定義
+    const ignores = [
+      Config.UIType.GuideItem
+    ]
+
+    // 除外対象以外のHTMLElementを生成
+    Object.values(Config.UIType).map((uiKey) => {
+      if(ignores.indexOf(uiKey) === -1){
+        this.doms[uiKey] = Config.createElement(uiKey as Config.UIType);
+      }
+    });
+
+    // 言語セレクトボックスの中身を生成
+    this.createSelectOptionsOfLanguage();
+  }
+
+  /**
+   * 言語セレクトボックスの選択項目(option)を生成する。
+   * この関数は１度だけ実行する。
+   */
+  private createSelectOptionsOfLanguage() 
+  {
+    // 言語セレクトボックスを取得
+    const s = this.langs;
+    
+    // デフォルトの項目を生成
+    s.appendChild(Util.createOption("言語選択(自動)"));
+  
+    // StepCodeのサポート言語の数だけ項目を生成
+    StepCode.supportLanguages.map((lang) => {
+      s.appendChild(Util.createOption(lang, lang));
+    })
+  }
+
+  /**
+   * HTMLElementを生成し、階層構造を構築する。
+   * この関数は１度だけ実行する。
+   */
+  private buildElements() 
+  {
+    // 動的に変化しないHTML要素を生成する。
+    this.createHTMLElements();
+
+    // 各種要素の階層構造を構築する。
+    this.buildMainElements();
+    this.buildEditorElements();
+    this.buildPreviewElements();
+    this.buildMenuElements();
+
+    // ルート要素の階層構築
+    this.root.appendChild(this.doms[Config.UIType.Main]);
+    this.root.appendChild(this.doms[Config.UIType.Guide]);
+    this.root.appendChild(this.doms[Config.UIType.Menu]);
+  }
+
+  /**
+   * メイン要素の階層構造を構築する 
+   * この関数は１度だけ実行する。
+   */
+  private buildMainElements() 
+  {
+    const dom = this.doms;
+    const ui = Config.UIType;
+   
+    dom[ui.Main].appendChild(dom[ui.MainEditor]);
+    dom[ui.Main].appendChild(dom[ui.MainPreview]);
+  }
+
+  /** 
+   * エディター要素の階層構造を構築する 
+   * この関数は１度だけ実行する。
+   */
+  private buildEditorElements() 
+  {
+    const dom = this.doms;
+    const ui = Config.UIType;
+
+    // エディタ直下
+    dom[ui.MainEditor].appendChild(dom[ui.EditorHeader]);
+    dom[ui.MainEditor].appendChild(dom[ui.EditorCode]);
+    dom[ui.MainEditor].appendChild(dom[ui.EditorMd]);
+    dom[ui.MainEditor].appendChild(dom[ui.EditorFooter]);
+
+    // エディタ:タイトル直下
+    dom[ui.EditorHeader].appendChild(dom[ui.EditorHeaderTitle]);
+    dom[ui.EditorHeader].appendChild(dom[ui.EditorHeaderLang]);
+
+    // エディタ:コード直下
+    dom[ui.EditorCode].appendChild(dom[ui.EditorCodeAce]);
+    
+    // エディタ:マークダウン直下
+    dom[ui.EditorMd].appendChild(dom[ui.EditorMdInput]);
+    
+    // エディタ:フッター直下
+    dom[ui.EditorFooter].appendChild(dom[ui.EditorFooterInfo]);
+    dom[ui.EditorFooter].appendChild(dom[ui.EditorFooterLogo]);
+  }
+
+  /** 
+   * プレビュー要素の階層構造を構築
+   * この関数は１度だけ実行する。
+   */
+  private buildPreviewElements() 
+  {
+    const dom = this.doms;
+    const ui = Config.UIType;
+
+    dom[ui.MainPreview].appendChild(dom[ui.MainPreviewStepCode]);
+  }
+
+  /** 
+   * メニュー要素の階層構造を構築
+   * この関数は１度だけ実行する。
+   */
+  private buildMenuElements() 
+  {
+    const dom = this.doms;
+    const ui = Config.UIType;
+
+    dom[ui.Menu].appendChild(dom[ui.MenuAddStepBefore]);
+    dom[ui.Menu].appendChild(dom[ui.MenuAddStepAfter]);
+    dom[ui.Menu].appendChild(dom[ui.MenuAddStepLast]);
+    dom[ui.Menu].appendChild(dom[ui.MenuDelStep]);
+    dom[ui.Menu].appendChild(dom[ui.MenuDownload]);
+    dom[ui.Menu].appendChild(dom[ui.MenuReset]);
+    dom[ui.Menu].appendChild(dom[ui.MenuLoadFile]);
+    dom[ui.Menu].appendChild(dom[ui.MenuLoadFileInput]); 
   }
 
   //---------------------------------------------------------------------------
-  // その他
+  // 要素の取得
+
+  /** 
+   * Config.UITypeから該当するHTMLElementを取得する
+   * 取得する際にGeneriscで型を指定可能
+   */
+  public get<T extends HTMLElement>(uiType:Config.UIType): T {
+    return this.doms[uiType] as T;
+  }
+
+  /**
+   * 言語セレクトボックス
+   */
+  private get langs() : HTMLSelectElement {
+    return this.get<HTMLSelectElement>(Config.UIType.EditorHeaderLang);
+  }
+
+  /** 
+   * Markdownの入力に該当するHTMLElementを返します 
+   */
+  private get md(): HTMLTextAreaElement {
+    return this.get<HTMLTextAreaElement>(Config.UIType.EditorMdInput);
+  }
+
+  /** 
+   * ガイド要素を取得する 
+   */
+  private get guide() {
+    return this.get<HTMLElement>(Config.UIType.Guide);
+  }
+
+  /**
+   * ルート要素を取得する。
+   * @param target ルート要素を取得するselector、もしくはルート要素
+   */
+  private getRoot(target:string |  HTMLElement) : HTMLElement 
+  {
+    let root;
+
+    // targetがHTMLElementであればそのまま
+    if (target instanceof HTMLElement) {
+      root = target;
+    } 
+    
+    // HTMLElementでなければ、selector文字列として処理する
+    else {
+      root = document.querySelector(target) as HTMLElement;
+    }
+
+    return root;
+  }
+
+  /**
+   * 指定された[[ElementType]]に該当するHTMLElementを取得する
+   * @param type ターゲットの種類
+   */
+  private getElementByTarget(type:ElementType) 
+  {
+    // ElementTypeとConfig.UITypeのマッピングテーブル
+    const dic:{[key:number]:Config.UIType} = {
+      [ElementType.Title]         :Config.UIType.EditorHeaderTitle,
+      [ElementType.Lang]          :Config.UIType.EditorHeaderLang,
+      [ElementType.Desc]          :Config.UIType.EditorMdInput,
+      [ElementType.AddStepLast]   :Config.UIType.MenuAddStepLast,
+      [ElementType.AddStepBefore] :Config.UIType.MenuAddStepBefore,
+      [ElementType.AddStepAfter]  :Config.UIType.MenuAddStepAfter,
+      [ElementType.DelStep]       :Config.UIType.MenuDelStep,
+      [ElementType.Reset]         :Config.UIType.MenuReset,
+      [ElementType.Download]      :Config.UIType.MenuDownload,
+      [ElementType.LoadFile]      :Config.UIType.MenuLoadFileInput,
+    }
+
+    // 指定されたElementTypeに該当するHTMLElementを返す
+    return this.get<HTMLElement>(dic[type]);
+  }
+
+  //---------------------------------------------------------------------------
+  // サードパーティ製のライブラリを生成する
+
+  /**
+   * StepCodeを初期化(生成)する
+   */
+  private createStepCode() {
+    return new StepCode(this.doms[Config.UIType.MainPreviewStepCode], {});
+  }
 
   /**
    * Ace Editorを初期化(生成)する
    */
-  private createAce() {
+  private createAce() 
+  {
+    // Ace Editorを生成
     const ace = Ace.edit(this.doms[Config.UIType.EditorCodeAce]);
-    ace.container.style.lineHeight = "1.5";
-    ace.container.style.fontSize = "16px";
+
+    // 構文チェックを無効にする
     ace.getSession().setUseWorker(false);
-    ace.setTheme(ThemeGithub);
+
+    // Configに設定されたStyle、Themeを適用
+    Object.assign(ace.container.style, Config.ace.style);
+    ace.setTheme(Config.ace.theme);
+    
     return ace;
-  }
-
-  /**
-   * Coreの内容でUIを更新する
-   * @param core Core
-   */
-  public update(core: Core) 
-  {
-    this.updateEditor(core);
-    this.updateGuide(core);
-    this.updateStepCode(core);
-    this.updateFooterInfo(core.currentNo);
-  }
-
-  public updateEditor(core:Core) {
-    const step = core.current;
-    this.code = (step? step.code : Config.DEF_CODE_TEXT);
-    this.mdText = (step? step.desc : Config.DEF_DESC_TEXT);
-    this.updateFooterInfo(core.currentNo);
-  }
-
-  /**
-   * ステップコードを更新する
-   * @param core コア
-   */
-  public updateStepCode(core:Core) {
-    this.stepcode.load(core.toJSON());
-    this.stepcode.show(core.currentNo);
-  }
-
-  public updateGuide(core:Core, isInsert = false) {
-    this.adjustGuideItem(core.count);
-    this.clearGuideItemClass();
-    this.selectedGuideItem(core.cursor);
-    if(isInsert) {
-      this.insertedGuideItem(core.cursor);
-    }
-  }
-
-  /**
-   * 指定したコアのデータをダウンロードさせる
-   * @param core コア
-   */
-  public download(core:Core) 
-  {
-    // ダウンロード用のリンクを取得
-    const anchor = this.get<HTMLAnchorElement>(Config.UIType.MenuDownload);
-
-    // ダウンロードURLを生成
-    const blob = new Blob(
-      [JSON.stringify(core.toJSON())], 
-      {type:'application/json'}
-    );
-    const url = URL.createObjectURL(blob);
-    
-    // タイトルを取得
-    const title = (core.first && core.first.title)? core.first.title : "notitle";
-    
-    // リンクにダウンロードプロパティを設定
-    if (anchor) {
-      anchor.href = url;
-      anchor.download = title + ".stepdata.json";
-    }
-
-  }
-
-  /**
-   * 指定されたターゲットに該当するHTMLElementを取得する
-   * @param type ターゲットの種類
-   */
-  private getElementByTarget(type:TargetType) {
-
-    const dic:{[key:number]:Config.UIType} = {
-      [TargetType.Title]         :Config.UIType.EditorHeaderTitle,
-      [TargetType.Lang]          :Config.UIType.EditorHeaderLang,
-      [TargetType.Desc]          :Config.UIType.EditorMdInput,
-      [TargetType.AddStepLast]   :Config.UIType.MenuAddStepLast,
-      [TargetType.AddStepBefore] :Config.UIType.MenuAddStepBefore,
-      [TargetType.AddStepAfter]  :Config.UIType.MenuAddStepAfter,
-      [TargetType.DelStep]       :Config.UIType.MenuDelStep,
-      [TargetType.Reset]         :Config.UIType.MenuReset,
-      [TargetType.Download]      :Config.UIType.MenuDownload,
-      [TargetType.LoadFile]      :Config.UIType.MenuLoadFileInput,
-    }
-
-    const key = dic[type];
-    return this.doms[key];
   }
 }

@@ -149,7 +149,7 @@ export default class StepCodeEditor {
     // エディター以外のUIを更新する。
     this.ui.addGuideItemAndUpdate(index, isBefore);
     this.ui.updateStepCode(this.core);
-    this.ui.updateFooterInfo(this.core.currentNo);
+    this.ui.footerInfo = this.core.currentNo;
   }
 
   //---------------------------------------------------------------------------
@@ -161,13 +161,13 @@ export default class StepCodeEditor {
   private attachEvent() {
     //-------------------------------------------------------------------------
     // タイトルが変更された時の処理
-    this.ui.on(UI.TargetType.Title, 'input', this.onInputTitle.bind(this));
-    this.ui.on(UI.TargetType.Title, 'blur', this.reflectEditorToStepCode.bind(this));
+    this.ui.on(UI.ElementType.Title, 'input', this.onInputTitle.bind(this));
+    this.ui.on(UI.ElementType.Title, 'blur', this.reflectEditorToStepCode.bind(this));
 
     //-------------------------------------------------------------------------
     // 言語変更時
-    this.ui.on(UI.TargetType.Lang, 'change', this.onChangeLang.bind(this));
-    this.ui.on(UI.TargetType.Lang, 'blur', this.reflectEditorToStepCode.bind(this));
+    this.ui.on(UI.ElementType.Lang, 'change', this.onChangeLang.bind(this));
+    this.ui.on(UI.ElementType.Lang, 'blur', this.reflectEditorToStepCode.bind(this));
 
     //-------------------------------------------------------------------------
     // コードが変更された時の処理
@@ -176,30 +176,30 @@ export default class StepCodeEditor {
 
     //-------------------------------------------------------------------------
     // 解説文が変更された時の処理
-    this.ui.on(UI.TargetType.Desc, 'input', this.onInputMarkdown.bind(this));
-    this.ui.on(UI.TargetType.Desc, 'blur', this.reflectEditorToStepCode.bind(this));
+    this.ui.on(UI.ElementType.Desc, 'input', this.onInputMarkdown.bind(this));
+    this.ui.on(UI.ElementType.Desc, 'blur', this.reflectEditorToStepCode.bind(this));
 
     //-------------------------------------------------------------------------
     // ステップ追加をクリック
-    this.ui.on(UI.TargetType.AddStepLast, 'click', this.addStepLast.bind(this));
+    this.ui.on(UI.ElementType.AddStepLast, 'click', this.addStepLast.bind(this));
 
     // ステップを前に追加する
-    this.ui.on(UI.TargetType.AddStepBefore, 'click', this.addStepBefore.bind(this));
+    this.ui.on(UI.ElementType.AddStepBefore, 'click', this.addStepBefore.bind(this));
 
     // ステップを後に追加する
-    this.ui.on(UI.TargetType.AddStepAfter, 'click', this.addStepAfter.bind(this));
+    this.ui.on(UI.ElementType.AddStepAfter, 'click', this.addStepAfter.bind(this));
 
     // ステップの削除
-    this.ui.on(UI.TargetType.DelStep, 'click', this.onClickDelStep.bind(this));
+    this.ui.on(UI.ElementType.DelStep, 'click', this.onClickDelStep.bind(this));
 
     // リセットボタン
-    this.ui.on(UI.TargetType.Reset, 'click', this.onClickReset.bind(this));
+    this.ui.on(UI.ElementType.Reset, 'click', this.onClickReset.bind(this));
 
     // データのダウンロード
-    this.ui.on(UI.TargetType.Download, 'click', this.onClickDownload.bind(this));
+    this.ui.on(UI.ElementType.Download, 'click', this.onClickDownload.bind(this));
 
     // ファイルが読み込まれた時
-    this.ui.on(UI.TargetType.LoadFile, 'change', this.onChangeFile.bind(this));
+    this.ui.on(UI.ElementType.LoadFile, 'change', this.onChangeFile.bind(this));
 
     this.ui.stepcode.setCallback(StepCode.CallbackType.PrevAfter, this.onChangeStepCode.bind(this));
     this.ui.stepcode.setCallback(StepCode.CallbackType.NextAfter, this.onChangeStepCode.bind(this));
@@ -285,7 +285,7 @@ export default class StepCodeEditor {
       return;
     }
     
-    this.deleteStep(this.core.cursor);
+    this.deleteStep(this.core.currentIdx);
   }
 
   /**
@@ -309,7 +309,9 @@ export default class StepCodeEditor {
    * ダウンロードがクリックされた時の処理
    */
   private onClickDownload() {
-    this.ui.download(this.core);
+    const { core } = this;
+    const title = (core.first && core.first.title)? core.first.title : "notitle";
+    Util.download(title, core.toJSON());
   }
 
   /**
@@ -374,7 +376,7 @@ export default class StepCodeEditor {
    */
   private saveWorkToStorage() {
     Util.storage.saveMeta(this.core);
-    Util.storage.saveStep(this.core.cursor, this.work);
+    Util.storage.saveStep(this.core.currentIdx, this.work);
   }
 
   /**

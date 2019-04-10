@@ -20,6 +20,28 @@ export const setData = (elm:any, key:string, value:string) => {
   return true;
 }
 
+export const createOption = (text:string, value?:string):HTMLOptionElement => {
+  const e = document.createElement('option') as HTMLOptionElement;
+  e.innerHTML = text;
+  value && (e.value = value);
+  return e;
+}
+
+export const download = (title:string, json:any) => 
+{
+  const blob = new Blob(
+    [JSON.stringify(json)],
+    {type:'application/json'}
+  );
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = title + ".stepcode.json";
+  a.click();
+  a.remove();
+}
+
 export const readFile = (e:Event, onloadCallback:Function) => 
 {
   // targetがHTMLInputElementでなければ終了

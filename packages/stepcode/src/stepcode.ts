@@ -87,7 +87,7 @@ export default class StepCode
 
   /** 現在ページのIndexを返します。 */
   public get currentIdx() {
-    return Math.max(this.core.cursor, 0);
+    return Math.max(this.core.currentIdx, 0);
   }
 
   /** 現在ページの番号を返します。 */

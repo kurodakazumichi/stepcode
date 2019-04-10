@@ -62,7 +62,7 @@ export default class StepCode
   }
 
   /** カーソルの位置を取得します */
-  public get cursor() {
+  public get currentIdx() {
     return this._cursor;
   }
 

@@ -2,16 +2,14 @@ module.exports = {
   
     globals: {
       'ts-jest': {
-        //"tsConfig": "tsconfig.json"
-        "tsConfig": {
-          esModuleInterop:true
-        }
+        "tsConfig": "tsconfig.json"
       }
     },
     transform: {
       "^.+\\.tsx?$": "ts-jest"
     },
     testRegex: "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+
     moduleFileExtensions: [
       "ts",
       "tsx",
@@ -19,6 +17,10 @@ module.exports = {
       "jsx",
       "json",
       "node"
-    ]
+    ],
+    /** coverageに含めないもの */
+    coveragePathIgnorePatterns:['__tools__'],
+    /** テストから除外するもの */
+    testPathIgnorePatterns: ["__tools__"]
   
 }
