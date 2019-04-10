@@ -318,7 +318,7 @@ export default class StepCodeEditor {
    * ファイルが選択された時の処理
    */
   private onChangeFile(e:Event) {
-    Util.readFile(e, (file:any) => {
+    Util.fs.readFile(e, (file:any) => {
       this.load(JSON.parse(file));
     });
   }

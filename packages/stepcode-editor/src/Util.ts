@@ -42,32 +42,35 @@ export const download = (title:string, json:any) =>
   a.remove();
 }
 
-export const readFile = (e:Event, onloadCallback:Function) => 
-{
-  // targetがHTMLInputElementでなければ終了
-  if (!e.target) return;
-  if (!(e.target instanceof HTMLInputElement)) return;
-
-  // ファイルがなければ終了
-  if (!e.target.files) return;
-  if (!e.target.files[0]) return;
-
-  // FileReaderでFileを読み込む
-  const file = e.target.files[0];
-  const fr = new FileReader();
-  fr.readAsText(file);
-
-  // 読み込み後のコールバックを仕込む
-  fr.onload = (ev:ProgressEvent) => {
-
-    // targetがなければ終了
-    if (!ev.target) return;
-
-    // ev.target.resultは定義されてないと言われるので、anyにキャストして処理する
-    const result = (ev.target as any).result;
-    result && onloadCallback(result);
+export const fs = {
+  readFile (e:Event, onloadCallback:Function)
+  {
+    // targetがHTMLInputElementでなければ終了
+    if (!e.target) return;
+    if (!(e.target instanceof HTMLInputElement)) return;
+  
+    // ファイルがなければ終了
+    if (!e.target.files) return;
+    if (!e.target.files[0]) return;
+  
+    // FileReaderでFileを読み込む
+    const file = e.target.files[0];
+    const fr = new FileReader();
+    fr.readAsText(file);
+  
+    // 読み込み後のコールバックを仕込む
+    fr.onload = (ev:ProgressEvent) => {
+  
+      // targetがなければ終了
+      if (!ev.target) return;
+  
+      // ev.target.resultは定義されてないと言われるので、anyにキャストして処理する
+      const result = (ev.target as any).result;
+      result && onloadCallback(result);
+    }
   }
 }
+
 
 export const storage = {
   save(core:Core) {
