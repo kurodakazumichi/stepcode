@@ -207,10 +207,10 @@ export default class StepCodeEditor {
 
     this.ui.setCbOnClickGuideItem((idx:number) => { this.jump(idx); console.log(idx); });
     this.ui.setCbOnSwapGuideItem(this.onSwapStep.bind(this));
-    this.ui.setCbOnDragOverGuideItem((idx:number) => { this.ui.stepcode.show(idx + 1)});
+    this.ui.setCbOnDragEnterGuideItem((idx:number) => { this.ui.stepcode.show(idx + 1)});
     this.ui.setCbOnDragStartGuideItem((idx:number) => {
-      this.ui.clearGuideItemClass();
-      this.ui.selectedGuideItem(idx);
+      this.ui.resetGuideItemClassAll();
+      this.ui.modifyGuideItemToSelected(idx);
       this.core.to(idx);
       this.ui.updateEditor(this.core);
     });

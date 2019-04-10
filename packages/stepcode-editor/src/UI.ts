@@ -2,7 +2,6 @@
  * import
  *****************************************************************************/
 import Ace from 'ace-builds';
-//import ThemeGithub from 'ace-builds/src-noconflict/theme-github';
 import Core from 'stepcode-core';
 import StepCode from 'stepcode';
 import * as Config from './Config';
@@ -11,9 +10,9 @@ import * as Util from './Util';
 /******************************************************************************
  * 型定義
  *****************************************************************************/
-type GuideItemOnClickFunction = (clickIndex:number) => void;
-type GuideItemOnSwapFunction = (fromIndex:number, toIndex:number) => void;
-type GuideItemOnDragOverFunction = (overIndex:number, underIndex:number) => void;
+type GuideItemOnClickFunction     = (clickIndex:number) => void;
+type GuideItemOnSwapFunction      = (fromIndex:number, toIndex:number) => void;
+type GuideItemOnDragEnterFunction = (overIndex:number, underIndex:number) => void;
 type GuideItemOnDragStartFunction = (startIndex:number) => void;
 
 /******************************************************************************
@@ -175,16 +174,120 @@ export default class UI {
     this.adjustGuideItem(core.count);
 
     // スタイルを破棄する
-    this.clearGuideItemClass();
+    this.resetGuideItemClassAll();
 
     // 現在のステップを選択状態にする
-    this.selectedGuideItem(core.currentIdx);
+    this.modifyGuideItemToSelected(core.currentIdx);
   }
 
   //---------------------------------------------------------------------------
-  // ガイドアイテム関連
+  // ガイド全体の操作
 
+  /**
+   * ガイドアイテムを指定された数になるように調整します。
+   * @param num 調整する数
+   */
+  public adjustGuideItem(num:number) 
+  {
+    // 現在のアイテム数と要求されたアイテム数の差分をとる
+    const makeCount = num - this.guide.childElementCount;
 
+    // 現在のアイテム数と要求された数が同じであれば作成も削除も必要ない
+    if(makeCount === 0) return;
+
+    // 作成数が+なら作成、-なら削除を行う。
+    if (0 < makeCount) {
+      this.createGuideItems(makeCount);
+    } else {
+      this.removeGuideItems(Math.abs(makeCount));
+    }
+
+    // 作成、削除によって番号がおかしくなっているので再度番号を振り直す。
+    this.numberingGuideItem();
+  }
+  
+  /**
+   * 指定された数だけGuiteItemを生成します。
+   * @param count 作成する要素の数
+   */
+  private createGuideItems(count:number) 
+  {
+    const guide = this.guide;
+
+    for(let i = 0; i < count; ++i) {
+      const item = this.createGuideItem();
+      guide.appendChild(item);
+    }
+  }
+
+  /**
+   * 指定された数だけGuideItemを削除します。
+   * @param count 削除する要素の数
+   */
+  private removeGuideItems(count:number) 
+  {
+    const guide = this.guide;
+
+    for(let i = 0; i < count; ++i) {
+      if (!guide.firstChild) break;
+      guide.removeChild(guide.firstChild);
+    }
+  }
+
+  /**
+   * ガイドアイテムの番号を割り振ります。
+   */
+  private numberingGuideItem() {
+    this.mapGuideItem((item, index) => {
+      this.setPropGuideItem(item, index);
+    })
+  }
+
+  /**
+   * 全てのガイドアイテムに対し、コールバック処理を実行します。
+   * @param callback コールバック関数
+   */
+  private mapGuideItem(callback:(item:HTMLElement, index:number) => void) 
+  {
+    const guide = this.guide;
+    const count = guide.childElementCount;
+
+    for (let i = 0; i < count; ++i) {
+      callback(guide.children[i] as HTMLElement, i);
+    }
+  }
+
+  /**
+   * ガイドアイテム要素を追加し、見た目の調整も合わせて行う
+   * @param addBaseIndex ガイドアイテムを追加する基準位置
+   * @param isBefore 要素を前に追加するフラグ
+   */
+  public addGuideItemAndUpdate(addIndex:number, isBefore:boolean) 
+  {
+    // まず既存のcss classを除去しておく
+    this.resetGuideItemClassAll();
+
+    // 新たにガイドアイテムを追加する
+    const item = this.addGuideItem(addIndex, isBefore);
+
+    // 追加された要素を選択された状態にする
+    if (item) this.modifyGuideItemToSelected(item);
+
+    // 番号を振り直す
+    this.numberingGuideItem();
+  }
+
+  /**
+   * 全ガイドアイテムのCSS CLASSを初期値に戻す
+   */
+  public resetGuideItemClassAll() {
+    this.mapGuideItem((item:HTMLElement) => {
+      this.resetGuideItemClass(item);
+    });
+  }
+
+  //---------------------------------------------------------------------------
+  // ガイドアイテムの操作
 
   createGuideItem(idx?:number) {
     const item = Config.createElement(Config.UIType.GuideItem);
@@ -193,169 +296,24 @@ export default class UI {
     //ドラッグの参考
     item.draggable = true;
 
-    item.addEventListener('click', (e:Event) => {
-      if (!e.target) return;
-      
-      const idx = Util.getData(e.target, 'index', '0');
-      this.cbOnClickGuideItem(Number(idx));
-    });
-    
-    
-    item.addEventListener('dragstart', (e:DragEvent) => {
-      if (!e.dataTransfer) return;
-      const idx = Util.getData(e.target, 'index', '0');
-      e.dataTransfer.setData('text', idx);
-      //this.tmpDragStart(Util.getData(e.target, 'index', '0'));
-      
-      this.cbOnDragStartGuideItem(Number(idx));
-      console.log(idx);
-    })
-    item.addEventListener('dragover', (e:Event) => {
-      e.preventDefault();
-      if(e.target) {
-        (e.target as HTMLElement).style.background = "#12948a";
-      }
-
-      this.cbOnDragOverGuideItem(Number(Util.getData(e.target, 'index', '0')), 0);
-      
-    });
-    item.addEventListener('dragleave', (e:Event) => {
-      e.preventDefault();
-      if(e.target) {
-        (e.target as HTMLElement).style.background = "";
-      }
-    })
-    item.addEventListener('drop', (e:DragEvent) => {
-      if (!e.dataTransfer) return;
-      e.preventDefault();
-      const fromIdx = Number(e.dataTransfer.getData('text'));
-      const toIdx   = Number(Util.getData(e.target, 'index', '0'));
-      
-      (e.target as HTMLElement).style.background = "";
-      this.cbOnSwapGuideItem(fromIdx, toIdx);
-
-    })
+    // ドラッグイベントの割り当て
+    item.addEventListener('click'    , this.onClickGuideItem.bind(this));
+    item.addEventListener('dragstart', this.onDragStartGuideItem.bind(this));
+    item.addEventListener('dragenter', this.onDragEnterGuideItem.bind(this));
+    item.addEventListener('dragleave', this.onDragLeaveGuideItem.bind(this));
+    item.addEventListener('drop'     , this.onDropGuideItem.bind(this));
 
     return item;
   }
 
+  /**
+   * ガイドアイテムのプロパティをセットします。
+   * @param item ガイドアイテム
+   * @param idx ガイドアイテムに割り当てるIndex
+   */
   private setPropGuideItem(item:Element, idx:number) {
-
     item.innerHTML = (idx + 1).toString();
     Util.setData(item, 'index', idx.toString());
-
-  }
-  public insertGuideItem(idx:number) {
-    const target = this.guide.children[idx];
-    if (!target) return;
-
-    const item = this.createGuideItem();
-    target.after(item);
-
-    this.reNumberingGuideItem();
-    this.insertedGuideItem(idx);
-  }
-  public adjustGuideItem(num:number) {
-    
-    const makeCount = num - this.guide.childElementCount;
-
-    if(makeCount === 0) return;
-
-    if (0 < makeCount) {
-      this.createGuideItems(makeCount);
-    } else {
-      this.removeGuideItems(Math.abs(makeCount));
-    }
-
-    this.reNumberingGuideItem();
-  }
-
-
-  private createGuideItems(count:number) {
-    
-    for(let i = 0; i < count; ++i) {
-      const item = this.createGuideItem();
-      this.guide.appendChild(item);
-    }
-  }
-
-  private removeGuideItems(count:number) {
-    const guide = this.guide;
-    for(let i = 0; i < count; ++i) {
-      if (!guide.firstChild) break;
-      guide.removeChild(guide.firstChild);
-      
-    }
-  }
-
-  public reNumberingGuideItem() {
-    this.mapGuideItem((item, index) => {
-      this.setPropGuideItem(item, index);
-    })
-  }
-
-  private mapGuideItem(callback:(item:Element, index:number) => void) {
-    const guide = this.doms[Config.UIType.Guide];
-    const count = guide.childElementCount;
-
-    for (let i = 0; i < count; ++i) {
-      callback(guide.children[i], i);
-    }
-  }
-
-  setCbOnClickGuideItem(callback:GuideItemOnClickFunction) {
-    this.cbOnClickGuideItem = callback;
-  }
-  setCbOnSwapGuideItem(callback:GuideItemOnSwapFunction) {
-    this.cbOnSwapGuideItem = callback;
-  }
-  setCbOnDragStartGuideItem(callback:GuideItemOnDragStartFunction) {
-    this.cbOnDragStartGuideItem = callback;
-  }
-  setCbOnDragOverGuideItem(callback:GuideItemOnDragOverFunction) {
-    this.cbOnDragOverGuideItem = callback;
-  }
-
-  private cbOnClickGuideItem: GuideItemOnClickFunction = () => {}
-  private cbOnSwapGuideItem:GuideItemOnSwapFunction = () => {};
-  private cbOnDragStartGuideItem: GuideItemOnDragStartFunction = () => {};
-  private cbOnDragOverGuideItem: GuideItemOnDragOverFunction = () => {};
-
-  public clearGuideItemClass() {
-    const guide = this.doms[Config.UIType.Guide];
-    guide.childNodes.forEach((node) => {
-      (node as HTMLElement).classList.remove(Config.classNames.guideItemSelected);
-      (node as HTMLElement).classList.remove(Config.classNames.guideItemInserted);
-    })
-  }
-
-  public selectedGuideItem(idx:number) {
-    const guide = this.doms[Config.UIType.Guide];
-    const target = guide.children[idx];
-    
-    if(target) {
-      target.classList.add(Config.classNames.guideItemSelected);
-    }
-  }
-
-  public insertedGuideItem(idx:number) {
-    const guide = this.doms[Config.UIType.Guide];
-    const target = guide.children[idx];
-    
-    if(!target) return;
-
-    if(target) {
-      const index = Number(Util.getData(target, 'index', '0'));
-      const item = this.createGuideItem(index);
-      target.classList.forEach((v) => {
-        item.classList.add(v);
-      })
-      item.classList.add(Config.classNames.guideItemInserted);
-      
-      
-      target.after(item);
-      target.remove();
-    }
   }
 
   /**
@@ -391,37 +349,153 @@ export default class UI {
     return null;
   }
 
+  //---------------------------------------------------------------------------
+  // ガイドアイテム スタイル操作
+
   /**
-   * ガイドアイテム要素を追加し、見た目の調整も合わせて行う
-   * @param addBaseIndex ガイドアイテムを追加する基準位置
-   * @param isBefore 要素を前に追加するフラグ
+   * ガイドアイテムのCSS CLASSを初期値に戻す
    */
-  public addGuideItemAndUpdate(addIndex:number, isBefore:boolean) 
+  public resetGuideItemClass(item:HTMLElement) {
+    item.className = Config.classNames.guideItem;
+  }
+
+  /**
+   * 指定したガイドアイテムを選択された状態にします。
+   * @param arg ガイドアイテム要素か、要素を指定するIndex
+   */
+  public modifyGuideItemToSelected(arg:number|HTMLElement) 
   {
-    // まず既存のcss classを除去しておく
-    this.clearGuideItemClass();
+    if (arg instanceof HTMLElement) 
+      this.modifyGuideItemToSelected_element(arg);
+    else
+      this.modifyGuideItemToSelected_number(arg);
+  }
 
-    // 新たにガイドアイテムを追加する
-    const item = this.addGuideItem(addIndex, isBefore);
-
-    // 追加された要素を選択された状態にする
-    this.modifyGuideItemToSelected(item);
-
-    // 番号を振り直す
-    this.reNumberingGuideItem();
+  /**
+   * 指定したガイドアイテムを選択された状態にする。
+   * @param idx ガイドアイテムを指定するIndex
+   */
+  private modifyGuideItemToSelected_number(idx:number) {
+    const item = this.guide.children[idx] as HTMLElement;
+    this.modifyGuideItemToSelected_element(item);
   }
 
   /**
    * 与えられたガイドアイテムを選択された状態にする。
    * @param item 変更を加えたい要素
    */
-  modifyGuideItemToSelected(item:HTMLElement | null) {
+  private modifyGuideItemToSelected_element(item:HTMLElement | null) {
     item && item.classList.add(Config.classNames.guideItemSelected);
   }
+
+  //---------------------------------------------------------------------------
+  // ガイドアイテム イベント
+
+  // TODO
+  private onClickGuideItem(e:Event) {
+    if (!e.target) return;
+      
+    const idx = Util.getData(e.target, 'index', '0');
+    this.cbOnClickGuideItem(Number(idx));
+  }
+
+  // TODO
+  private onDragStartGuideItem(e:DragEvent) {
+    if (!e.dataTransfer) return;
+    const idx = Util.getData(e.target, 'index', '0');
+    e.dataTransfer.setData('text', idx);
+    //this.tmpDragStart(Util.getData(e.target, 'index', '0'));
     
+    this.cbOnDragStartGuideItem(Number(idx));
+    console.log(idx);
+  }
 
+  // TODO
+  private onDragEnterGuideItem(e:DragEvent) {
+    console.log("event");
+    e.preventDefault();
+    if(e.target) {
+      (e.target as HTMLElement).style.background = "#12948a";
+    }
 
+    this.cbOnDragEnterGuideItem(Number(Util.getData(e.target, 'index', '0')), 0);
+    
+  }
 
+  // TODO
+  private onDragLeaveGuideItem(e:DragEvent) {
+    e.preventDefault();
+    if(e.target) {
+      (e.target as HTMLElement).style.background = "";
+    }
+  }
+
+  // TODO
+  private onDropGuideItem(e:DragEvent) {
+    if (!e.dataTransfer) return;
+    e.preventDefault();
+    const fromIdx = Number(e.dataTransfer.getData('text'));
+    const toIdx   = Number(Util.getData(e.target, 'index', '0'));
+    
+    (e.target as HTMLElement).style.background = "";
+    this.cbOnSwapGuideItem(fromIdx, toIdx);
+
+  }
+
+  //---------------------------------------------------------------------------
+  // ガイドアイテム コールバック
+
+  /**
+   * ガイドアイテムがクリックされた時に実行されるコールバック関数
+   */
+  private cbOnClickGuideItem: GuideItemOnClickFunction = () => {}
+
+  /**
+   * ガイドアイテムがドラッグ開始された時に実行されるコールバック関数
+   */
+  private cbOnDragStartGuideItem: GuideItemOnDragStartFunction = () => {};
+
+  /**
+   * ガイドアイテムがドラッグオーバーされた時に実行されるコールバック
+   */
+  private cbOnDragEnterGuideItem: GuideItemOnDragEnterFunction = () => {};
+
+  /**
+   * ガイドアイテムが入れ替えされた時に実行されるコールバック関数
+   */
+  private cbOnSwapGuideItem:GuideItemOnSwapFunction = () => {};
+
+  /**
+   * ガイドアイテムのクリック時コールバックを設定する
+   * @param callback コールバック
+   */
+  setCbOnClickGuideItem(callback:GuideItemOnClickFunction) {
+    this.cbOnClickGuideItem = callback;
+  }
+
+  /**
+   * ガイドアイテムのドラッグ開始時コールバックを設定する
+   * @param callback コールバック
+   */
+  setCbOnDragStartGuideItem(callback:GuideItemOnDragStartFunction) {
+    this.cbOnDragStartGuideItem = callback;
+  }
+
+  /**
+   * ガイドアイテムのドラッグオーバー時のコールバックを設定する
+   * @param callback コールバック
+   */
+  setCbOnDragEnterGuideItem(callback:GuideItemOnDragEnterFunction) {
+    this.cbOnDragEnterGuideItem = callback;
+  }
+
+  /**
+   * ガイドアイテムの入れ替え時のコールバックを設定する
+   * @param callback コールバック
+   */
+  setCbOnSwapGuideItem(callback:GuideItemOnSwapFunction) {
+    this.cbOnSwapGuideItem = callback;
+  }
 
   //---------------------------------------------------------------------------
   // HTMLElement生成関連(1度しか実行しないもの)
