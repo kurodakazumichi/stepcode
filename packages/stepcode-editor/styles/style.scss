@@ -147,6 +147,7 @@ $borderColor: #718288;
       background-color:#eee;
       overflow: hidden;
       border-radius: 3px;
+      cursor: pointer;
 
       &--selected {
         background:$mainColor2;
