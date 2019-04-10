@@ -300,6 +300,7 @@ export default class UI {
     item.addEventListener('click'    , this.onClickGuideItem.bind(this));
     item.addEventListener('dragstart', this.onDragStartGuideItem.bind(this));
     item.addEventListener('dragenter', this.onDragEnterGuideItem.bind(this));
+    item.addEventListener('dragover' , this.onDragOverGuideItem.bind(this));
     item.addEventListener('dragleave', this.onDragLeaveGuideItem.bind(this));
     item.addEventListener('drop'     , this.onDropGuideItem.bind(this));
 
@@ -436,6 +437,13 @@ export default class UI {
 
     this.cbOnDragEnterGuideItem(Number(Util.getData(e.target, 'index', '0')), 0);
     
+  }
+
+  /**
+   * Note:DragOverでe.preventDefault()をしないとdropイベントが動作しないので用意。
+   */
+  private onDragOverGuideItem(e:DragEvent) {
+    e.preventDefault();
   }
 
   // TODO
