@@ -427,6 +427,50 @@ export default class UI {
   //   else
   //     guide.appendChild(item);
 
+  /**
+   * ガイドアイテム要素を追加する
+   * @param idx 要素を追加する位置を指定する
+   */
+  public addGuideItem(idx:number) 
+  {
+    // 初期処理
+    const { guide } = this;
+
+    // まずガイド要素を生成し、新規作成を表現するcss classをセットする。
+    const item = this.createGuideItem();
+    item.classList.add(Config.classNames.guideItemInserted);
+
+    // そもそも子要素がまだ存在しない場合は単純に追加する
+    if (guide.childElementCount === 0) {
+      guide.appendChild(item);
+      return;
+    }
+
+    // 要素を追加するために基準となる子要素を取得する
+    const child = guide.children[idx];
+
+    // 子要素が取得できる場合はその子要素の後に追加
+    if (child) {
+      child.after(item);
+      return;
+    }
+
+    /**
+     * 子要素が取得できない場合
+     * これは範囲外を指定されたというケースになるのでケースごとに対処する
+     */
+
+    // idxが負の値の場合、先頭要素の前に追加する
+    if (idx < 0) {
+      guide.firstChild && guide.firstChild.before(item);
+      return;
+    } 
+
+    // idxが正の値の場合、末尾に要素を追加する
+    if (0 < idx) {
+      guide.lastChild && guide.lastChild.after(item);
+    }
+  }
     
     
   // }
