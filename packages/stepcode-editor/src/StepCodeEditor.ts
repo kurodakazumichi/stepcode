@@ -7,6 +7,20 @@ import * as UI from './UI';
 import * as Config from './Config';
 import * as Util from './Util';
 
+enum KeyCode {
+  ArrowLeft = 37,
+  ArrowRight = 39,
+  B = 66,
+  N = 78,
+  M = 77,
+  Meta = 91,
+  Num6 = 54,
+  Num7 = 55,
+  Num8 = 56,
+  Num9 = 57,
+  Num0 = 48,
+
+}
 /******************************************************************************
  * StepCodeEditorの本体
  *****************************************************************************/
@@ -23,7 +37,7 @@ export default class StepCodeEditor {
     this.work     = new Step({});
     this.ui       = new UI.default(target);
     this.attachEvent();
-    this.load(this.getInitData());    
+    this.load(this.getInitData());
   }
 
   //---------------------------------------------------------------------------
@@ -120,6 +134,17 @@ export default class StepCodeEditor {
    */
   public jump(idx:number) {
     this.ui.stepcode.jump(idx);
+  }
+
+  /** 前のステップへ移動 */
+  public prev() {
+    this.jump(Math.max(0, this.core.currentIdx - 1));
+  }
+
+  /** 
+   * 次のステップへ移動 */
+  public next() {
+    this.jump(Math.min(this.core.count - 1, this.core.currentIdx + 1));
   }
 
   //---------------------------------------------------------------------------
@@ -222,6 +247,9 @@ export default class StepCodeEditor {
     this.ui.setCbOnDragStartGuideItem(this.onDragStartGuideItem.bind(this));
     this.ui.setCbOnDragEnterGuideItem(this.onDragEnterGuideItem.bind(this));
     this.ui.setCbOnSwapGuideItem(this.onSwapGuideItem.bind(this));
+    
+    // キーボードイベント
+    document.body.addEventListener('keydown', this.onKeyDown.bind(this));
   }
 
   /**
@@ -379,6 +407,36 @@ export default class StepCodeEditor {
     this.core.to(toIdx);
     this.work.apply(this.core.current);
     this.ui.update(this.core);
+  }
+
+  /**
+   * ショートカットキーイベント処理
+   * Ctrl + 6:コード入力欄にfocus
+   * Ctrl + 7:解説入力欄にfocus
+   * Ctrl + 8:前にステップを追加
+   * Ctrl + 9:後ろにステップを追加
+   * Ctrl + 0:最後にステップを追加
+   * Ctrl + Shift + ←:前ステップへ移動
+   * Ctrl + Shift + →:右ステップへ移動
+   */
+  private onKeyDown(ev:KeyboardEvent) {
+
+    if (ev.ctrlKey) {
+      switch(ev.keyCode) {
+        case KeyCode.Num6: this.ui.ace.focus(); break;
+        case KeyCode.Num7: this.ui.md.focus(); break;
+        case KeyCode.Num8: this.addStepBefore(); break;
+        case KeyCode.Num9: this.addStepAfter(); break;
+        case KeyCode.Num0: this.addStepLast(); break;
+      }
+    };
+
+    if (ev.ctrlKey && ev.shiftKey) {
+      switch(ev.keyCode) {
+        case KeyCode.ArrowLeft : this.prev(); break;
+        case KeyCode.ArrowRight: this.next(); break;
+      }
+    }
   }
 
   //---------------------------------------------------------------------------
