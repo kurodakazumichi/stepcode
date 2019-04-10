@@ -159,7 +159,13 @@ $borderColor: #718288;
         animation-duration: 0.5s;
       }
       &--entered {
-
+        background:#c23b8e;
+        color:white;
+        border:1px solid #c23b8e;
+        box-shadow: 0 0 2px 1px #d47fd0;
+        animation-name: sce-blink;
+        animation-duration:1s;
+        animation-iteration-count: infinite;
       }
 
       &:first-child{
@@ -178,5 +184,17 @@ $borderColor: #718288;
   100% {
     width:60px;
     text-indent: 0;
+  }
+}
+
+@keyframes sce-blink {
+  0% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.5
   }
 }

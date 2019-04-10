@@ -388,6 +388,22 @@ export default class UI {
     item && item.classList.add(Config.classNames.guideItemSelected);
   }
 
+  /**
+   * 与えられたガイドアイテムにcss class --enteredを付与する
+   * @param item 変更を加えたい要素
+   */
+  private onGuideItemEntered(item:HTMLElement) {
+    item.classList.add(Config.classNames.guideItemEntered);
+  }
+
+  /**
+   * 与えられたガイドアイテムからcss class --enteredを削除する
+   * @param item 変更を加えたい要素
+   */
+  private offGuideItemEntered(item:HTMLElement) {
+    item.classList.remove(Config.classNames.guideItemEntered);
+  }
+
   //---------------------------------------------------------------------------
   // ガイドアイテム イベント
 
