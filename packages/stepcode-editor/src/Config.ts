@@ -45,7 +45,7 @@ export const classNames = {
   guideItem          : "sce-guide__item",
   guideItemSelected  : "sce-guide__item--selected",
   guideItemInserted  : "sce-guide__item--inserted",
-  guideItemEntered   : "sce-guide__item--entered",
+  guideItemBlink     : "sce-guide__item--blink",
 }
 
 /******************************************************************************

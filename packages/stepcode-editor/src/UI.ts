@@ -289,7 +289,8 @@ export default class UI {
   //---------------------------------------------------------------------------
   // ガイドアイテムの操作
 
-  createGuideItem(idx?:number) {
+  createGuideItem(idx?:number) 
+  {
     const item = Config.createElement(Config.UIType.GuideItem);
     idx && this.setPropGuideItem(item, idx);
     
@@ -393,16 +394,16 @@ export default class UI {
    * 与えられたガイドアイテムにcss class --enteredを付与する
    * @param item 変更を加えたい要素
    */
-  private onGuideItemEntered(item:HTMLElement) {
-    item.classList.add(Config.classNames.guideItemEntered);
+  private onGuideItemBlink(item:HTMLElement) {
+    item.classList.add(Config.classNames.guideItemBlink);
   }
 
   /**
    * 与えられたガイドアイテムからcss class --enteredを削除する
    * @param item 変更を加えたい要素
    */
-  private offGuideItemEntered(item:HTMLElement) {
-    item.classList.remove(Config.classNames.guideItemEntered);
+  private offGuideItemBlink(item:HTMLElement) {
+    item.classList.remove(Config.classNames.guideItemBlink);
   }
 
   //---------------------------------------------------------------------------
@@ -421,27 +422,50 @@ export default class UI {
     this.cbOnClickGuideItem(Number(idx));
   }
 
-  // TODO
-  private onDragStartGuideItem(e:DragEvent) {
+  /**
+   * ガイドアイテムがドラック開始された時の処理
+   */
+  private onDragStartGuideItem(e:DragEvent) 
+  {
+    // dataTransferがなけれな終了
     if (!e.dataTransfer) return;
+
+    // dataTarnsferにドラッグされた要素のもつindexを保存
     const idx = Util.getData(e.target, 'index', '0');
     e.dataTransfer.setData('text', idx);
-    //this.tmpDragStart(Util.getData(e.target, 'index', '0'));
     
+    // コールバックを実行する
     this.cbOnDragStartGuideItem(Number(idx));
-    console.log(idx);
   }
 
-  // TODO
-  private onDragEnterGuideItem(e:DragEvent) {
-    console.log("event");
-    e.preventDefault();
-    if(e.target) {
-      (e.target as HTMLElement).style.background = "#12948a";
-    }
-
-    this.cbOnDragEnterGuideItem(Number(Util.getData(e.target, 'index', '0')), 0);
+  /**
+   * ドラッグ中の要素が上に重なった瞬間に実行される処理
+   */
+  private onDragEnterGuideItem(e:DragEvent) 
+  {
+    // e.targetがなければ終了
+    if (!e.target || !e.dataTransfer) return;
     
+    // 点滅を開始する
+    this.onGuideItemBlink(e.target as HTMLElement);
+    
+    // コールバックを実行する
+    const overIndex  = Number(Util.getData(e.target, 'index', '0'));
+    const underIndex = Number(e.dataTransfer.getData('text'));
+    this.cbOnDragEnterGuideItem(overIndex, underIndex);
+  }
+
+  /**
+   * 上に重なっていたドラッグ中の要素が離れた時に実行される処理
+   */
+  private onDragLeaveGuideItem(e:DragEvent) 
+  {
+    e.preventDefault();
+
+    if (!e.target) return;
+    
+    // 点滅を解除
+    this.offGuideItemBlink(e.target as HTMLElement);
   }
 
   /**
@@ -451,24 +475,18 @@ export default class UI {
     e.preventDefault();
   }
 
-  // TODO
-  private onDragLeaveGuideItem(e:DragEvent) {
+  /**
+   * ドロップされた時の処理
+   */
+  private onDropGuideItem(e:DragEvent) 
+  {
     e.preventDefault();
-    if(e.target) {
-      (e.target as HTMLElement).style.background = "";
-    }
-  }
-
-  // TODO
-  private onDropGuideItem(e:DragEvent) {
     if (!e.dataTransfer) return;
-    e.preventDefault();
+    
+    // コールバックを実行
     const fromIdx = Number(e.dataTransfer.getData('text'));
     const toIdx   = Number(Util.getData(e.target, 'index', '0'));
-    
-    (e.target as HTMLElement).style.background = "";
     this.cbOnSwapGuideItem(fromIdx, toIdx);
-
   }
 
   //---------------------------------------------------------------------------
