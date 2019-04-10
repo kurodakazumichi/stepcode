@@ -16,10 +16,25 @@ type GuideItemOnSwapFunction = (fromIndex:number, toIndex:number) => void;
 type GuideItemOnDragOverFunction = (overIndex:number, underIndex:number) => void;
 type GuideItemOnDragStartFunction = (startIndex:number) => void;
 
+export enum TargetType {
+  Title,
+  Lang,
+  Desc,
+  AddStepLast,
+  AddStepBefore,
+  AddStepAfter,
+  DelStep,
+  Reset,
+  Download,
+  LoadFile,
+}
+
 /******************************************************************************
  * StepCodeで必要な全てのHTMLElementを管理するクラス
  *****************************************************************************/
 export default class UI {
+
+
 
   /**
    * StepCodeEditorに必要な全てのHTMLElementを生成・構築する
@@ -96,8 +111,8 @@ export default class UI {
    * @param name イベントの名前
    * @param func callback関数
    */
-  on(uiType:Config.UIType, name:string, func:EventListenerOrEventListenerObject) {
-    this.doms[uiType].addEventListener(name, func);
+  on(target:TargetType, name:string, func:EventListenerOrEventListenerObject) {
+    this.getElementByTarget(target).addEventListener(name, func);
   }
 
   /** 各種要素を取得する */
@@ -250,10 +265,12 @@ export default class UI {
     
   }
 
-  createGuideItem(idx:number) {
+  //---------------------------------------------------------------------------
+  // ガイドアイテム関連
+
+  createGuideItem(idx?:number) {
     const item = Config.createElement(Config.UIType.GuideItem);
-    item.innerHTML = (idx + 1).toString();
-    Util.setData(item, 'index', idx.toString());
+    idx && this.setPropGuideItem(item, idx);
     
     //ドラッグの参考
     item.draggable = true;
@@ -303,34 +320,71 @@ export default class UI {
 
     return item;
   }
-  public adjustGuideItem(num:number) {
-    const guide = this.doms[Config.UIType.Guide];
 
-    const makeCount = num - guide.childElementCount;
+  private setPropGuideItem(item:Element, idx:number) {
+
+    item.innerHTML = (idx + 1).toString();
+    Util.setData(item, 'index', idx.toString());
+
+  }
+  public insertGuideItem(idx:number) {
+    const target = this.guide.children[idx];
+    if (!target) return;
+
+    const item = this.createGuideItem();
+    target.after(item);
+
+    this.reNumberingGuideItem();
+    this.insertedGuideItem(idx);
+  }
+  public adjustGuideItem(num:number) {
+    
+    const makeCount = num - this.guide.childElementCount;
 
     if(makeCount === 0) return;
 
-    if(0 < makeCount) {
-      for(let i = 0; i < makeCount; ++i) {
-        const item = this.createGuideItem(i);
-        guide.appendChild(item);
-      }
+    if (0 < makeCount) {
+      this.createGuideItems(makeCount);
+    } else {
+      this.removeGuideItems(Math.abs(makeCount));
     }
 
-    if (makeCount < 0) {
-      for(let i = 0; i < Math.abs(makeCount); ++i) {
-        if(guide.firstChild) {
-          guide.removeChild(guide.firstChild);
-        }
-      }
+    this.reNumberingGuideItem();
+  }
 
+  private get guide() {
+    return this.doms[Config.UIType.Guide];
+  }
+
+  private createGuideItems(count:number) {
+    
+    for(let i = 0; i < count; ++i) {
+      const item = this.createGuideItem();
+      this.guide.appendChild(item);
     }
+  }
 
-    for(let i = 0; i < guide.childElementCount; ++i) {
-      if(guide.children[i]) {
-        guide.children[i].innerHTML = (i + 1).toString();
-        Util.setData(guide.children[i], 'index', i.toString());
-      }
+  private removeGuideItems(count:number) {
+    const guide = this.guide;
+    for(let i = 0; i < count; ++i) {
+      if (!guide.firstChild) break;
+      guide.removeChild(guide.firstChild);
+      
+    }
+  }
+
+  public reNumberingGuideItem() {
+    this.mapGuideItem((item, index) => {
+      this.setPropGuideItem(item, index);
+    })
+  }
+
+  private mapGuideItem(callback:(item:Element, index:number) => void) {
+    const guide = this.doms[Config.UIType.Guide];
+    const count = guide.childElementCount;
+
+    for (let i = 0; i < count; ++i) {
+      callback(guide.children[i], i);
     }
   }
 
@@ -351,25 +405,6 @@ export default class UI {
   private cbOnSwapGuideItem:GuideItemOnSwapFunction = () => {};
   private cbOnDragStartGuideItem: GuideItemOnDragStartFunction = () => {};
   private cbOnDragOverGuideItem: GuideItemOnDragOverFunction = () => {};
-
-  public adjustGuideItem2(num:number) {
-    const guide = this.doms[Config.UIType.Guide];
-
-
-    const count = num;
-    const removecount = guide.childElementCount;
-    for(let i = 0; i < removecount; ++i) {
-      if(guide.firstChild) {
-        guide.removeChild(guide.firstChild);
-      }
-    }
-
-    for(let i = 0; i < count; ++i) {
-      const item = this.createGuideItem(i);
-      guide.appendChild(item);
-    }
-    
-  }
 
   public clearGuideItemClass() {
     const guide = this.doms[Config.UIType.Guide];
@@ -394,7 +429,6 @@ export default class UI {
     
     if(!target) return;
 
-
     if(target) {
       const index = Number(Util.getData(target, 'index', '0'));
       const item = this.createGuideItem(index);
@@ -408,30 +442,14 @@ export default class UI {
       target.remove();
     }
   }
-  // /**
-  //  * ガイドアイテムを追加する
-  //  * @param idx アイテムを追加する位置
-  //  */
-  // public addGuideItem(idx:number) {
-  //   //const item = Config.createElement(Config.UIType.GuideItem);
-  //   const guide = this.doms[Config.UIType.Guide];
-  //   const children = guide.querySelectorAll(`.${Config.classNames.guideItem}`);
-  //   console.log(children.length);
-
-  //   const item = Config.createElement(Config.UIType.GuideItem);
-  //   item.innerHTML = idx.toString();
-  //   item.classList.add(Config.classNames.guideItemInserted);
-
-  //   if(children[idx])
-  //     children[idx].after(item);
-  //   else
-  //     guide.appendChild(item);
 
   /**
    * ガイドアイテム要素を追加する
    * @param idx 要素を追加する位置を指定する
+   * @param isBefore 要素を前に追加するフラグ
+   * @returns 追加された要素を返す
    */
-  public addGuideItem(idx:number) 
+  public addGuideItem(idx:number, isBefore = false) 
   {
     // 初期処理
     const { guide } = this;
@@ -443,37 +461,51 @@ export default class UI {
     // そもそも子要素がまだ存在しない場合は単純に追加する
     if (guide.childElementCount === 0) {
       guide.appendChild(item);
-      return;
+      return　item;
     }
 
     // 要素を追加するために基準となる子要素を取得する
     const child = guide.children[idx];
 
-    // 子要素が取得できる場合はその子要素の後に追加
+    // 子要素が取得できたらその前、もしくは後ろに要素を追加する
     if (child) {
-      child.after(item);
-      return;
+      (isBefore)? child.before(item) : child.after(item);
+      return item;
     }
 
-    /**
-     * 子要素が取得できない場合
-     * これは範囲外を指定されたというケースになるのでケースごとに対処する
-     */
+    return null;
+  }
 
-    // idxが負の値の場合、先頭要素の前に追加する
-    if (idx < 0) {
-      guide.firstChild && guide.firstChild.before(item);
-      return;
-    } 
+  /**
+   * ガイドアイテム要素を追加し、見た目の調整も合わせて行う
+   * @param addBaseIndex ガイドアイテムを追加する基準位置
+   * @param isBefore 要素を前に追加するフラグ
+   */
+  public addGuideItemAndUpdate(addIndex:number, isBefore:boolean) 
+  {
+    // まず既存のcss classを除去しておく
+    this.clearGuideItemClass();
 
-    // idxが正の値の場合、末尾に要素を追加する
-    if (0 < idx) {
-      guide.lastChild && guide.lastChild.after(item);
-    }
+    // 新たにガイドアイテムを追加する
+    const item = this.addGuideItem(addIndex, isBefore);
+
+    // 追加された要素を選択された状態にする
+    this.modifyGuideItemToSelected(item);
+
+    // 番号を振り直す
+    this.reNumberingGuideItem();
+  }
+
+  /**
+   * 与えられたガイドアイテムを選択された状態にする。
+   * @param item 変更を加えたい要素
+   */
+  modifyGuideItemToSelected(item:HTMLElement | null) {
+    item && item.classList.add(Config.classNames.guideItemSelected);
   }
     
-    
-  // }
+  //---------------------------------------------------------------------------
+  // その他
 
   /**
    * Ace Editorを初期化(生成)する
@@ -544,5 +576,28 @@ export default class UI {
     // リンクにダウンロードプロパティを設定
     anchor.href = url;
     anchor.download = title + ".stepdata.json";
+  }
+
+  /**
+   * 指定されたターゲットに該当するHTMLElementを取得する
+   * @param type ターゲットの種類
+   */
+  private getElementByTarget(type:TargetType) {
+
+    const dic:{[key:number]:Config.UIType} = {
+      [TargetType.Title]         :Config.UIType.EditorHeaderTitle,
+      [TargetType.Lang]          :Config.UIType.EditorHeaderLang,
+      [TargetType.Desc]          :Config.UIType.EditorMdInput,
+      [TargetType.AddStepLast]   :Config.UIType.MenuAddStepLast,
+      [TargetType.AddStepBefore] :Config.UIType.MenuAddStepBefore,
+      [TargetType.AddStepAfter]  :Config.UIType.MenuAddStepAfter,
+      [TargetType.DelStep]       :Config.UIType.MenuDelStep,
+      [TargetType.Reset]         :Config.UIType.MenuReset,
+      [TargetType.Download]      :Config.UIType.MenuDownload,
+      [TargetType.LoadFile]      :Config.UIType.MenuLoadFileInput,
+    }
+
+    const key = dic[type];
+    return this.doms[key];
   }
 }
