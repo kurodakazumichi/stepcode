@@ -91,25 +91,26 @@ export default class UI {
     return this._ace;
   }
 
-  /** Ace Editorに入力されている内容を取得する */
-  public get code() {
-    return this.ace.getValue();
-  }
-
   /** Ace Editorに指定した内容を設定する */
-  public set code(v:string) {
+  private set code(v:string) {
     this.ace.setValue(v);
     this.ace.clearSelection();
   }
 
-  /** 解説テキストに入力されている内容を取得する */
-  public get desc() {
-    return this.md.value;
+  /** 解説テキストに指定した内容を設定する */
+  private set desc(v:string) {
+    this.md.value = v;;
   }
 
-  /** 解説テキストに指定した内容を設定する */
-  public set desc(v:string) {
-    this.md.value = v;;
+  /** タイトルに指定した内容を設定する */
+  private set title(v:string) {
+    const title = this.get<HTMLInputElement>(Config.UIType.EditorHeaderTitle);
+    title.value = v;
+  }
+
+  /** 言語選択に指定した内容を設定する */
+  private set lang(v:string) {
+    this.langs.value = v;
   }
 
   /** EditorのFooterに表示される現在表示しているステップの番号を設定する */
@@ -150,6 +151,8 @@ export default class UI {
    */
   public updateEditor(core:Core) {
     const step = core.current;
+    this.title = (step)? step.title : "";
+    this.lang = (step)? step.lang : "";
     this.code = (step? step.code : Config.DEF_CODE_TEXT);
     this.desc = (step? step.desc : Config.DEF_DESC_TEXT);
     this.footerInfo = core.currentNo;
