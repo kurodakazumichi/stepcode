@@ -8,6 +8,7 @@
     "test": "jest --coverage --watch"
   },
   "devDependencies": {
+    "@types/diff": "^4.0.2",
     "@types/jest": "^24.0.11",
     "@types/lodash": "^4.14.121",
     "@types/node": "^11.11.3",
@@ -16,6 +17,7 @@
     "typescript": "next"
   },
   "dependencies": {
+    "diff": "^4.0.1",
     "lodash": "^4.17.11"
   }
 }

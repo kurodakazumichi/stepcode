@@ -4,7 +4,7 @@
 import _get from 'lodash/get';
 import Steps, { IJSON as StepsJSON } from './Steps';
 import Step from './Step';
-
+import * as Diff from 'diff';
 /******************************************************************************
  * Interface
  *****************************************************************************/
@@ -156,20 +156,26 @@ export default class StepCode
       return target.codeArray.map((v, k) => k + 1)
     }
 
-    const preArray = base.codeArray;
+    // 前後の内容で差分を取り、差分行番号の配列を作成する
+    let line = 0;
+    const diff = Diff.diffArrays(base.codeArray, target.codeArray);
     
-    // 現ステップの１行を前ステップのコードと総当たりチェックする
-    target.codeArray.map((curLine, curIndex) => {
+    diff.map((data) => {
+      // 削除された行は無視する
+      if (!data.count) return;
+      if (data.removed) return;
 
-      const matchIndex = preArray.indexOf(curLine);
-
-      // マッチする行がなければ新規行か変更行
-      if (matchIndex === -1) {
-        diffs.push(curIndex + 1);
-      } else {
-        preArray.splice(matchIndex, 1);
+      // 追加された行数を登録
+      if (data.added) {
+        for(let i = 0; i < data.count; ++i) {
+          diffs.push(++line);
+        }
+      } 
+      // 変更がない場合は行数だけ加算する
+      else {
+        line += data.count;
       }
-    })
+    });
 
     return diffs;
   }
