@@ -114,9 +114,20 @@ export default class StepCodeEditor {
     return true;
   }
 
+  /**
+   * 指定したIndexにジャンプする
+   * @param idx 異動先のIndex
+   */
+  public jump(idx:number) {
+    this.ui.stepcode.jump(idx);
+  }
+
   //---------------------------------------------------------------------------
   // private メソッド
 
+  /**
+   * 初期データを取得する
+   */
   private getInitData() {
     // ストレージにデータがあればストレージのデータを、なければ初期データを使用する
     const savedata = Util.storage.savedata;
@@ -201,19 +212,16 @@ export default class StepCodeEditor {
     // ファイルが読み込まれた時
     this.ui.on(UI.ElementType.LoadFile, 'change', this.onChangeFile.bind(this));
 
+    // StepCodeのコールバックを設定
     this.ui.stepcode.setCallback(StepCode.CallbackType.PrevAfter, this.onChangeStepCode.bind(this));
     this.ui.stepcode.setCallback(StepCode.CallbackType.NextAfter, this.onChangeStepCode.bind(this));
     this.ui.stepcode.setCallback(StepCode.CallbackType.JumpAfter, this.onChangeStepCode.bind(this));
 
-    this.ui.setCbOnClickGuideItem((idx:number) => { this.jump(idx); console.log(idx); });
-    this.ui.setCbOnSwapGuideItem(this.onSwapStep.bind(this));
-    this.ui.setCbOnDragEnterGuideItem((idx:number) => { this.ui.stepcode.show(idx + 1)});
-    this.ui.setCbOnDragStartGuideItem((idx:number) => {
-      this.ui.resetGuideItemClassAll();
-      this.ui.modifyGuideItemToSelected(idx);
-      this.core.to(idx);
-      this.ui.updateEditor(this.core);
-    });
+    // ガイドアイテムのコールバックを設定
+    this.ui.setCbOnClickGuideItem(this.onClickGuideItem.bind(this));
+    this.ui.setCbOnDragStartGuideItem(this.onDragStartGuideItem.bind(this));
+    this.ui.setCbOnDragEnterGuideItem(this.onDragEnterGuideItem.bind(this));
+    this.ui.setCbOnSwapGuideItem(this.onSwapGuideItem.bind(this));
   }
 
   /**
@@ -324,18 +332,53 @@ export default class StepCodeEditor {
   }
 
   /**
+   * ガイドアイテムがクリックされた時の処理
+   */
+  private onClickGuideItem(idx:number) {
+    // クリックされたガイドアイテムに対応するページへジャンプする
+    this.jump(idx);
+  }
+
+  /**
+   * ドラッグ中のアイテムが重なった時の処理
+   */
+  private onDragEnterGuideItem(idx:number) 
+  {
+    /**
+     * StepCodeの方だけページを切り替える。
+     * Editorの方はドラッグ中の内容を表示させたいので
+     */
+    this.ui.stepcode.show(idx + 1);
+  }
+
+  /**
+   * ドラッグ開始時の処理
+   */
+  private onDragStartGuideItem(idx:number) {
+    /**
+     * Editorにはドラッグ開始したガイドアイテムのページ内容を表示する
+     * StepCodeの内容はDragEnterの方で制御するのでここでは何もしない。
+     */
+    this.core.to(idx);
+    this.ui.updateEditor(this.core);
+
+    // ドラッグ開始したガイドアイテムを選択状態にする。
+    this.ui.resetGuideItemClassAll();
+    this.ui.modifyGuideItemToSelected(idx);
+  }
+
+  /**
    * ステップが入れ替えられた時の処理
    */
-  public onSwapStep(fromIdx:number, toIdx:number) {
-
+  public onSwapGuideItem(fromIdx:number, toIdx:number) 
+  {
+    // Stepを入れ替え、入れ替えられなかったら終了
     if (!this.core.steps.swap(fromIdx, toIdx)) return;
+
+    // 入れ替え先にフォーカスして全体を更新。
     this.core.to(toIdx);
     this.work.apply(this.core.current);
     this.ui.update(this.core);
-  }
-
-  public jump(idx:number) {
-    this.ui.stepcode.jump(idx);
   }
 
   //---------------------------------------------------------------------------
