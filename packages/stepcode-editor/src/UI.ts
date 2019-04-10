@@ -408,10 +408,15 @@ export default class UI {
   //---------------------------------------------------------------------------
   // ガイドアイテム イベント
 
-  // TODO
-  private onClickGuideItem(e:Event) {
+  /**
+   * ガイドアイテムがクリックされた時の処理
+   */
+  private onClickGuideItem(e:Event) 
+  {
+    // targetがない(なんてことはないが)時は終了
     if (!e.target) return;
       
+    // コールバックを実行する
     const idx = Util.getData(e.target, 'index', '0');
     this.cbOnClickGuideItem(Number(idx));
   }
