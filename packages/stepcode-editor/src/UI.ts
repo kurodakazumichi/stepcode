@@ -110,7 +110,12 @@ export default class UI {
 
   /** 言語選択に指定した内容を設定する */
   private set lang(v:string) {
-    this.langs.value = v;
+    if (v) {
+      this.langs.value = v;
+    } else {
+      this.langs.selectedIndex = 0;
+    }
+    
   }
 
   /** EditorのFooterに表示される現在表示しているステップの番号を設定する */
@@ -707,7 +712,7 @@ export default class UI {
   /** 
    * Markdownの入力に該当するHTMLElementを返します 
    */
-  private get md(): HTMLTextAreaElement {
+  public get md(): HTMLTextAreaElement {
     return this.get<HTMLTextAreaElement>(Config.UIType.EditorMdInput);
   }
 
