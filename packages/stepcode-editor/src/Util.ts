@@ -1,47 +1,43 @@
+/******************************************************************************
+ * import
+ *****************************************************************************/
 import _get from 'lodash';
 import Core, { Step } from 'stepcode-core';
-export const getValue = (elm:any) => {
-  return (elm && elm.value)? elm.value : "";
-}
 
-export const getData = (elm:any, key:string, def:string):string => {
-  if (!(elm instanceof HTMLElement)) return def;
+/******************************************************************************
+ * DOM関連
+ *****************************************************************************/
+export const dom = {
+  get: {
+    value(elm:any) {
+      return (elm && elm.value)? elm.value : "";
+    },
+    data(elm:any, key:string, def:string):string {
+      if (!elm.dataset) return def;
+      const data = elm.dataset[key];
+      return (data)? data : def;
+    }
+  },
+  set: {
+    data(elm:any, key:string, value:string) {
+      if (!(elm instanceof HTMLElement)) return false;
+      elm.dataset[key] = value;
+      return true;
+    }
+  },
+  make: {
+    option(text:string, value?:string):HTMLOptionElement {
+      const e = document.createElement('option') as HTMLOptionElement;
+      e.innerHTML = text;
+      value && (e.value = value);
+      return e;
+    }
+  }
+};
 
-  if (!elm.dataset) return def;
-
-  const data = elm.dataset[key];
-  return (data)? data : def;
-}
-
-export const setData = (elm:any, key:string, value:string) => {
-  if (!(elm instanceof HTMLElement)) return false;
-
-  elm.dataset[key] = value;
-  return true;
-}
-
-export const createOption = (text:string, value?:string):HTMLOptionElement => {
-  const e = document.createElement('option') as HTMLOptionElement;
-  e.innerHTML = text;
-  value && (e.value = value);
-  return e;
-}
-
-export const download = (title:string, json:any) => 
-{
-  const blob = new Blob(
-    [JSON.stringify(json)],
-    {type:'application/json'}
-  );
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = title + ".stepcode.json";
-  a.click();
-  a.remove();
-}
-
+/******************************************************************************
+ * ファイルシステム
+ *****************************************************************************/
 export const fs = {
   readFile (e:Event, onloadCallback:Function)
   {
@@ -68,10 +64,26 @@ export const fs = {
       const result = (ev.target as any).result;
       result && onloadCallback(result);
     }
+  },
+  download(title:string, json:any)
+  {
+    const blob = new Blob(
+      [JSON.stringify(json)],
+      {type:'application/json'}
+    );
+    const url = URL.createObjectURL(blob);
+  
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = title + ".stepcode.json";
+    a.click();
+    a.remove();
   }
 }
 
-
+/******************************************************************************
+ * ストレージ
+ *****************************************************************************/
 export const storage = {
   save(core:Core) {
     this.clear();

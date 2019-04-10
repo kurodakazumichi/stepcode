@@ -223,7 +223,7 @@ export default class StepCodeEditor {
   private onInputTitle(e:Event) 
   {
     // work.title、プレビューを更新
-    this.work.title = Util.getValue(e.target);
+    this.work.title = Util.dom.get.value(e.target);
     this.ui.stepcode.previewTitle(this.work.title);
 
     // セッションストレージに保存
@@ -237,7 +237,7 @@ export default class StepCodeEditor {
   private onChangeLang(e:Event) 
   {
     // work.lang、プレビューを更新
-    this.work.lang = Util.getValue(e.target);
+    this.work.lang = Util.dom.get.value(e.target);
     this.ui.stepcode.previewCode(this.work);
 
     // セッションストレージに保存
@@ -265,7 +265,7 @@ export default class StepCodeEditor {
   private onInputMarkdown(e:Event) 
   {
     // work.descとプレビューを更新
-    this.work.desc = Util.getValue(e.target);
+    this.work.desc = Util.dom.get.value(e.target);
     this.ui.stepcode.previewComment(this.work);
 
     // セッションステレーじに保存
@@ -311,7 +311,7 @@ export default class StepCodeEditor {
   private onClickDownload() {
     const { core } = this;
     const title = (core.first && core.first.title)? core.first.title : "notitle";
-    Util.download(title, core.toJSON());
+    Util.fs.download(title, core.toJSON());
   }
 
   /**

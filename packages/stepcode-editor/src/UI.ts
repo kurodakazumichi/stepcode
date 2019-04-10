@@ -315,7 +315,7 @@ export default class UI {
    */
   private setPropGuideItem(item:Element, idx:number) {
     item.innerHTML = (idx + 1).toString();
-    Util.setData(item, 'index', idx.toString());
+    Util.dom.set.data(item, 'index', idx.toString());
   }
 
   /**
@@ -418,7 +418,7 @@ export default class UI {
     if (!e.target) return;
       
     // コールバックを実行する
-    const idx = Util.getData(e.target, 'index', '0');
+    const idx = Util.dom.get.data(e.target, 'index', '0');
     this.cbOnClickGuideItem(Number(idx));
   }
 
@@ -431,7 +431,7 @@ export default class UI {
     if (!e.dataTransfer) return;
 
     // dataTarnsferにドラッグされた要素のもつindexを保存
-    const idx = Util.getData(e.target, 'index', '0');
+    const idx = Util.dom.get.data(e.target, 'index', '0');
     e.dataTransfer.setData('text', idx);
     
     // コールバックを実行する
@@ -450,7 +450,7 @@ export default class UI {
     this.onGuideItemBlink(e.target as HTMLElement);
     
     // コールバックを実行する
-    const overIndex  = Number(Util.getData(e.target, 'index', '0'));
+    const overIndex  = Number(Util.dom.get.data(e.target, 'index', '0'));
     const underIndex = Number(e.dataTransfer.getData('text'));
     this.cbOnDragEnterGuideItem(overIndex, underIndex);
   }
@@ -485,7 +485,7 @@ export default class UI {
     
     // コールバックを実行
     const fromIdx = Number(e.dataTransfer.getData('text'));
-    const toIdx   = Number(Util.getData(e.target, 'index', '0'));
+    const toIdx   = Number(Util.dom.get.data(e.target, 'index', '0'));
     this.cbOnSwapGuideItem(fromIdx, toIdx);
   }
 
@@ -580,11 +580,11 @@ export default class UI {
     const s = this.langs;
     
     // デフォルトの項目を生成
-    s.appendChild(Util.createOption("言語選択(自動)"));
+    s.appendChild(Util.dom.make.option("言語選択(自動)"));
   
     // StepCodeのサポート言語の数だけ項目を生成
     StepCode.supportLanguages.map((lang) => {
-      s.appendChild(Util.createOption(lang, lang));
+      s.appendChild(Util.dom.make.option(lang, lang));
     })
   }
 
