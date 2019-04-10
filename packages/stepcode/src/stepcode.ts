@@ -129,7 +129,7 @@ export default class StepCode
    * @param step [[Step]]
    */
   previewCode(step:Step) {
-    const diffs = this.core.calcDiffs(this.core.current, step);    
+    const diffs = this.core.calcDiffs(this.core.prev, step);    
     this.ui.previewCode(step, diffs);
   }
 

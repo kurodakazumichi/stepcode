@@ -84,6 +84,14 @@ export default class StepCode
   }
 
   /**
+   * [[_cursor]]が指している１つ前のステップデータを取得します
+   */
+  public get prev() {
+    if (this.isFirst) return null;
+    return this._steps.get(this._cursor - 1);
+  }
+
+  /**
    * 最初の[[Step]]を取得します
    */
   public get first() {
@@ -149,7 +157,7 @@ export default class StepCode
     }
 
     const preArray = base.codeArray;
-
+    
     // 現ステップの１行を前ステップのコードと総当たりチェックする
     target.codeArray.map((curLine, curIndex) => {
 
