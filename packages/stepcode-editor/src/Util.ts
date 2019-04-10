@@ -3,6 +3,7 @@ import Core, { Step } from 'stepcode-core';
 export const getValue = (elm:any) => {
   return (elm && elm.value)? elm.value : "";
 }
+
 export const getData = (elm:any, key:string, def:string):string => {
   if (!(elm instanceof HTMLElement)) return def;
 
