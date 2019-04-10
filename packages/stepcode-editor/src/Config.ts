@@ -61,6 +61,7 @@ export enum UIType {
   EditorMd            = "EditorMd",
   EditorMdInput       = "EditorMdInput",
   EditorFooter        = "EditorFooter",
+  EditorFooterInfo    = "EditorFooterInfo",
   EditorFooterLogo    = "EditorFooterLogo",
   Menu                = "Menu",
   MenuAddStepLast     = "MenuAddStepLast",
@@ -154,6 +155,12 @@ const config =
     [UIType.EditorFooter]: {
       tag:"div",
       className:classNames.editorFooter,
+    },
+
+    /** エディター:フッター:情報 */
+    [UIType.EditorFooterInfo]: {
+      tag:"span",
+      innerHTML:"Step 1",
     },
 
     /** エディター:フッター:ロゴ */

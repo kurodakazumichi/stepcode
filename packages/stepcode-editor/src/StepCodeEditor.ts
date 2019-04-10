@@ -149,6 +149,7 @@ export default class StepCodeEditor {
     // エディター以外のUIを更新する。
     this.ui.addGuideItemAndUpdate(index, isBefore);
     this.ui.updateStepCode(this.core);
+    this.ui.updateFooterInfo(this.core.currentNo);
   }
 
   //---------------------------------------------------------------------------
@@ -360,7 +361,7 @@ export default class StepCodeEditor {
     const idx = stepcode.currentIdx;
     this.core.to(idx);
 
-    // エディターとガイドを更新
+    // UIを更新
     this.ui.updateEditor(this.core);
     this.ui.updateGuide(this.core);
   }

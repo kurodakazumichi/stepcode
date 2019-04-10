@@ -116,7 +116,7 @@ export default class UI {
   }
 
   /** 各種要素を取得する */
-  get<T extends HTMLElement>(uiType:Config.UIType): T {
+  get<T extends HTMLElement>(uiType:Config.UIType): T|null {
     return this.doms[uiType] as T;
   }
 
@@ -232,6 +232,7 @@ export default class UI {
     dom[ui.EditorMd].appendChild(dom[ui.EditorMdInput]);
     
     // エディタ:フッター直下
+    dom[ui.EditorFooter].appendChild(dom[ui.EditorFooterInfo]);
     dom[ui.EditorFooter].appendChild(dom[ui.EditorFooterLogo]);
   }
 
@@ -505,6 +506,14 @@ export default class UI {
   }
     
   //---------------------------------------------------------------------------
+  // FooterInfo
+
+  public updateFooterInfo(no:number) {
+    const info = this.get(Config.UIType.EditorFooterInfo);
+    info && (info.innerHTML = `Step ${no}`);
+  }
+
+  //---------------------------------------------------------------------------
   // その他
 
   /**
@@ -528,12 +537,14 @@ export default class UI {
     this.updateEditor(core);
     this.updateGuide(core);
     this.updateStepCode(core);
+    this.updateFooterInfo(core.currentNo);
   }
 
   public updateEditor(core:Core) {
     const step = core.current;
     this.code = (step? step.code : Config.DEF_CODE_TEXT);
     this.mdText = (step? step.desc : Config.DEF_DESC_TEXT);
+    this.updateFooterInfo(core.currentNo);
   }
 
   /**
@@ -574,8 +585,11 @@ export default class UI {
     const title = (core.first && core.first.title)? core.first.title : "notitle";
     
     // リンクにダウンロードプロパティを設定
-    anchor.href = url;
-    anchor.download = title + ".stepdata.json";
+    if (anchor) {
+      anchor.href = url;
+      anchor.download = title + ".stepdata.json";
+    }
+
   }
 
   /**
