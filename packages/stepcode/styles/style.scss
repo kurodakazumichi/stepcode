@@ -69,7 +69,7 @@ $markColor:#81D674;
     padding:0.5em;
     overflow-y:auto;
     box-sizing: border-box;
-    line-height: 1.2em;
+    line-height: 1.6em;
     p{
       padding:0;
       margin:0;
@@ -77,19 +77,33 @@ $markColor:#81D674;
     }
 
     strong {
-      color:red;
+      color:#C7243A;
+      font-weight: bold;
     }
 
     em {
       font-weight: bold;
       font-style: normal;
-      color:brown;
+      color:#485FA4;
     }
 
     code {
       background-color: #eee;
-      color:#f00;
-      padding:0.3em;
+      color:#007AB7;
+      padding:0 0.3em;
+      border-radius: 5px;
+    }
+
+    blockquote {
+      background-color: #eee;
+      padding: 0.3em 0 0.3em 0.7em;
+      border-left: 4px solid #999;
+      font-size: 16px;
+      line-height: 1.4em;
+
+      p {
+        margin-bottom: 0.5em;
+      }
     }
   }
 

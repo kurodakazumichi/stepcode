@@ -131,17 +131,18 @@ $borderColor: #718288;
   }
 
   &-guide {
-    
-    height:60px;
+    margin-top:1em;
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    overflow-x:auto;
+    
     
     &__item {
       flex-shrink: 0;
+      margin: 0 0.5em 0.5em 0;
       width:60px;
       height:40px;
-      margin-left: 1em;
+      box-sizing: border-box;
       text-align: center;
       line-height: 40px;
       background-color:#eee;
