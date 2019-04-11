@@ -788,7 +788,8 @@ export default class UI {
 
     // 構文チェックを無効にする
     ace.getSession().setUseWorker(false);
-
+    ace.session.setTabSize(Config.ace.tasSize);
+    
     // Configに設定されたStyle、Themeを適用
     Object.assign(ace.container.style, Config.ace.style);
     ace.setTheme(Config.ace.theme);

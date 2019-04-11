@@ -242,7 +242,8 @@ const config =
       lineHeight: "1.5",
       fontSize: "16px",
     },
-    theme:ThemeGithub
+    theme:ThemeGithub,
+    tasSize:2,
   }
 }
 
