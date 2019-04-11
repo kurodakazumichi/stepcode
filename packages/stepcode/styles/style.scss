@@ -116,6 +116,21 @@ $markColor:#81D674;
         line-height: 1em;
       }
     }
+
+    table {
+      tr {
+        td, th {
+          border:1px solid #dddddd;
+          font-size:16px;
+          line-height: 1.5em;
+          padding:0.1em 0.2em;;
+        }
+        th {
+          font-weight:bold;
+          background: #eee;
+        }
+      }
+    }
   }
 
   &-footer {
