@@ -613,8 +613,8 @@ export default class UI {
 
     // ルート要素の階層構築
     this.root.appendChild(this.doms[Config.UIType.Main]);
-    this.root.appendChild(this.doms[Config.UIType.Guide]);
     this.root.appendChild(this.doms[Config.UIType.Menu]);
+    this.root.appendChild(this.doms[Config.UIType.Guide]);
   }
 
   /**
