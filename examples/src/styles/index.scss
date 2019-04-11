@@ -3,6 +3,10 @@ html, body {
   font-size: 20px;
 }
 
+body {
+  background: linear-gradient(0deg, #F7F0FC, #FCFEF7),
+}
+
 .sc-editor {
   height:400px;
 }
@@ -14,7 +18,7 @@ html, body {
 header, footer {
   height:40px;
   display: flex;
-  background:black;
+  background:#00A3C7;
   color:white;
   line-height: 40px;
   justify-content: space-between;
@@ -27,10 +31,6 @@ header, footer {
 
 header {
   margin-bottom:2em;
-}
-
-footer {
-  margin-top:2em;
 }
 
 .button {
@@ -61,9 +61,16 @@ footer {
 #stepcode__file {
   display: none;
 }
+.section {
+  min-height: 100vh;
 
+
+  &:nth-child(2){
+    padding:1vw;
+  }
+}
 .stepcode {
-  width:60vw;
+  max-width:60vw;
   margin:0 auto;
   
   &__container {
@@ -76,6 +83,44 @@ footer {
 
     & .button {
       width:49%;
+    }
+  }
+}
+
+.contents {
+  margin:0 auto;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+
+  &__box {
+    width:48%;
+    margin-bottom: 2em;
+
+    @media (max-width: 600px) { 
+      width:100%;
+    }
+    
+    border:1px solid #ddd;
+    background:#fefefe;
+    h2 {
+      background:#00A3C7;
+      color:white;
+      padding: 0.5em;
+      font-weight: bold;
+      font-size: 20px;
+    }
+
+    ul {
+      padding:1em;
+      font-size: 14px;
+      
+      a {
+        cursor: pointer;
+        &:hover {
+          color:#00BCD4;
+        }
+      }
     }
   }
 }

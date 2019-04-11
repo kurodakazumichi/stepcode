@@ -19,7 +19,8 @@ export default class Comment
       breaks:true,
       linkify:true,
       html:false,
-    });
+    })
+    .use(require('markdown-it-deflist'));
   }
 
   //---------------------------------------------------------------------------
