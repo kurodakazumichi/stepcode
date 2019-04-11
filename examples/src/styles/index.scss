@@ -89,8 +89,18 @@ header {
 
 .contents {
   margin:0 auto;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
 
   &__box {
+    width:48%;
+    margin-bottom: 2em;
+
+    @media (max-width: 600px) { 
+      width:100%;
+    }
+    
     border:1px solid #ddd;
     background:#fefefe;
     h2 {
