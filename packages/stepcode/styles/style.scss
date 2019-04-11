@@ -105,6 +105,17 @@ $markColor:#81D674;
         margin-bottom: 0.5em;
       }
     }
+
+    dl {
+      dt {
+        font-weight: bold;
+      }
+      dd {
+        font-size: 18px;
+        text-indent: 0.5em;
+        line-height: 1em;
+      }
+    }
   }
 
   &-footer {
