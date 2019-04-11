@@ -463,6 +463,7 @@ export default class StepCodeEditor {
     // StepCodeの現在位置をCoreに反映
     const idx = stepcode.currentIdx;
     this.core.to(idx);
+    this.work.apply(this.core.current);
 
     // UIを更新
     this.ui.updateEditor(this.core);
