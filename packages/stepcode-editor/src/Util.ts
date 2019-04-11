@@ -63,6 +63,7 @@ export const fs = {
       // ev.target.resultは定義されてないと言われるので、anyにキャストして処理する
       const result = (ev.target as any).result;
       result && onloadCallback(result);
+      (e.target as HTMLInputElement).value = "";
     }
   },
   download(title:string, json:any)
