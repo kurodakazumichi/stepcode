@@ -1,20 +1,32 @@
-/**
- * import
- */
-//import Sample01 from './datas/sample01';
-import Sample02 from '../datas/sample02';
-
+/******************************************************************************
+ * import 
+ *****************************************************************************/
+import Axios from 'axios';
+import DefaultData from '../datas/AboutStepCode';
 import StepCode from 'stepcode';
+import Define from './define';
+
 import 'stepcode/styles/style.scss';
 import '../styles/index.scss';
-//new StepCode("#container", convert(Sample01));
-const stepcode = new StepCode(".stepcode__container", Sample02);
-(window as any).e = stepcode;
 
-const fileButton = document.getElementById('stepcode__file');
+/******************************************************************************
+ * Util
+ *****************************************************************************/
+const Util = {
+  async getContent(url:string) {
 
-if (fileButton) {
-  fileButton.addEventListener('change', (e:Event) => {
+    const axios = Axios.create({
+      baseURL: Define.baseURL + "static/data/",
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      responseType: 'json' 
+    });
+    return await axios.get(url+".json");
+  },
+  fileread(e:Event, callback:Function) {
+    
     // targetがHTMLInputElementでなければ終了
     if (!e.target) return;
     if (!(e.target instanceof HTMLInputElement)) return;
@@ -36,9 +48,122 @@ if (fileButton) {
   
       // ev.target.resultは定義されてないと言われるので、anyにキャストして処理する
       const result = (ev.target as any).result;
-      //result && onloadCallback(result);
-      stepcode.load(JSON.parse(result));
+      callback(JSON.parse(result));
       (e.target as HTMLInputElement).value = "";
     }
-  })
+  }
 }
+
+/******************************************************************************
+ * Index Appクラス
+ *****************************************************************************/
+class App {
+
+  /**
+   * コンストラクタ
+   */
+  constructor() 
+  {
+    this.stepcode = new StepCode(".stepcode__container", {});
+    
+    // デバッグ用
+    if (Define.isDevelop) {
+      (window as any).app = this;
+    }
+  }
+
+  /**
+   * ステップコード
+   */
+  private stepcode:StepCode;
+
+  /**
+   * 初期化
+   */
+  public async init() {
+    const data = await this.getInitData();
+    this.stepcode.load(data);
+    this.initFileButton();
+    this.initContentLinks();
+  }
+
+  /**
+   * 初期データを取得する
+   * URLに指定があった場合は指定されたデータの取得を試みる
+   * データが指定されていない、もしくは取得できなかった場合はデフォルトのデータを返す。
+   */
+  async getInitData() 
+  {
+    // クエリパラメータから指定されたデータURLを抽出する
+    const query = location.search.substring(1).split('&');
+    const url = query.filter((value) => value.indexOf('url') === 0).map((value) => {
+      return value.split('=')[1];
+    })[0];
+
+    // URLがなければデフォルトデータ
+    if (!url) return DefaultData;
+
+    // URLがあればデータ取得を試みる
+    if (url) {
+      const result = await Util.getContent(url);
+      if (result.data) {
+        return result.data;
+      }
+    } 
+
+    // ここまで到達したらデフォルトデータを返す
+    return DefaultData;
+  }
+
+  /**
+   * ファイル読み込みボタンの初期化
+   */
+  initFileButton() {
+
+    const fileButton = document.getElementById('stepcode__file');
+
+    if(!fileButton) return;
+
+    // ファイルが選択された場合、ファイルを読み込み、読み込んだデータをStepCodeにロードする
+    fileButton.addEventListener('change', (e:Event) => {
+      Util.fileread(e, (file:any) => {
+        this.stepcode.load(file);
+      })
+    })
+
+  }
+
+  /**
+   * コンテンツリンクの初期化 
+   */
+  initContentLinks() {
+    const contents = document.querySelectorAll(".content");
+
+    // 全てのコンテンツリンクのonClickイベントを設定
+    contents.forEach((content) => 
+    {
+      content.addEventListener('click', async (e:Event) => {
+    
+        const target = e.target as HTMLElement;
+        const url    = target.dataset.url;
+    
+        if (!url) return;
+    
+        const result = await Util.getContent(url);
+        if (result.data) {
+          this.stepcode.load(result.data);
+          window.scrollTo(0, 0);
+        } else {
+          alert("データの取得に失敗しました。");
+        }
+      })
+    });
+  }
+}
+
+// ページ読み込みが完了したら実行する
+window.addEventListener('load', () => { new App().init(); })
+
+
+
+

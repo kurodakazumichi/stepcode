@@ -6,6 +6,7 @@ $markColor:#81D674;
 
 .sc {
   &-root {
+    background:#fefefe;
     border:1px solid $borderColor;
     border-radius: 6px;
     overflow: hidden;
@@ -27,6 +28,7 @@ $markColor:#81D674;
     line-height: 1.5em;
     overflow-y:scroll;
     overflow-x:hidden;
+
 
     &__lines {
       list-style-type: none;
