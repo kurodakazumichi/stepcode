@@ -11,7 +11,7 @@ const dev:IDefine = {
 
 const prod:IDefine = {
   isDevelop:isDevelop,
-  baseURL:"http://127.0.0.1:8081/"
+  baseURL:"https://kurodakazumichi.github.io/stepcode/"
 }
 
 export default (isDevelop)? dev : prod;
