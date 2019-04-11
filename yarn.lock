@@ -2023,13 +2023,6 @@ diffie-hellman@^5.0.0:
     miller-rabin "^4.0.0"
     randombytes "^2.0.0"
 
-docusaurus-init@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/docusaurus-init/-/docusaurus-init-1.0.2.tgz#f9a21925b3dd8b9ec99e56e673d3e43d17e7480e"
-  dependencies:
-    chalk "^2.1.0"
-    shelljs "^0.7.8"
-
 dom-serializer@0:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/dom-serializer/-/dom-serializer-0.1.1.tgz#1ec4059e284babed36eec2941d4a970a189ce7c0"
@@ -5159,14 +5152,6 @@ shebang-command@^1.2.0:
 shebang-regex@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/shebang-regex/-/shebang-regex-1.0.0.tgz#da42f49740c0b42db2ca9728571cb190c98efea3"
-
-shelljs@^0.7.8:
-  version "0.7.8"
-  resolved "https://registry.yarnpkg.com/shelljs/-/shelljs-0.7.8.tgz#decbcf874b0d1e5fb72e14b164a9683048e9acb3"
-  dependencies:
-    glob "^7.0.0"
-    interpret "^1.0.0"
-    rechoir "^0.6.2"
 
 shelljs@^0.8.2:
   version "0.8.3"
