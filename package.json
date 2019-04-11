@@ -23,7 +23,7 @@
     "start:editor": "yarn build:editor --watch & yarn demo:start",
     "doc": "node ./scripts/docgen.js",
     "demo:start": "parcel ./examples/src/index.html --out-dir=./examples/dist",
-    "demo:build": "parcel build ./examples/src/index.html --out-dir=./docs",
+    "demo:build": "parcel build ./examples/src/index.html --out-dir=./docs --public-url ./",
     "sass:build": "parcel build ./packages/stepcode/styles/style.scss --out-dir=./packages/stepcode/css"
   }
 }
