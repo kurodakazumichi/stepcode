@@ -119,6 +119,14 @@ export default class UI{
   }
 
   /**
+   * 指定されたファイル名をプレビューします。(実際のデータは変更されません)
+   * @param name ファイル名テキスト
+   */
+  previewFile(name:string) {
+    this.header.fileText = name;
+  }
+
+  /**
    * 指定された[[Step]]のコードをプレビューします。(実際のデータは変更されません)
    * @param step [[Step]]
    */
