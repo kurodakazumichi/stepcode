@@ -6,7 +6,7 @@ interface IDefine {
 }
 const dev:IDefine = {
   isDevelop:isDevelop,
-  baseURL:"http://localhost:1234/"
+  baseURL:window.location.origin + "/"
 }
 
 const prod:IDefine = {
