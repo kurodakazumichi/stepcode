@@ -11,7 +11,7 @@ import * as Util from './Util';
  * 型定義
  *****************************************************************************/
 type GuideItemOnClickFunction     = (clickIndex:number) => void;
-type GuideItemOnSwapFunction      = (fromIndex:number, toIndex:number) => void;
+type GuideItemOnDropFunction      = (dragIndex:number, dropIndex:number) => void;
 type GuideItemOnDragEnterFunction = (overIndex:number, underIndex:number) => void;
 type GuideItemOnDragStartFunction = (startIndex:number) => void;
 
@@ -23,6 +23,7 @@ type GuideItemOnDragStartFunction = (startIndex:number) => void;
  */
 export enum ElementType {
   Title,
+  File,
   Lang,
   Desc,
   AddStepLast,
@@ -108,14 +109,19 @@ export default class UI {
     title.value = v;
   }
 
+  /** ファイル名に指定された内容を設定する */
+  private set file(v:string) {
+    const file = this.get<HTMLInputElement>(Config.UIType.EditorHeaderFile);
+    file.value = v;
+  }
+
   /** 言語選択に指定した内容を設定する */
   private set lang(v:string) {
     if (v) {
       this.langs.value = v;
     } else {
       this.langs.selectedIndex = 0;
-    }
-    
+    } 
   }
 
   /** EditorのFooterに表示される現在表示しているステップの番号を設定する */
@@ -156,10 +162,11 @@ export default class UI {
    */
   public updateEditor(core:Core) {
     const step = core.current;
-    this.title = (step)? step.title : "";
-    this.lang = (step)? step.lang : "";
-    this.code = (step? step.code : Config.DEF_CODE_TEXT);
-    this.desc = (step? step.desc : Config.DEF_DESC_TEXT);
+    this.title = (step)? step.title: "";
+    this.file  = (step)? step.file : "";
+    this.lang  = (step)? step.lang : "";
+    this.code  = (step)? step.code : Config.DEF_CODE_TEXT;
+    this.desc  = (step)? step.desc : Config.DEF_DESC_TEXT;
     this.footerInfo = core.currentNo;
   }
 
@@ -492,9 +499,9 @@ export default class UI {
     if (!e.dataTransfer) return;
     
     // コールバックを実行
-    const fromIdx = Number(e.dataTransfer.getData('text'));
-    const toIdx   = Number(Util.dom.get.data(e.target, 'index', '0'));
-    this.cbOnSwapGuideItem(fromIdx, toIdx);
+    const dragIdx = Number(e.dataTransfer.getData('text'));
+    const dropIdx = Number(Util.dom.get.data(e.target, 'index', '0'));
+    this.cbOnDropGuideItem(dragIdx, dropIdx);
   }
 
   //---------------------------------------------------------------------------
@@ -516,9 +523,9 @@ export default class UI {
   private cbOnDragEnterGuideItem: GuideItemOnDragEnterFunction = () => {};
 
   /**
-   * ガイドアイテムが入れ替えされた時に実行されるコールバック関数
+   * ガイドアイテムがドロップされた時に実行されるコールバック関数
    */
-  private cbOnSwapGuideItem:GuideItemOnSwapFunction = () => {};
+  private cbOnDropGuideItem:GuideItemOnDropFunction = () => {};
 
   /**
    * ガイドアイテムのクリック時コールバックを設定する
@@ -548,8 +555,8 @@ export default class UI {
    * ガイドアイテムの入れ替え時のコールバックを設定する
    * @param callback コールバック
    */
-  setCbOnSwapGuideItem(callback:GuideItemOnSwapFunction) {
-    this.cbOnSwapGuideItem = callback;
+  setCbOnDropGuideItem(callback:GuideItemOnDropFunction) {
+    this.cbOnDropGuideItem = callback;
   }
 
   //---------------------------------------------------------------------------
@@ -647,6 +654,7 @@ export default class UI {
 
     // エディタ:タイトル直下
     dom[ui.EditorHeader].appendChild(dom[ui.EditorHeaderTitle]);
+    dom[ui.EditorHeader].appendChild(dom[ui.EditorHeaderFile]);
     dom[ui.EditorHeader].appendChild(dom[ui.EditorHeaderLang]);
 
     // エディタ:コード直下
@@ -753,6 +761,7 @@ export default class UI {
     // ElementTypeとConfig.UITypeのマッピングテーブル
     const dic:{[key:number]:Config.UIType} = {
       [ElementType.Title]         :Config.UIType.EditorHeaderTitle,
+      [ElementType.File]          :Config.UIType.EditorHeaderFile,
       [ElementType.Lang]          :Config.UIType.EditorHeaderLang,
       [ElementType.Desc]          :Config.UIType.EditorMdInput,
       [ElementType.AddStepLast]   :Config.UIType.MenuAddStepLast,

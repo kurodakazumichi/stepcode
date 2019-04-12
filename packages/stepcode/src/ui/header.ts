@@ -13,8 +13,9 @@ export default class Header
    * コンストラクタ
    */
   constructor() {
-    this.root = Config.createElement(Config.UIType.Header);
-    this.title = Config.createElement(Config.UIType.HeaderTitle);
+    this.root     = Config.createElement(Config.UIType.Header);
+    this.title    = Config.createElement(Config.UIType.HeaderTitle);
+    this.filename = Config.createElement(Config.UIType.HeaderFileName);
     this.build();
   }
 
@@ -35,13 +36,25 @@ export default class Header
   public get titleText() {
     return this.title.innerHTML;
   }
+
+  /** ファイル名テキストを設定する */
+  public set fileText(name:string) {
+
+    if (name) {
+      this.filename.innerHTML = name;
+      this.filename.style.display = "block";
+    } else {
+      this.filename.style.display = "none";
+    }
+  }
   
   //---------------------------------------------------------------------------
   // public メンバ
 
   /** 更新 */
-  public update(title:string) {
+  public update(title:string, filename:string) {
     this.titleText = title;
+    this.fileText = filename;
   }
 
   //---------------------------------------------------------------------------
@@ -53,12 +66,16 @@ export default class Header
   /** タイトル要素 */
   private title : HTMLElement;
 
+  /** ファイル名要素 */
+  private filename : HTMLElement;
+
   //---------------------------------------------------------------------------
   // private メソッド
 
   /** DOM構築する */
   private build() {
     this.root.appendChild(this.title);
+    this.root.appendChild(this.filename);
   }
 
 }

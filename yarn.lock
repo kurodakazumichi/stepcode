@@ -1718,6 +1718,14 @@ create-hmac@^1.1.0, create-hmac@^1.1.2, create-hmac@^1.1.4:
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
 
+cross-spawn@^5.0.1:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/cross-spawn/-/cross-spawn-5.1.0.tgz#e8bd0efee58fcff6f8f94510a0a554bbfa235449"
+  dependencies:
+    lru-cache "^4.0.1"
+    shebang-command "^1.2.0"
+    which "^1.2.9"
+
 cross-spawn@^6.0.0, cross-spawn@^6.0.4:
   version "6.0.5"
   resolved "https://registry.yarnpkg.com/cross-spawn/-/cross-spawn-6.0.5.tgz#4a5ec7c64dfae22c3a14124dbacdee846d80cbc4"
@@ -1942,7 +1950,7 @@ debug@^4.1.0, debug@^4.1.1:
   dependencies:
     ms "^2.1.1"
 
-decamelize@^1.2.0:
+decamelize@^1.1.1, decamelize@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/decamelize/-/decamelize-1.2.0.tgz#f6534d15148269b20352e7bee26f501f9a191290"
 
@@ -2096,6 +2104,10 @@ duplexer2@~0.1.4:
   dependencies:
     readable-stream "^2.0.2"
 
+duplexer@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/duplexer/-/duplexer-0.1.1.tgz#ace6ff808c1ce66b57d1ebf97977acb02334cfc1"
+
 ecc-jsbn@~0.1.1:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/ecc-jsbn/-/ecc-jsbn-0.1.2.tgz#3a83a904e54353287874c564b7549386849a98c9"
@@ -2236,6 +2248,18 @@ exec-sh@^0.3.2:
   version "0.3.2"
   resolved "https://registry.yarnpkg.com/exec-sh/-/exec-sh-0.3.2.tgz#6738de2eb7c8e671d0366aea0b0db8c6f7d7391b"
 
+execa@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/execa/-/execa-0.7.0.tgz#944becd34cc41ee32a63a9faf27ad5a65fc59777"
+  dependencies:
+    cross-spawn "^5.0.1"
+    get-stream "^3.0.0"
+    is-stream "^1.1.0"
+    npm-run-path "^2.0.0"
+    p-finally "^1.0.0"
+    signal-exit "^3.0.0"
+    strip-eof "^1.0.0"
+
 execa@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/execa/-/execa-1.0.0.tgz#c6236a5bb4df6d6f15e88e7f017798216749ddd8"
@@ -2375,6 +2399,12 @@ fill-range@^4.0.0:
     repeat-string "^1.6.1"
     to-regex-range "^2.1.0"
 
+find-up@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/find-up/-/find-up-2.1.0.tgz#45d1b7e506c717ddd482775a2b77920a3c0c57a7"
+  dependencies:
+    locate-path "^2.0.0"
+
 find-up@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/find-up/-/find-up-3.0.0.tgz#49169f1d7993430646da61ecc5ae355c21c97b73"
@@ -2467,6 +2497,10 @@ get-port@^3.2.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/get-port/-/get-port-3.2.0.tgz#dd7ce7de187c06c8bf353796ac71e099f0980ebc"
 
+get-stream@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/get-stream/-/get-stream-3.0.0.tgz#8e943d1358dc37555054ecbe2edb05aa174ede14"
+
 get-stream@^4.0.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/get-stream/-/get-stream-4.1.0.tgz#c1b255575f3dc21d59bfc79cd3d2b46b1c3a54b5"
@@ -2523,6 +2557,13 @@ grapheme-breaker@^0.3.2:
 growly@^1.3.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/growly/-/growly-1.3.0.tgz#f10748cbe76af964b7c96c93c6bcc28af120c081"
+
+gzip-size@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/gzip-size/-/gzip-size-4.1.0.tgz#8ae096257eabe7d69c45be2b67c448124ffb517c"
+  dependencies:
+    duplexer "^0.1.1"
+    pify "^3.0.0"
 
 handlebars@*, handlebars@^4.0.6, handlebars@^4.1.0:
   version "4.1.1"
@@ -2775,6 +2816,10 @@ invariant@^2.2.2, invariant@^2.2.4:
   resolved "https://registry.yarnpkg.com/invariant/-/invariant-2.2.4.tgz#610f3c92c9359ce1db616e538008d23ff35158e6"
   dependencies:
     loose-envify "^1.0.0"
+
+invert-kv@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/invert-kv/-/invert-kv-1.0.0.tgz#104a8e4aaca6d3d8cd157a8ef8bfab2d7a3ffdb6"
 
 invert-kv@^2.0.0:
   version "2.0.0"
@@ -3522,6 +3567,12 @@ kleur@^3.0.2:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/kleur/-/kleur-3.0.2.tgz#83c7ec858a41098b613d5998a7b653962b504f68"
 
+lcid@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/lcid/-/lcid-1.0.0.tgz#308accafa0bc483a3867b4b6f2b9506251d1b835"
+  dependencies:
+    invert-kv "^1.0.0"
+
 lcid@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/lcid/-/lcid-2.0.0.tgz#6ef5d2df60e52f82eb228a4c373e8d1f397253cf"
@@ -3557,6 +3608,13 @@ load-json-file@^4.0.0:
     parse-json "^4.0.0"
     pify "^3.0.0"
     strip-bom "^3.0.0"
+
+locate-path@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/locate-path/-/locate-path-2.0.0.tgz#2b568b265eec944c6d9c0de9c3dbbbca0354cd8e"
+  dependencies:
+    p-locate "^2.0.0"
+    path-exists "^3.0.0"
 
 locate-path@^3.0.0:
   version "3.0.0"
@@ -3597,7 +3655,7 @@ loose-envify@^1.0.0:
   dependencies:
     js-tokens "^3.0.0 || ^4.0.0"
 
-lru-cache@^4.1.5:
+lru-cache@^4.0.1, lru-cache@^4.1.5:
   version "4.1.5"
   resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-4.1.5.tgz#8bbe50ea85bed59bc9e33dcab8235ee9bcf443cd"
   dependencies:
@@ -3687,6 +3745,12 @@ mdn-data@~1.1.0:
 mdurl@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/mdurl/-/mdurl-1.0.1.tgz#fe85b2ec75a59037f2adfec100fd6c601761152e"
+
+mem@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/mem/-/mem-1.1.0.tgz#5edd52b485ca1d900fe64895505399a0dfa45f76"
+  dependencies:
+    mimic-fn "^1.0.0"
 
 mem@^4.0.0:
   version "4.3.0"
@@ -4121,6 +4185,14 @@ os-homedir@^1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/os-homedir/-/os-homedir-1.0.2.tgz#ffbc4988336e0e833de0c168c7ef152121aa7fb3"
 
+os-locale@^2.0.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/os-locale/-/os-locale-2.1.0.tgz#42bc2900a6b5b8bd17376c8e882b65afccf24bf2"
+  dependencies:
+    execa "^0.7.0"
+    lcid "^1.0.0"
+    mem "^1.1.0"
+
 os-locale@^3.0.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/os-locale/-/os-locale-3.1.0.tgz#a802a6ee17f24c10483ab9935719cef4ed16bf1a"
@@ -4158,11 +4230,23 @@ p-is-promise@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/p-is-promise/-/p-is-promise-2.0.0.tgz#7554e3d572109a87e1f3f53f6a7d85d1b194f4c5"
 
+p-limit@^1.1.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/p-limit/-/p-limit-1.3.0.tgz#b86bd5f0c25690911c7590fcbfc2010d54b3ccb8"
+  dependencies:
+    p-try "^1.0.0"
+
 p-limit@^2.0.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/p-limit/-/p-limit-2.2.0.tgz#417c9941e6027a9abcba5092dd2904e255b5fbc2"
   dependencies:
     p-try "^2.0.0"
+
+p-locate@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/p-locate/-/p-locate-2.0.0.tgz#20a0103b222a70c8fd39cc2e580680f3dde5ec43"
+  dependencies:
+    p-limit "^1.1.0"
 
 p-locate@^3.0.0:
   version "3.0.0"
@@ -4173,6 +4257,10 @@ p-locate@^3.0.0:
 p-reduce@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/p-reduce/-/p-reduce-1.0.0.tgz#18c2b0dd936a4690a529f8231f58a0fdb6a47dfa"
+
+p-try@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/p-try/-/p-try-1.0.0.tgz#cbc79cdbaf8fd4228e13f621f2b1a237c1b207b3"
 
 p-try@^2.0.0:
   version "2.2.0"
@@ -4247,6 +4335,14 @@ parcel-bundler@^1.12.3:
     terser "^3.7.3"
     v8-compile-cache "^2.0.0"
     ws "^5.1.1"
+
+parcel-plugin-bundle-visualiser@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/parcel-plugin-bundle-visualiser/-/parcel-plugin-bundle-visualiser-1.2.0.tgz#b24cde64233c8e8ce2561ec5d864a7543d8e719d"
+  dependencies:
+    filesize "^3.6.0"
+    gzip-size "^4.1.0"
+    yargs "^11.0.0"
 
 parse-asn1@^5.0.0:
   version "5.1.4"
@@ -5965,6 +6061,10 @@ xtend@^4.0.0, xtend@~4.0.1:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/xtend/-/xtend-4.0.1.tgz#a5c6d532be656e23db820efb943a1f04998d63af"
 
+y18n@^3.2.1:
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/y18n/-/y18n-3.2.1.tgz#6d15fba884c08679c0d77e88e7759e811e07fa41"
+
 "y18n@^3.2.1 || ^4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/y18n/-/y18n-4.0.0.tgz#95ef94f85ecc81d007c264e190a120f0a3c8566b"
@@ -5989,6 +6089,29 @@ yargs-parser@^11.1.1:
   dependencies:
     camelcase "^5.0.0"
     decamelize "^1.2.0"
+
+yargs-parser@^9.0.2:
+  version "9.0.2"
+  resolved "https://registry.yarnpkg.com/yargs-parser/-/yargs-parser-9.0.2.tgz#9ccf6a43460fe4ed40a9bb68f48d43b8a68cc077"
+  dependencies:
+    camelcase "^4.1.0"
+
+yargs@^11.0.0:
+  version "11.1.0"
+  resolved "https://registry.yarnpkg.com/yargs/-/yargs-11.1.0.tgz#90b869934ed6e871115ea2ff58b03f4724ed2d77"
+  dependencies:
+    cliui "^4.0.0"
+    decamelize "^1.1.1"
+    find-up "^2.1.0"
+    get-caller-file "^1.0.1"
+    os-locale "^2.0.0"
+    require-directory "^2.1.1"
+    require-main-filename "^1.0.1"
+    set-blocking "^2.0.0"
+    string-width "^2.0.0"
+    which-module "^2.0.0"
+    y18n "^3.2.1"
+    yargs-parser "^9.0.2"
 
 yargs@^12.0.2:
   version "12.0.5"

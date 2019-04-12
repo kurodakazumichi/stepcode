@@ -11,6 +11,9 @@ export interface IJSON {
   /** タイトル */
   title:string;
 
+  /** ファイル名 */
+  file:string;
+
   /** ソースコード */
   code:string;
 
@@ -32,6 +35,7 @@ export default class Step
    */
   constructor(data:any) {
     this._title = "";
+    this._file  = "";
     this._code  = "";
     this._desc  = "";
     this._lang  = "";
@@ -43,6 +47,9 @@ export default class Step
 
   /** タイトル */
   private _title:string;
+
+  /** ファイル名 */
+  private _file:string;
 
   /** コードテキスト */
   private _code:string;
@@ -64,6 +71,16 @@ export default class Step
   /** タイトルをセットします。 */
   public set title(v:string) {
     this._title = v;
+  }
+
+  /** ファイル名を返します */
+  public get file() {
+    return this._file;
+  }
+
+  /** ファイル名をセットします */
+  public set file(v:string) {
+    this._file = v;
   }
 
   /** コードを返します。 */
@@ -116,6 +133,7 @@ export default class Step
    */
   apply(data:any) {
     this._title = _get(data, "title", "");
+    this._file  = _get(data, "file", "");
     this._code  = _get(data, "code", "");
     this._desc  = _get(data, "desc", "");
     this._lang  = _get(data, "lang", "");
@@ -134,6 +152,7 @@ export default class Step
   public toJSON() :IJSON{
     return {
       title: this._title,
+      file : this._file,
       code : this._code,
       desc : this._desc,
       lang : this._lang

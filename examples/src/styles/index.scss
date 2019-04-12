@@ -116,9 +116,11 @@ header {
     ul {
       padding:1em;
       font-size: 14px;
+      line-height: 1.5em;
       
       a {
         cursor: pointer;
+        color:#333;
         &:hover {
           color:#00BCD4;
         }

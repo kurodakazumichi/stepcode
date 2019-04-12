@@ -201,6 +201,11 @@ export default class StepCodeEditor {
     this.ui.on(UI.ElementType.Title, 'blur', this.reflectEditorToStepCode.bind(this));
 
     //-------------------------------------------------------------------------
+    // ファイル名が変更された時の処理
+    this.ui.on(UI.ElementType.File, 'input', this.onInputFile.bind(this));
+    this.ui.on(UI.ElementType.File, 'blur', this.reflectEditorToStepCode.bind(this));
+
+    //-------------------------------------------------------------------------
     // 言語変更時
     this.ui.on(UI.ElementType.Lang, 'change', this.onChangeLang.bind(this));
     this.ui.on(UI.ElementType.Lang, 'blur', this.reflectEditorToStepCode.bind(this));
@@ -246,7 +251,7 @@ export default class StepCodeEditor {
     this.ui.setCbOnClickGuideItem(this.onClickGuideItem.bind(this));
     this.ui.setCbOnDragStartGuideItem(this.onDragStartGuideItem.bind(this));
     this.ui.setCbOnDragEnterGuideItem(this.onDragEnterGuideItem.bind(this));
-    this.ui.setCbOnSwapGuideItem(this.onSwapGuideItem.bind(this));
+    this.ui.setCbOnDropGuideItem(this.onDropGuideItem.bind(this));
     
     // キーボードイベント
     document.body.addEventListener('keydown', this.onKeyDown.bind(this));
@@ -264,6 +269,15 @@ export default class StepCodeEditor {
 
     // セッションストレージに保存
     this.saveWorkToStorage();
+  }
+
+  /**
+   * ファイルの入力内容が変更された時
+   * @param e イベントオブジェクト
+   */
+  private onInputFile(e:Event) {
+    this.work.file = Util.dom.get.value(e.target);
+    this.ui.stepcode.previewFile(this.work.file);
   }
 
   /**
@@ -396,15 +410,26 @@ export default class StepCodeEditor {
   }
 
   /**
-   * ステップが入れ替えられた時の処理
+   * ステップがドロップされた時の処理
    */
-  public onSwapGuideItem(fromIdx:number, toIdx:number) 
+  public onDropGuideItem(dragIdx:number, dropIdx:number) 
   {
-    // Stepを入れ替え、入れ替えられなかったら終了
-    if (!this.core.steps.swap(fromIdx, toIdx)) return;
+    // 入れ替え先が同じ場合はUIの更新だけ
+    if (dragIdx === dropIdx) {
+      console.log("skip");
+      this.ui.update(this.core);
+      return;
+    }
+
+    // ドロップされた場所にドラッグされたステップを入れる
+    const step = this.core.steps.get(dragIdx);
+    if (step) {
+      this.core.steps.remove(dragIdx);
+      this.core.steps.add(dropIdx, step);
+    }
 
     // 入れ替え先にフォーカスして全体を更新。
-    this.core.to(toIdx);
+    this.core.to(dropIdx);
     this.work.apply(this.core.current);
     this.ui.update(this.core);
   }
@@ -425,16 +450,16 @@ export default class StepCodeEditor {
       switch(ev.keyCode) {
         case KeyCode.Num6: this.ui.ace.focus(); break;
         case KeyCode.Num7: this.ui.md.focus(); break;
-        case KeyCode.Num8: this.addStepBefore(); break;
-        case KeyCode.Num9: this.addStepAfter(); break;
-        case KeyCode.Num0: this.addStepLast(); break;
+        case KeyCode.Num8: this.syncWorkToCurrentOfCore(); this.addStepBefore(); break;
+        case KeyCode.Num9: this.syncWorkToCurrentOfCore(); this.addStepAfter(); break;
+        case KeyCode.Num0: this.syncWorkToCurrentOfCore(); this.addStepLast(); break;
       }
     };
 
     if (ev.ctrlKey && ev.shiftKey) {
       switch(ev.keyCode) {
-        case KeyCode.ArrowLeft : this.prev(); break;
-        case KeyCode.ArrowRight: this.next(); break;
+        case KeyCode.ArrowLeft : this.syncWorkToCurrentOfCore(); this.prev(); break;
+        case KeyCode.ArrowRight: this.syncWorkToCurrentOfCore(); this.next(); break;
       }
     }
   }

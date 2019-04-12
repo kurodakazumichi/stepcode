@@ -71,7 +71,7 @@ export default class UI{
 
   /** リセット */
   public reset() {
-    this.header.update("");
+    this.header.update("", "");
     this.editor.update({step:new Step(null), diffs:[]});
     this.comment.update("");
     this.footer.update({currentNo:0, totalNo:0});
@@ -88,17 +88,20 @@ export default class UI{
       return;
     }
 
+    // 現在のステップを取得
+    const step = core.current;
+
     // ヘッダを更新
-    this.header.update(core.current.title);
+    this.header.update(step.title, step.file);
 
     // エディターを更新
     this.editor.update({
-      step: core.current,
+      step: step,
       diffs: core.diffs
     });
 
     // コメントを更新
-    this.comment.update(core.current.desc);
+    this.comment.update(step.desc);
 
     // フッタを更新
     this.footer.update({
@@ -113,6 +116,14 @@ export default class UI{
    */
   previewTitle(title:string) {
     this.header.titleText = title;
+  }
+
+  /**
+   * 指定されたファイル名をプレビューします。(実際のデータは変更されません)
+   * @param name ファイル名テキスト
+   */
+  previewFile(name:string) {
+    this.header.fileText = name;
   }
 
   /**

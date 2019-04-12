@@ -59,6 +59,10 @@ $borderColor: #718288;
         margin-right: 1em;
       }
 
+      input[name=filename] {
+        width:100px;
+      }
+
       select {
         height:20px;
       }

@@ -125,6 +125,14 @@ export default class StepCode
   }
 
   /**
+   * 指定されたファイル名をプレビューします(実際のデータは変更されません)
+   * @param name ファイル名
+   */
+  previewFile(name:string) {
+    this.ui.previewFile(name);
+  }
+
+  /**
    * 指定された[[Step]]のコードをプレビューします。(実際のデータは変更されません)
    * @param step [[Step]]
    */

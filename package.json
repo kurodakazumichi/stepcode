@@ -15,15 +15,19 @@
   "scripts": {
     "clean:pkg": "rm -rf ./packages/*/build ./packages/*/build-es5 ./packages/*/tsconfig.tsbuildinfo",
     "clean:node": "rm -rf ./node_modules ./*/node_modules ./*/*/node_modules",
-    "clean:demo": "rm -rf ./examples/build ./examples/dist",
+    "clean:demo": "rm -rf ./examples/dist",
+    "clean:docs": "rm -rf ./docs",
     "build": "tsc -b ./packages/stepcode/tsconfig.json",
     "build:core": "tsc -b ./packages/stepcode-core/tsconfig.json",
     "build:editor": "tsc -b ./packages/stepcode-editor/tsconfig.json",
+    "build:docs": "yarn clean:docs && yarn demo:build && yarn copy:static:docs",
     "watch": "yarn build --watch",
     "start:editor": "yarn build:editor --watch & yarn demo:start",
     "doc": "node ./scripts/docgen.js",
     "demo:start": "parcel ./examples/src/index.html --out-dir=./examples/dist",
     "demo:build": "parcel build ./examples/src/index.html --out-dir=./docs --public-url ./ --no-source-maps",
-    "sass:build": "parcel build ./packages/stepcode/styles/style.scss --out-dir=./packages/stepcode/css"
+    "sass:build": "parcel build ./packages/stepcode/styles/style.scss --out-dir=./packages/stepcode/css",
+    "copy:static:dev": "cp -rf ./examples/src/static ./examples/dist/",
+    "copy:static:docs": "cp -rf ./examples/src/static ./docs/"
   }
 }
