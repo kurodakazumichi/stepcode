@@ -23,7 +23,16 @@ const Util = {
       },
       responseType: 'json' 
     });
-    return await axios.get(url+".json");
+
+    // データを取得
+    const result = await axios.get(url+".json");
+
+    // 通信成功、かつデータがあればレスポンスデータを返す
+    if (result.status === 200 && result.data) {
+      return result.data;
+    } else {
+      return null;
+    }
   },
   fileread(e:Event, callback:Function) {
     
@@ -105,9 +114,9 @@ class App {
 
     // URLがあればデータ取得を試みる
     if (url) {
-      const result = await Util.getContent(url);
-      if (result.data) {
-        return result.data;
+      const data = await Util.getContent(url);
+      if (data) {
+        return data;
       }
     } 
 
@@ -149,9 +158,9 @@ class App {
     
         if (!url) return;
     
-        const result = await Util.getContent(url);
-        if (result.data) {
-          this.stepcode.load(result.data);
+        const data = await Util.getContent(url);
+        if (data) {
+          this.stepcode.load(data);
           window.scrollTo(0, 0);
         } else {
           alert("データの取得に失敗しました。");
