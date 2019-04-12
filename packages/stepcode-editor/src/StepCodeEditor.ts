@@ -246,7 +246,7 @@ export default class StepCodeEditor {
     this.ui.setCbOnClickGuideItem(this.onClickGuideItem.bind(this));
     this.ui.setCbOnDragStartGuideItem(this.onDragStartGuideItem.bind(this));
     this.ui.setCbOnDragEnterGuideItem(this.onDragEnterGuideItem.bind(this));
-    this.ui.setCbOnSwapGuideItem(this.onSwapGuideItem.bind(this));
+    this.ui.setCbOnDropGuideItem(this.onDropGuideItem.bind(this));
     
     // キーボードイベント
     document.body.addEventListener('keydown', this.onKeyDown.bind(this));
@@ -396,15 +396,26 @@ export default class StepCodeEditor {
   }
 
   /**
-   * ステップが入れ替えられた時の処理
+   * ステップがドロップされた時の処理
    */
-  public onSwapGuideItem(fromIdx:number, toIdx:number) 
+  public onDropGuideItem(dragIdx:number, dropIdx:number) 
   {
-    // Stepを入れ替え、入れ替えられなかったら終了
-    if (!this.core.steps.swap(fromIdx, toIdx)) return;
+    // 入れ替え先が同じ場合はUIの更新だけ
+    if (dragIdx === dropIdx) {
+      console.log("skip");
+      this.ui.update(this.core);
+      return;
+    }
+
+    // ドロップされた場所にドラッグされたステップを入れる
+    const step = this.core.steps.get(dragIdx);
+    if (step) {
+      this.core.steps.remove(dragIdx);
+      this.core.steps.add(dropIdx, step);
+    }
 
     // 入れ替え先にフォーカスして全体を更新。
-    this.core.to(toIdx);
+    this.core.to(dropIdx);
     this.work.apply(this.core.current);
     this.ui.update(this.core);
   }

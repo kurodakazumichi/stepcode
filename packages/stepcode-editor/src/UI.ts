@@ -11,7 +11,7 @@ import * as Util from './Util';
  * 型定義
  *****************************************************************************/
 type GuideItemOnClickFunction     = (clickIndex:number) => void;
-type GuideItemOnSwapFunction      = (fromIndex:number, toIndex:number) => void;
+type GuideItemOnDropFunction      = (dragIndex:number, dropIndex:number) => void;
 type GuideItemOnDragEnterFunction = (overIndex:number, underIndex:number) => void;
 type GuideItemOnDragStartFunction = (startIndex:number) => void;
 
@@ -492,9 +492,9 @@ export default class UI {
     if (!e.dataTransfer) return;
     
     // コールバックを実行
-    const fromIdx = Number(e.dataTransfer.getData('text'));
-    const toIdx   = Number(Util.dom.get.data(e.target, 'index', '0'));
-    this.cbOnSwapGuideItem(fromIdx, toIdx);
+    const dragIdx = Number(e.dataTransfer.getData('text'));
+    const dropIdx = Number(Util.dom.get.data(e.target, 'index', '0'));
+    this.cbOnDropGuideItem(dragIdx, dropIdx);
   }
 
   //---------------------------------------------------------------------------
@@ -516,9 +516,9 @@ export default class UI {
   private cbOnDragEnterGuideItem: GuideItemOnDragEnterFunction = () => {};
 
   /**
-   * ガイドアイテムが入れ替えされた時に実行されるコールバック関数
+   * ガイドアイテムがドロップされた時に実行されるコールバック関数
    */
-  private cbOnSwapGuideItem:GuideItemOnSwapFunction = () => {};
+  private cbOnDropGuideItem:GuideItemOnDropFunction = () => {};
 
   /**
    * ガイドアイテムのクリック時コールバックを設定する
@@ -548,8 +548,8 @@ export default class UI {
    * ガイドアイテムの入れ替え時のコールバックを設定する
    * @param callback コールバック
    */
-  setCbOnSwapGuideItem(callback:GuideItemOnSwapFunction) {
-    this.cbOnSwapGuideItem = callback;
+  setCbOnDropGuideItem(callback:GuideItemOnDropFunction) {
+    this.cbOnDropGuideItem = callback;
   }
 
   //---------------------------------------------------------------------------
