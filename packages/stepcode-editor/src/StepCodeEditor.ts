@@ -1,11 +1,12 @@
 /******************************************************************************
  * import
  *****************************************************************************/
+import * as Util from '@puyan/stepcode-util';
 import Core, { Step } from 'stepcode-core';
 import * as StepCode from 'stepcode';
 import * as UI from './UI';
 import * as Config from './Config';
-import * as Util from './Util';
+
 
 enum KeyCode {
   ArrowLeft = 37,
@@ -155,7 +156,7 @@ export default class StepCodeEditor {
    */
   private getInitData() {
     // ストレージにデータがあればストレージのデータを、なければ初期データを使用する
-    const savedata = Util.storage.savedata;
+    const savedata = Util.storage.load();
     const data     = (savedata)? savedata : Config.INIT_DATA;
     return data;
   }
@@ -361,14 +362,14 @@ export default class StepCodeEditor {
   private onClickDownload() {
     const { core } = this;
     const title = (core.first && core.first.title)? core.first.title : "notitle";
-    Util.fs.download(title, core.toJSON());
+    Util.file.download(title, core.toJSON());
   }
 
   /**
    * ファイルが選択された時の処理
    */
   private onChangeFile(e:Event) {
-    Util.fs.readFile(e, (file:any) => {
+    Util.file.read(e, (file:any) => {
       this.load(JSON.parse(file));
     });
   }

@@ -5,7 +5,7 @@ import Ace from 'ace-builds';
 import Core from 'stepcode-core';
 import StepCode from 'stepcode';
 import * as Config from './Config';
-import * as Util from './Util';
+import * as Util from '@puyan/stepcode-util';
 
 /******************************************************************************
  * 型定義

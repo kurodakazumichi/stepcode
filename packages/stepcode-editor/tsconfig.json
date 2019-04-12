@@ -6,6 +6,7 @@
   },
   "references": [
     { "path": "../stepcode" },
-    { "path": "../stepcode-core" }
+    { "path": "../stepcode-core" },
+    { "path": "../stepcode-util" }
   ]
 }
