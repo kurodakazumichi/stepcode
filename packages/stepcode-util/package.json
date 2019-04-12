@@ -1,0 +1,24 @@
+{
+  "name": "@puyan/stepcode-util",
+  "version": "0.0.0",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "license": "MIT",
+  "files":[
+    "build",
+    "package.json"
+  ],
+  "scripts": {
+    "test": "jest --coverage --watch"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.11",
+    "@types/node": "^11.11.3",
+    "jest": "^24.5.0",
+    "ts-jest": "^24.0.0",
+    "typescript": "next"
+  },
+  "peerDependencies": {
+    "stepcode-core":"1.0.0"
+  }
+}
