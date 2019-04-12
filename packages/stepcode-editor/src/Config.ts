@@ -122,13 +122,15 @@ const config =
     /** エディター:ヘッダ:テキスト */
     [UIType.EditorHeaderTitle]: {
       tag:"input",
-      placeholder:"タイトル"
+      placeholder:"タイトル",
+      name:"title"
     },
 
     /** エディター:ヘッダ:ファイル */
     [UIType.EditorHeaderFile]: {
       tag:"input",
-      placeholder:"ファイル名"
+      placeholder:"ファイル名",
+      name:"filename"
     },
 
 
