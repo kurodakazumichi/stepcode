@@ -57,7 +57,8 @@ export enum UIType {
   MainPreview         = "MainPreview",
   MainPreviewStepCode = "MainPreviewStepCode",
   EditorHeader        = "EditorHeader",
-  EditorHeaderTitle   = "EditorHeaderText",
+  EditorHeaderTitle   = "EditorHeaderTitle",
+  EditorHeaderFile    = "EditorHeaderFile",
   EditorHeaderLang    = "EditorHeaderLang",
   EditorCode          = "EditorCode",
   EditorCodeAce       = "EditorCodeAce",
@@ -123,6 +124,13 @@ const config =
       tag:"input",
       placeholder:"タイトル"
     },
+
+    /** エディター:ヘッダ:ファイル */
+    [UIType.EditorHeaderFile]: {
+      tag:"input",
+      placeholder:"ファイル名"
+    },
+
 
     /** エディター:ヘッダ:言語 */
     [UIType.EditorHeaderLang]: {
