@@ -450,16 +450,16 @@ export default class StepCodeEditor {
       switch(ev.keyCode) {
         case KeyCode.Num6: this.ui.ace.focus(); break;
         case KeyCode.Num7: this.ui.md.focus(); break;
-        case KeyCode.Num8: this.addStepBefore(); break;
-        case KeyCode.Num9: this.addStepAfter(); break;
-        case KeyCode.Num0: this.addStepLast(); break;
+        case KeyCode.Num8: this.syncWorkToCurrentOfCore(); this.addStepBefore(); break;
+        case KeyCode.Num9: this.syncWorkToCurrentOfCore(); this.addStepAfter(); break;
+        case KeyCode.Num0: this.syncWorkToCurrentOfCore(); this.addStepLast(); break;
       }
     };
 
     if (ev.ctrlKey && ev.shiftKey) {
       switch(ev.keyCode) {
-        case KeyCode.ArrowLeft : this.prev(); break;
-        case KeyCode.ArrowRight: this.next(); break;
+        case KeyCode.ArrowLeft : this.syncWorkToCurrentOfCore(); this.prev(); break;
+        case KeyCode.ArrowRight: this.syncWorkToCurrentOfCore(); this.next(); break;
       }
     }
   }
