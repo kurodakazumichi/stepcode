@@ -201,6 +201,11 @@ export default class StepCodeEditor {
     this.ui.on(UI.ElementType.Title, 'blur', this.reflectEditorToStepCode.bind(this));
 
     //-------------------------------------------------------------------------
+    // ファイル名が変更された時の処理
+    this.ui.on(UI.ElementType.File, 'input', this.onInputFile.bind(this));
+    this.ui.on(UI.ElementType.File, 'blur', this.reflectEditorToStepCode.bind(this));
+
+    //-------------------------------------------------------------------------
     // 言語変更時
     this.ui.on(UI.ElementType.Lang, 'change', this.onChangeLang.bind(this));
     this.ui.on(UI.ElementType.Lang, 'blur', this.reflectEditorToStepCode.bind(this));
@@ -264,6 +269,15 @@ export default class StepCodeEditor {
 
     // セッションストレージに保存
     this.saveWorkToStorage();
+  }
+
+  /**
+   * ファイルの入力内容が変更された時
+   * @param e イベントオブジェクト
+   */
+  private onInputFile(e:Event) {
+    this.work.file = Util.dom.get.value(e.target);
+    this.ui.stepcode.previewFile(this.work.file);
   }
 
   /**
