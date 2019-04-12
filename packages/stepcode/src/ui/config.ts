@@ -9,6 +9,7 @@ export const classNames = {
   root                : "sc-root",
   header              : "sc-header",
   headerTitle         : "sc-header__title",
+  headerFileName      : "sc-header__filename",
   editor              : "sc-editor",
   editorLines         : "sc-editor__lines",
   editorLinesItem     : "sc-editor__lines__item",
@@ -34,26 +35,27 @@ export const classNames = {
  * UIのType
  *****************************************************************************/
 export enum UIType {
-  Header             = "Header,",
-  HeaderTitle        = "HeaderTitle,",
-  Editor             = "Editor,",
-  EditorLines        = "EditorLines,",
-  EditorLinesItem    = "EditorLinesItem,",
-  EditorCodes        = "EditorCodes,",
-  EditorCodesPre     = "EditorCodesPre,",
-  EditorCodesPreCode = "EditorCodesPreCode,",
-  Comment            = "Comment,",
-  Footer             = "Footer,",
-  FooterLogo         = "FooterLogo,",
-  Buttons            = "Buttons,",
-  ButtonsPrev        = "ButtonsPrev,",
-  ButtonsNext        = "ButtonsNext,",
-  Pager              = "Pager,",
-  PagerCurrent       = "PagerCurrent,",
-  PagerSepalater     = "PagerSepalater,",
-  PagerTotal         = "PagerTotal,",
-  Progress           = "Progress,",
-  ProgressItem       = "ProgressItem,",
+  Header             = "Header",
+  HeaderTitle        = "HeaderTitle",
+  HeaderFileName     = "HeaderFileName",
+  Editor             = "Editor",
+  EditorLines        = "EditorLines",
+  EditorLinesItem    = "EditorLinesItem",
+  EditorCodes        = "EditorCodes",
+  EditorCodesPre     = "EditorCodesPre",
+  EditorCodesPreCode = "EditorCodesPrecode",
+  Comment            = "Comment",
+  Footer             = "Footer",
+  FooterLogo         = "FooterLogo",
+  Buttons            = "Buttons",
+  ButtonsPrev        = "ButtonsPrev",
+  ButtonsNext        = "ButtonsNext",
+  Pager              = "Pager",
+  PagerCurrent       = "PagerCurrent",
+  PagerSepalater     = "PagerSepalater",
+  PagerTotal         = "PagerTotal",
+  Progress           = "Progress",
+  ProgressItem       = "ProgressItem",
 }
 
 /******************************************************************************
@@ -76,6 +78,12 @@ const config =
     [UIType.HeaderTitle]:{
       tag:"span",
       className:classNames.headerTitle,
+    },
+
+    /** ヘッダ:ファイルネーム */
+    [UIType.HeaderFileName]: {
+      tag:"div",
+      className:classNames.headerFileName,
     },
 
     /** エディター */
@@ -207,7 +215,7 @@ export function createElement(uiType:UIType) :HTMLElement
   }
   
   const e = document.createElement(data.tag);
-  e.className = (data.className)? data.className : "";
-  e.innerHTML = (data.innerHTML)? data.innerHTML : "";
+  Object.assign(e, data);
+
   return e;
 }
