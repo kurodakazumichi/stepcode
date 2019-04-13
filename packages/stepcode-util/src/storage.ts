@@ -1,72 +1,98 @@
 /******************************************************************************
  * ストレージに関するUtil
  *****************************************************************************/
-import Core, {Step} from 'stepcode-core';
+import Core, { Step } from 'stepcode-core';
 
-export default  
-{
-  /**
-   * Coreの内容をストレージに保存する
-   */
-  save(core:Core) {
-    this.clear();
-    this.saveMeta(core);
-    for(let i = 0; i < core.count; ++i) {
-      const step = core.steps.get(i);
-      step && this.saveStep(i, step)
-    }
-  },
+/******************************************************************************
+ * ストレージに保存する際のキー定義
+ *****************************************************************************/
+const PREFIX = 'StepCodeEditor__';
+const SKEY_STEP = PREFIX + 'step__';
+const SKEY_COUNT = PREFIX + 'count';
 
-  /**
-   * ストレージの保存されているデータをロードする。
-   */
-  load() {
+/******************************************************************************
+ * 関数定義
+ *****************************************************************************/
+/**
+ * Coreの内容をストレージに保存する
+ */
+function save(core: Core) {
+  clear();
 
-    const data = [];
-
-    if (this.stepCount() === 0) return null;
-
-    for(let i = 0; i < this.stepCount(); ++i) {
-      const step = this.getStep(i);  
-      step && data.push(step);
-    }
-    return {steps:data};
-  },
-
-  /**
-   * メタデータをストレージに保存する
-   */
-  saveMeta(core:Core) {
-    sessionStorage.setItem("count", core.count.toString());
-  },
-
-  /**
-   * Stepの内容をストレージに保存する
-   */
-  saveStep(index:number, step:Step) {
-    sessionStorage.setItem(index.toString(), JSON.stringify(step.toJSON()));
-  },
-
-  /**
-   * ストレージの保存されているステップのデータを取得する
-   */
-  getStep(index:number) {
-    const step = sessionStorage.getItem(index.toString());
-    return (step)? JSON.parse(step):null;
-  },
-
-  /**
-   * ストレージをクリアする
-   */
-  clear() {
-    sessionStorage.clear();
-  },
-
-  /**
-   * ストレージの保存されているステップの数を取得する。
-   */
-  stepCount() {
-    const count = sessionStorage.getItem('count');
-    return (count)? Number(count) : 0;
-  },
+  saveCount(core.count);
+  for (let i = 0; i < core.count; ++i) {
+    const step = core.steps.get(i);
+    step && saveStep(i, step);
+  }
 }
+
+/**
+ * ストレージの保存されているデータをロードする。
+ */
+function load() {
+  const data = [];
+
+  if (loadCount() === 0) return null;
+
+  for (let i = 0; i < loadCount(); ++i) {
+    const step = loadStep(i);
+    step && data.push(step);
+  }
+  return { steps: data };
+}
+
+/**
+ * ストレージをクリアする
+ */
+function clear() {
+  const count = loadCount();
+  for (let i = 0; i < count; ++i) {
+    sessionStorage.removeItem(PREFIX + i);
+  }
+  sessionStorage.removeItem(SKEY_COUNT);
+}
+
+/**
+ * Stepの内容をストレージに保存する
+ */
+function saveStep(index: number, step: Step) {
+  const key = SKEY_STEP + index;
+  sessionStorage.setItem(key, JSON.stringify(step.toJSON()));
+}
+
+/**
+ * ストレージの保存されているステップのデータを取得する
+ */
+function loadStep(index: number) {
+  const key = SKEY_STEP + index;
+  const step = sessionStorage.getItem(key);
+  return step ? JSON.parse(step) : null;
+}
+
+/**
+ * メタデータをストレージに保存する
+ */
+function saveCount(count: number) {
+  sessionStorage.setItem(SKEY_COUNT, count.toString());
+}
+
+/**
+ * ストレージの保存されているステップの数を取得する。
+ */
+function loadCount() {
+  const count = sessionStorage.getItem(SKEY_COUNT);
+  return count ? Number(count) : 0;
+}
+
+/******************************************************************************
+ * export
+ *****************************************************************************/
+export default {
+  save,
+  load,
+  clear,
+  saveStep,
+  loadStep,
+  saveCount,
+  loadCount
+};

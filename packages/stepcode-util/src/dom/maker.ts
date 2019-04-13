@@ -2,10 +2,23 @@
  * DOMを生成するメーカー
  *****************************************************************************/
 
-/** HTMLOptionElementを生成する */
-export const option = (text:string, value?:string):HTMLOptionElement =>{
+/******************************************************************************
+ * 関数定義
+ *****************************************************************************/
+
+/**
+ * HTMLOptionElementを生成する
+ * @param caption 表示される名称
+ * @param value optionのvalue値
+ */
+function option(caption: string, value?: string): HTMLOptionElement {
   const e = document.createElement('option') as HTMLOptionElement;
-  e.innerHTML = text;
+  e.innerHTML = caption;
   value && (e.value = value);
   return e;
 }
+
+/******************************************************************************
+ * export
+ *****************************************************************************/
+export { option };
