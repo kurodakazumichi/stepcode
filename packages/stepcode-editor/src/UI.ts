@@ -157,7 +157,7 @@ export default class UI {
   }
 
   public updateEditor(store: Store) {
-    const json = store.current.json;
+    const json = store.getCurrentJSON();
     this.title = json ? json.title : '';
     this.file = json ? json.file : '';
     this.lang = json ? json.lang : '';
@@ -168,7 +168,7 @@ export default class UI {
 
   public updateStepCode(store: Store) {
     this.stepcode.load(store.core.json);
-    this.stepcode.show(store.current.no);
+    this.stepcode.show(store.current.idx);
   }
 
   public updateGuide(store: Store) {
