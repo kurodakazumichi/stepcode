@@ -22,20 +22,19 @@ export enum CallbackType {
   /** ページジャンプ処理が実行される直前に呼ばれるイベント */
   JumpBefore,
   /** ページジャンプ処理が実行される直後に呼ばれるイベント */
-  JumpAfter,
-};
+  JumpAfter
+}
 
 /******************************************************************************
  * Interface
  *****************************************************************************/
 /** Callback関数のシグネチャ */
-export type ICallbackFunc = (stepcode:StepCode) => void;
+export type ICallbackFunc = (stepcode: StepCode) => void;
 
 /******************************************************************************
  * StepCode本体
  *****************************************************************************/
-export default class StepCode
-{
+export default class StepCode {
   //---------------------------------------------------------------------------
   // 静的メンバ
 
@@ -49,17 +48,16 @@ export default class StepCode
   //---------------------------------------------------------------------------
   // コンストラクタ
 
-  /** 
+  /**
    * データのロードとUIの構築を行う。
    */
-  constructor(selector:string |  HTMLElement, datas:any) 
-  {
+  constructor(selector: string | HTMLElement, datas: any) {
     // コールバック関数配列を初期化
     this.callbacks = [];
 
     // StepCode(コア)を保持
     this.core = new Core(datas);
-    
+
     // ルート要素を取得、保持
     this.ui = new UI(selector);
     this.updateUI();
@@ -74,13 +72,13 @@ export default class StepCode
   // private メンバ
 
   /** StepCode本体 */
-  private core:Core;
+  private core: Core;
 
   /** UI */
-  private ui:UI;
+  private ui: UI;
 
   /** コールバック関数を格納する配列 */
-  private callbacks:ICallbackFunc[];
+  private callbacks: ICallbackFunc[];
 
   //---------------------------------------------------------------------------
   // public プロパティ
@@ -108,7 +106,7 @@ export default class StepCode
    * すでに読み込まれているデータがある場合は破棄されます。
    * @param data ロードするデータ
    */
-  public load(data:any) {
+  public load(data: any) {
     // 新しいデータを適用する。
     this.core.apply(data);
 
@@ -120,7 +118,7 @@ export default class StepCode
    * 指定されたタイトルテキストをプレビューします。(実際のデータは変更されません)
    * @param title タイトルに設定するテキスト
    */
-  previewTitle(title:string) {
+  previewTitle(title: string) {
     this.ui.previewTitle(title);
   }
 
@@ -128,7 +126,7 @@ export default class StepCode
    * 指定されたファイル名をプレビューします(実際のデータは変更されません)
    * @param name ファイル名
    */
-  previewFile(name:string) {
+  previewFile(name: string) {
     this.ui.previewFile(name);
   }
 
@@ -136,8 +134,8 @@ export default class StepCode
    * 指定された[[Step]]のコードをプレビューします。(実際のデータは変更されません)
    * @param step [[Step]]
    */
-  previewCode(step:Step) {
-    const diffs = this.core.calcDiffs(this.core.prev, step);    
+  previewCode(step: Step) {
+    const diffs = this.core.calcDiffs(this.core.prev, step);
     this.ui.previewCode(step, diffs);
   }
 
@@ -145,7 +143,7 @@ export default class StepCode
    * 指定された[[Step]]のコメントをプレビューします。(実際のデータは変更されません)
    * @param step [[Step]]
    */
-  previewComment(step:Step) {
+  previewComment(step: Step) {
     this.ui.previewComment(step);
   }
 
@@ -153,7 +151,7 @@ export default class StepCode
    * 指定された[[Step]]の内容をプレビューします。(実際のデータは変更されません)
    * @param step [[Step]]
    */
-  previewStep(step:Step) {
+  previewStep(step: Step) {
     this.previewTitle(step.title);
     this.previewCode(step);
     this.previewComment(step);
@@ -163,9 +161,9 @@ export default class StepCode
    * 指定されたステップを表示する
    * @param no 表示するStep番号
    */
-  public show(no:number) {
+  public show(no: number) {
     // coreは配列のindexを使うので-1してUIを更新。
-    this.core.to(no - 1);
+    this.core.at(no - 1);
     this.updateUI();
   }
 
@@ -174,7 +172,7 @@ export default class StepCode
    * @param type コールバックの種類
    * @param func コールバック関数
    */
-  public setCallback(type:CallbackType, func:ICallbackFunc) {
+  public setCallback(type: CallbackType, func: ICallbackFunc) {
     this.callbacks[type] = func;
   }
 
@@ -182,7 +180,7 @@ export default class StepCode
    * Editorのスクロールトップの量を設定する
    * @param value スクロール量
    */
-  public setEditorScrollTop(value:number) {
+  public setEditorScrollTop(value: number) {
     this.ui.setEditorScrollTop(value);
   }
 
@@ -191,9 +189,9 @@ export default class StepCode
    */
   public prev() {
     this.doCallback(CallbackType.PrevBefore);
-    this.core.toPrev(); 
+    this.core.toPrev();
     this.doCallback(CallbackType.PrevAfter);
-    this.updateUI(); 
+    this.updateUI();
   }
 
   /**
@@ -201,18 +199,18 @@ export default class StepCode
    */
   public next() {
     this.doCallback(CallbackType.NextBefore);
-    this.core.toNext(); 
+    this.core.toNext();
     this.doCallback(CallbackType.NextAfter);
-    this.updateUI(); 
+    this.updateUI();
   }
 
   /**
    * ページジャンプの処理
    * @param toIndex 異動先のページIndex
    */
-  public jump(toIndex:number) {
+  public jump(toIndex: number) {
     this.doCallback(CallbackType.JumpBefore);
-    this.core.to(toIndex);
+    this.core.at(toIndex);
     this.doCallback(CallbackType.JumpAfter);
     this.updateUI();
   }
@@ -231,9 +229,8 @@ export default class StepCode
    * 指定されたコールバック関数を実行する
    * @param type 実行するコールバックの種類
    */
-  private doCallback(type:CallbackType) {
+  private doCallback(type: CallbackType) {
     const func = this.callbacks[type];
     func && func(this);
   }
-
 }
