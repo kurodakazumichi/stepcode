@@ -145,8 +145,13 @@ export default class UI {
    * Editorのスクロール量を設定する
    * @param value スクロール量
    */
-  public setEditorScrollTop(value: number) {
+  public setScrollTopToEditor(value: number) {
     this.editor.node.scrollTop = value;
+  }
+
+  /** Editorのスクロール量を取得する */
+  public getScrollTopOfEditor() {
+    return this.editor.node.scrollTop;
   }
 
   /**

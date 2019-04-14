@@ -130,20 +130,17 @@ export default class StepCode {
    * @param step [[Step]]
    */
   private previewCode(step: Step) {
-    const { current, prev } = this.core;
-
-    if (current && current.code === step.code) return;
+    const { prev } = this.core;
     const diffs = this.core.calcDiffs(prev, step);
     this.ui.previewCode(step, diffs);
   }
 
   /**
    * 指定されたステップを表示する
-   * @param no 表示するStep番号
+   * @param idx 表示するStepのIndex
    */
-  public show(no: number) {
-    // coreは配列のindexを使うので-1してUIを更新。
-    this.core.at(no - 1);
+  public show(idx: number) {
+    this.core.at(idx);
     this.updateUI();
   }
 
@@ -160,8 +157,15 @@ export default class StepCode {
    * Editorのスクロールトップの量を設定する
    * @param value スクロール量
    */
-  public setEditorScrollTop(value: number) {
-    this.ui.setEditorScrollTop(value);
+  public setScrollTopToEditor(value: number) {
+    this.ui.setScrollTopToEditor(value);
+  }
+
+  /**
+   * Editorのスクロールトップの量を取得する
+   */
+  public getScrollTopOfEditor() {
+    return this.ui.getScrollTopOfEditor();
   }
 
   /**
