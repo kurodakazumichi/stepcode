@@ -55,7 +55,8 @@ function clear() {
 /**
  * Stepの内容をストレージに保存する
  */
-function saveStep(index: number, step: Step) {
+function saveStep(index: number, step: Step | null) {
+  if (!step) return;
   const key = SKEY_STEP + index;
   sessionStorage.setItem(key, JSON.stringify(step.toJSON()));
 }
