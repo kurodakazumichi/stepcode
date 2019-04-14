@@ -62,7 +62,7 @@ export default class StepCodeEditor {
    */
   public load(data: any) {
     this.store.load(data);
-    this.ui.update(this.store.deprecatedCore);
+    this.ui.update(this.store);
   }
 
   /**
@@ -75,7 +75,7 @@ export default class StepCodeEditor {
     // 追加されたステップとエディターに表示されている内容は一致するはずなので
     // エディター以外のUIを更新する。
     this.ui.addGuideItemAndUpdate(addedIdx, false);
-    this.ui.updateStepCode(this.store.deprecatedCore);
+    this.ui.updateStepCode(this.store);
     this.ui.footerInfo = this.store.current.no;
   }
 
@@ -89,7 +89,7 @@ export default class StepCodeEditor {
     // 追加されたステップとエディターに表示されている内容は一致するはずなので
     // エディター以外のUIを更新する。
     this.ui.addGuideItemAndUpdate(addedIdx, false);
-    this.ui.updateStepCode(this.store.deprecatedCore);
+    this.ui.updateStepCode(this.store);
     this.ui.footerInfo = this.store.current.no;
   }
 
@@ -103,7 +103,7 @@ export default class StepCodeEditor {
     // 追加されたステップとエディターに表示されている内容は一致するはずなので
     // エディター以外のUIを更新する。
     this.ui.addGuideItemAndUpdate(addedIdx, false);
-    this.ui.updateStepCode(this.store.deprecatedCore);
+    this.ui.updateStepCode(this.store);
     this.ui.footerInfo = this.store.current.no;
   }
 
@@ -113,7 +113,7 @@ export default class StepCodeEditor {
    */
   public deleteStep(delIndex: number) {
     this.store.removeStep(delIndex);
-    this.ui.update(this.store.deprecatedCore);
+    this.ui.update(this.store);
     return true;
   }
 
@@ -268,11 +268,9 @@ export default class StepCodeEditor {
    */
   private onInputTitle(e: Event) {
     // work.title、プレビューを更新
-    this.store.deprecatedWork.title = Util.dom.get.value(e.target);
-    this.ui.stepcode.previewTitle(this.store.deprecatedWork.title);
-
-    // セッションストレージに保存
-    this.saveWorkToStorage();
+    const title = Util.dom.get.value(e.target);
+    this.store.updateWork({ title });
+    this.ui.stepcode.previewTitle(title);
   }
 
   /**
@@ -280,8 +278,9 @@ export default class StepCodeEditor {
    * @param e イベントオブジェクト
    */
   private onInputFile(e: Event) {
-    this.store.deprecatedWork.file = Util.dom.get.value(e.target);
-    this.ui.stepcode.previewFile(this.store.deprecatedWork.file);
+    const file = Util.dom.get.value(e.target);
+    this.store.updateWork({ file });
+    this.ui.stepcode.previewFile(file);
   }
 
   /**
@@ -290,8 +289,9 @@ export default class StepCodeEditor {
    */
   private onChangeLang(e: Event) {
     // work.lang、プレビューを更新
-    this.store.deprecatedWork.lang = Util.dom.get.value(e.target);
-    this.ui.stepcode.previewCode(this.store.deprecatedWork);
+    const lang = Util.dom.get.value(e.target);
+    this.store.updateWork({ lang });
+    this.ui.stepcode.previewCode(this.store.getWork());
 
     // セッションストレージに保存
     this.saveWorkToStorage();
@@ -302,8 +302,9 @@ export default class StepCodeEditor {
    */
   private onChangeAce() {
     // work.code、プレビューを更新
-    this.store.deprecatedWork.code = this.ui.ace.getValue();
-    this.ui.stepcode.previewCode(this.store.deprecatedWork);
+    const code = this.ui.ace.getValue();
+    this.store.updateWork({ code });
+    this.ui.stepcode.previewCode(this.store.getWork());
     this.ui.stepcode.setEditorScrollTop(
       this.ui.ace.getSession().getScrollTop()
     );
@@ -318,8 +319,9 @@ export default class StepCodeEditor {
    */
   private onInputMarkdown(e: Event) {
     // work.descとプレビューを更新
-    this.store.deprecatedWork.desc = Util.dom.get.value(e.target);
-    this.ui.stepcode.previewComment(this.store.deprecatedWork);
+    const desc = Util.dom.get.value(e.target);
+    this.store.updateWork({ desc });
+    this.ui.stepcode.previewComment(this.store.getWork());
 
     // セッションステレーじに保存
     this.saveWorkToStorage();
@@ -362,9 +364,7 @@ export default class StepCodeEditor {
    * ダウンロードがクリックされた時の処理
    */
   private onClickDownload() {
-    const { deprecatedCore: core } = this.store;
-    const title = core.first && core.first.title ? core.first.title : 'notitle';
-    Util.file.download(title, core.toJSON());
+    Util.file.download(this.store.mainTitle, this.store.core.json);
   }
 
   /**
@@ -404,7 +404,7 @@ export default class StepCodeEditor {
      * StepCodeの内容はDragEnterの方で制御するのでここでは何もしない。
      */
     this.store.atStep(idx);
-    this.ui.updateEditor(this.store.deprecatedCore);
+    this.ui.updateEditor(this.store);
 
     // ドラッグ開始したガイドアイテムを選択状態にする。
     this.ui.resetGuideItemClassAll();
@@ -417,7 +417,7 @@ export default class StepCodeEditor {
   public onDropGuideItem(dragIdx: number, dropIdx: number) {
     // ドロップされた場所にドラッグされたステップを入れる
     this.store.moveStep(dragIdx, dropIdx);
-    this.ui.update(this.store.deprecatedCore);
+    this.ui.update(this.store);
   }
 
   /**
@@ -479,7 +479,7 @@ export default class StepCodeEditor {
     this.syncWorkToCurrentOfCore();
 
     // StepCodeを更新
-    this.ui.updateStepCode(this.store.deprecatedCore);
+    this.ui.updateStepCode(this.store);
   }
 
   /**
@@ -493,8 +493,8 @@ export default class StepCodeEditor {
     this.store.atStep(idx);
 
     // UIを更新
-    this.ui.updateEditor(this.store.deprecatedCore);
-    this.ui.updateGuide(this.store.deprecatedCore);
+    this.ui.updateEditor(this.store);
+    this.ui.updateGuide(this.store);
   }
 
   //---------------------------------------------------------------------------
