@@ -139,6 +139,23 @@ export default class Step {
   }
 
   /**
+   * 指定されたデータのみ更新する
+   */
+  public partialUpdate(data: {
+    title?: string;
+    file?: string;
+    lang?: string;
+    code?: string;
+    desc?: string;
+  }) {
+    if (typeof data.title === 'string') this._title = data.title;
+    if (typeof data.file === 'string') this._file = data.file;
+    if (typeof data.lang === 'string') this._lang = data.lang;
+    if (typeof data.code === 'string') this._code = data.code;
+    if (typeof data.desc === 'string') this._desc = data.desc;
+  }
+
+  /**
    * 同じ情報をもったクローンを生成する
    */
   clone() {
