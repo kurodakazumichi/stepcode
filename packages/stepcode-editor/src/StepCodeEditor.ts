@@ -6,7 +6,7 @@ import * as UI from './UI';
 import * as Config from './Config';
 import Store from './Store';
 import Actions from './Actions';
-
+import Events from './Events';
 /******************************************************************************
  * StepCodeEditorの本体
  *****************************************************************************/
@@ -20,7 +20,9 @@ export default class StepCodeEditor {
     this.store = new Store();
     this.ui = new UI.default(target);
     this.actions = new Actions(this.store, this.ui);
+    this.events = new Events(this.ui, this.store, this.actions);
     this.load(this.getInitData());
+    console.log(this.events);
   }
 
   //---------------------------------------------------------------------------
@@ -34,6 +36,9 @@ export default class StepCodeEditor {
 
   /** アクション */
   private actions: Actions;
+
+  /** イベント */
+  private events: Events;
 
   //---------------------------------------------------------------------------
   // public メソッド
