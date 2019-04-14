@@ -54,6 +54,11 @@ export default class StepCode {
     return this.current ? this.current.title : '';
   }
 
+  /** 最初のタイトル */
+  public get firstTitle() {
+    return this.first ? this.first.title : '';
+  }
+
   /** ステップの総数を取得します。 */
   public get count() {
     return this._steps.count;
