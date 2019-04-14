@@ -115,46 +115,26 @@ export default class StepCode {
   }
 
   /**
-   * 指定されたタイトルテキストをプレビューします。(実際のデータは変更されません)
-   * @param title タイトルに設定するテキスト
+   * 渡された[[Step]]の内容をプレビュー(表示のみ)する。
+   * 保持している内部のデータに影響はない。
    */
-  previewTitle(title: string) {
-    this.ui.previewTitle(title);
-  }
-
-  /**
-   * 指定されたファイル名をプレビューします(実際のデータは変更されません)
-   * @param name ファイル名
-   */
-  previewFile(name: string) {
-    this.ui.previewFile(name);
+  public preview(step: Step) {
+    this.ui.previewTitle(step.title);
+    this.ui.previewFile(step.file);
+    this.previewCode(step);
+    this.ui.previewComment(step);
   }
 
   /**
    * 指定された[[Step]]のコードをプレビューします。(実際のデータは変更されません)
    * @param step [[Step]]
    */
-  previewCode(step: Step) {
-    const diffs = this.core.calcDiffs(this.core.prev, step);
+  private previewCode(step: Step) {
+    const { current, prev } = this.core;
+
+    if (current && current.code === step.code) return;
+    const diffs = this.core.calcDiffs(prev, step);
     this.ui.previewCode(step, diffs);
-  }
-
-  /**
-   * 指定された[[Step]]のコメントをプレビューします。(実際のデータは変更されません)
-   * @param step [[Step]]
-   */
-  previewComment(step: Step) {
-    this.ui.previewComment(step);
-  }
-
-  /**
-   * 指定された[[Step]]の内容をプレビューします。(実際のデータは変更されません)
-   * @param step [[Step]]
-   */
-  previewStep(step: Step) {
-    this.previewTitle(step.title);
-    this.previewCode(step);
-    this.previewComment(step);
   }
 
   /**

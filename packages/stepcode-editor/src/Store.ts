@@ -82,8 +82,10 @@ export default class Store {
     return addIndex;
   }
 
-  public removeStep(index: number) {
+  public removeStep(index?: number) {
     if (!this.hasRemovableleSteps) return false;
+
+    index = index ? index : this.current.idx;
 
     this._core.steps.remove(index);
     this._core.at(index);
@@ -125,7 +127,7 @@ export default class Store {
     this.atStep(toIdx);
   }
 
-  public sync() {
+  public syncWorkToCore() {
     if (this._core.current) {
       this._core.current.apply(this._work.toJSON());
     }
