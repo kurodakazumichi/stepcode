@@ -1,8 +1,13 @@
-import * as UI from './UI';
-import Actions from './Actions';
-import * as StepCode from 'stepcode';
+/******************************************************************************
+ * import
+ *****************************************************************************/
 import * as Util from '@puyan/stepcode-util';
+import * as StepCode from 'stepcode';
+import * as UI from './UI';
 import Store from './Store';
+import Actions from './Actions';
+
+/** キーコードの定義 */
 enum KeyCode {
   ArrowLeft = 37,
   ArrowRight = 39,
@@ -12,32 +17,66 @@ enum KeyCode {
   Num9 = 57,
   Num0 = 48
 }
+
+/******************************************************************************
+ * UIに連動したイベント処理の定義とUIへのイベントの割り当てを担当
+ *****************************************************************************/
 export default class Events {
   constructor(ui: UI.default, store: Store, actions: Actions) {
     this.ui = ui;
     this.store = store;
     this.actions = actions;
-    this.attach();
+    this.init();
   }
   private ui: UI.default;
   private actions: Actions;
   private store: Store;
 
-  //----------------------------------------------------------------
-  public attach() {
+  /**
+   * 初期化
+   */
+  public init() {
+    this.initEventsForEditor();
+    this.initEventsForMenu();
+    this.initEventsForStepCode();
+    this.initEventsForGuide();
+    this.initEventsOfShortcutKey();
+  }
+
+  //---------------------------------------------------------------------------
+  // イベントの初期化
+  // Editor、StepCode、Menu、Guide、ShortcutKey
+
+  private initEventsForEditor() {
     this.ui.on(UI.ElementType.Title, 'input', this.onInputTitle.bind(this));
     this.ui.on(UI.ElementType.Title, 'blue', this.onBlurTitle.bind(this));
     this.ui.on(UI.ElementType.File, 'input', this.onInputFile.bind(this));
     this.ui.on(UI.ElementType.File, 'blur', this.onBlurFile.bind(this));
     this.ui.on(UI.ElementType.Lang, 'change', this.onChangeLang.bind(this));
     this.ui.on(UI.ElementType.Lang, 'blur', this.onBlurLang.bind(this));
-
     this.ui.ace.on('change', this.onChangeAce.bind(this));
     this.ui.ace.on('blur', this.onBlurAce.bind(this));
-
     this.ui.on(UI.ElementType.Desc, 'input', this.onInputMarkdown.bind(this));
     this.ui.on(UI.ElementType.Desc, 'blur', this.onBlurMarkdown.bind(this));
+  }
 
+  private initEventsForStepCode() {
+    // StepCodeのコールバックを設定
+    this.ui.stepcode.setCallback(
+      StepCode.CallbackType.PrevAfter,
+      this.onChangeStepCode.bind(this)
+    );
+    this.ui.stepcode.setCallback(
+      StepCode.CallbackType.NextAfter,
+      this.onChangeStepCode.bind(this)
+    );
+    this.ui.stepcode.setCallback(
+      StepCode.CallbackType.JumpAfter,
+      this.onChangeStepCode.bind(this)
+    );
+  }
+
+  private initEventsForMenu() {
     this.ui.on(
       UI.ElementType.AddStepLast,
       'click',
@@ -71,30 +110,23 @@ export default class Events {
 
     // ファイルが読み込まれた時
     this.ui.on(UI.ElementType.LoadFile, 'change', this.onChangeFile.bind(this));
+  }
 
-    // StepCodeのコールバックを設定
-    this.ui.stepcode.setCallback(
-      StepCode.CallbackType.PrevAfter,
-      this.onChangeStepCode.bind(this)
-    );
-    this.ui.stepcode.setCallback(
-      StepCode.CallbackType.NextAfter,
-      this.onChangeStepCode.bind(this)
-    );
-    this.ui.stepcode.setCallback(
-      StepCode.CallbackType.JumpAfter,
-      this.onChangeStepCode.bind(this)
-    );
-
+  private initEventsForGuide() {
     // ガイドアイテムのコールバックを設定
     this.ui.setCbOnClickGuideItem(this.onClickGuideItem.bind(this));
     this.ui.setCbOnDragStartGuideItem(this.onDragStartGuideItem.bind(this));
     this.ui.setCbOnDragEnterGuideItem(this.onDragEnterGuideItem.bind(this));
     this.ui.setCbOnDropGuideItem(this.onDropGuideItem.bind(this));
+  }
 
+  private initEventsOfShortcutKey() {
     // キーボードイベント
     document.body.addEventListener('keydown', this.onKeyDown.bind(this));
   }
+
+  //---------------------------------------------------------------------------
+  // Editor系のイベント
 
   private onInputTitle(e: Event) {
     console.log('input title');
@@ -119,9 +151,6 @@ export default class Events {
     this.actions.syncStoreToPreview();
   }
 
-  /**
-   * コードの内容が変更された時
-   */
   private onChangeAce() {
     const code = this.ui.ace.getValue();
     this.actions.preview({ code });
@@ -133,13 +162,26 @@ export default class Events {
   }
 
   private onInputMarkdown(e: Event) {
-    // work.descとプレビューを更新
     const desc = Util.dom.get.value(e.target);
     this.actions.preview({ desc });
   }
+
   private onBlurMarkdown(_: Event) {
     this.actions.syncStoreToPreview();
   }
+
+  //---------------------------------------------------------------------------
+  //  StepCode系のイベント
+  /**
+   * ステップコードのページが変更された時の処理
+   * @param stepcode ステップコード
+   */
+  private onChangeStepCode(_: StepCode.default) {
+    this.actions.syncPreviewToEditor();
+  }
+
+  //---------------------------------------------------------------------------
+  //  Menu系のイベント
 
   private onClickAddStepToLast(_: Event) {
     this.actions.addStep('last');
@@ -184,13 +226,8 @@ export default class Events {
     });
   }
 
-  /**
-   * ステップコードのページが変更された時の処理
-   * @param stepcode ステップコード
-   */
-  private onChangeStepCode(_: StepCode.default) {
-    this.actions.syncPreviewToEditor();
-  }
+  //---------------------------------------------------------------------------
+  // Guide系のイベント
 
   /**
    * ガイドアイテムがクリックされた時の処理
@@ -222,6 +259,9 @@ export default class Events {
     // ドロップされた場所にドラッグされたステップを入れる
     this.actions.moveStep(dragIdx, dropIdx);
   }
+
+  //---------------------------------------------------------------------------
+  // ShortcutKeyのイベント
 
   /**
    * ショートカットキーイベント処理
