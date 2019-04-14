@@ -10,25 +10,23 @@ import * as Diff from 'diff';
  *****************************************************************************/
 /** StepCodeのJSONフォーマットインターフェース */
 export interface IJSON {
-  steps: StepsJSON
+  steps: StepsJSON;
 }
 
 /******************************************************************************
  * StepCodeで扱う全てのデータを制御するクラス
- * 
+ *
  * 外部からstepcode-coreを扱う場合、原則としてこのクラスが窓口になります。
  *****************************************************************************/
-export default class StepCode 
-{
+export default class StepCode {
   /**
    * プロパティの初期化、および与えられたデータを解析し読み込みます。
    * @param datas ロードさせるStepCodeのデータ
    */
-  constructor(datas:any) 
-  {
+  constructor(datas: any = {}) {
     // 初期化
     this._cursor = 0;
-    this._steps  = new Steps();
+    this._steps = new Steps();
 
     // データの適用
     this.apply(datas);
@@ -38,10 +36,10 @@ export default class StepCode
   // privatre プロパティ
 
   /** ステップデータ */
-  private _steps:Steps;
+  private _steps: Steps;
 
   /** 現在のステップを指し示すカーソルです。 */
-  private _cursor:number;
+  private _cursor: number;
 
   //---------------------------------------------------------------------------
   // public アクセッサ
@@ -53,7 +51,7 @@ export default class StepCode
 
   /** タイトルを取得します。 */
   public get title() {
-    return (this.current)? this.current.title : "";
+    return this.current ? this.current.title : '';
   }
 
   /** ステップの総数を取得します。 */
@@ -66,9 +64,14 @@ export default class StepCode
     return this._cursor;
   }
 
+  /** 最後のIndex */
+  public get lastIdx() {
+    return this.count - 1;
+  }
+
   /**
    * StepCodeが利用可能かどうか
-   * 
+   *
    * [[constructor]]、および[[apply]]で読み込んだデータが正しく読み込めなかった場合にfalseを返します。
    */
   public get isAvailable(): boolean {
@@ -107,35 +110,39 @@ export default class StepCode
 
   /**
    * コードに差分のある行番号の配列を返します。
-   * 
+   *
    * [[_cursor]]の指すステップと、その１つ前のステップのコードの差分です。
    */
   public get diffs() {
     return this.getDiffLineNums(this._cursor);
   }
 
-  /** 現在のステップ番号(現在ページ番号として利用できます) */ 
+  /** 現在のステップ番号(現在ページ番号として利用できます) */
+
   public get currentNo() {
     return this._cursor + 1;
   }
 
-  /** 最後のステップ番号(最後の番号として利用できます) */ 
+  /** 最後のステップ番号(最後の番号として利用できます) */
+
   public get lastNo() {
     return this.count;
   }
 
-  /** 
+  /**
    * [[_cursor]]が最初のステップを指している場合にtrueになります
-   */ 
+   */
+
   public get isFirst() {
-    return (this._cursor === 0);
+    return this._cursor === 0;
   }
 
-  /** 
+  /**
    * [[_cursor]]が最後のステップを指している場合にtrueになります
-   */ 
+   */
+
   public get isLast() {
-    return (this.currentNo === this.lastNo);
+    return this.currentNo === this.lastNo;
   }
 
   /**
@@ -143,34 +150,33 @@ export default class StepCode
    * @param base 比較元となるステップ
    * @param target 比較先となるステップ
    */
-  public calcDiffs(base:Step|null, target:Step|null) 
-  {
+  public calcDiffs(base: Step | null, target: Step | null) {
     // 差分行番号の配列を生成する
-    const diffs:number[] = [];
+    const diffs: number[] = [];
 
     // 比較対象がなければ空配列を返す
     if (!target) return diffs;
 
     // 比較元のステップがない(最初のページなど)の場合は、全行を変更扱い
     if (!base) {
-      return target.codeArray.map((v, k) => k + 1)
+      return target.codeArray.map((v, k) => k + 1);
     }
 
     // 前後の内容で差分を取り、差分行番号の配列を作成する
     let line = 0;
     const diff = Diff.diffArrays(base.codeArray, target.codeArray);
-    
-    diff.map((data) => {
+
+    diff.map(data => {
       // 削除された行は無視する
       if (!data.count) return;
       if (data.removed) return;
 
       // 追加された行数を登録
       if (data.added) {
-        for(let i = 0; i < data.count; ++i) {
+        for (let i = 0; i < data.count; ++i) {
           diffs.push(++line);
         }
-      } 
+      }
       // 変更がない場合は行数だけ加算する
       else {
         line += data.count;
@@ -187,10 +193,9 @@ export default class StepCode
    * データを適用し、プロパティを初期化する。
    * @param datas ロードさせるStepCodeのデータ
    */
-  public apply(datas:any) 
-  {  
+  public apply(datas: any) {
     // データの適用
-    this._steps.apply(_get(datas, "steps", []));
+    this._steps.apply(_get(datas, 'steps', []));
 
     // カーソルはデータ適用時にリセットする
     this._cursor = 0;
@@ -199,65 +204,64 @@ export default class StepCode
   /**
    * JSONに変換する
    */
-  public toJSON() : IJSON {
+  public toJSON(): IJSON {
     return {
       steps: this.steps.toJSON()
-    }
+    };
   }
 
   /**
    * 指定した位置に[[_cursor]]を移動する。
    * 範囲外を指定した場合、カーソルは0以上、ステップ数未満に収められます。
-   * 
+   *
    * @param point カーソルの位置
    */
-  public to(point:number) {
+  public at(point: number) {
     point = Math.max(0, point);
     point = Math.min(this.count - 1, point);
     this._cursor = point;
   }
 
-  /** 
+  /**
    * [[_cursor]]が先頭に移動します。
    */
   public toFirst() {
-    this.to(0);
+    this.at(0);
   }
 
-  /** 
+  /**
    * [[_cursor]]が最後に移動します。
    */
   public toLast() {
-    this.to(this.count - 1);
+    this.at(this.count - 1);
   }
 
   /**
    * [[_cursor]]を1つ前に移動します、移動できない場合は現在の位置に留まります。
    */
   public toPrev() {
-    this.to(this._cursor - 1);
+    this.at(this._cursor - 1);
   }
 
   /**
    * [[_cursor]]を1つ次に移動します、移動できない場合は現在の位置に留まります。
    */
   public toNext() {
-    this.to(this._cursor + 1);
+    this.at(this._cursor + 1);
   }
 
   //---------------------------------------------------------------------------
   // private メソッド
 
-  /** 
+  /**
    * 指定したステップと１つ前のステップに含まれるコードの差分行配列を取得する。
    * @param stepIndex 差分を取得したいステップを指すIndex
    */
-  private getDiffLineNums(stepIndex:number):number[] 
-  {
+  private getDiffLineNums(stepIndex: number): number[] {
     // 現在と１つ前のステップを取得する
     const cur = this._steps.get(stepIndex);
     const pre = this._steps.get(stepIndex - 1);
-    
+
     return this.calcDiffs(pre, cur);
   }
 }

@@ -9,36 +9,35 @@ import _get from 'lodash/get';
 /** StepのJSONフォーマットインターフェース */
 export interface IJSON {
   /** タイトル */
-  title:string;
+  title: string;
 
   /** ファイル名 */
-  file:string;
+  file: string;
 
   /** ソースコード */
-  code:string;
+  code: string;
 
   /** 解説テキスト(マークダウン) */
-  desc:string;
+  desc: string;
 
   /** 言語の種類 */
-  lang:string;
+  lang: string;
 }
 
 /******************************************************************************
  * 表示するソースコードと解説文を管理するクラス
  *****************************************************************************/
-export default class Step 
-{
+export default class Step {
   /**
    * 与えらたデータをプロパティに適用する。
    * @param data 1ステップに該当するデータ
    */
-  constructor(data:any) {
-    this._title = "";
-    this._file  = "";
-    this._code  = "";
-    this._desc  = "";
-    this._lang  = "";
+  constructor(data: any = {}) {
+    this._title = '';
+    this._file = '';
+    this._code = '';
+    this._desc = '';
+    this._lang = '';
     this.apply(data);
   }
 
@@ -46,19 +45,19 @@ export default class Step
   // private プロパティ
 
   /** タイトル */
-  private _title:string;
+  private _title: string;
 
   /** ファイル名 */
-  private _file:string;
+  private _file: string;
 
   /** コードテキスト */
-  private _code:string;
+  private _code: string;
 
   /** 解説テキスト */
-  private _desc:string;
+  private _desc: string;
 
   /** 言語の種類 */
-  private _lang:string;
+  private _lang: string;
 
   //---------------------------------------------------------------------------
   // public アクセッサ
@@ -69,7 +68,7 @@ export default class Step
   }
 
   /** タイトルをセットします。 */
-  public set title(v:string) {
+  public set title(v: string) {
     this._title = v;
   }
 
@@ -79,7 +78,7 @@ export default class Step
   }
 
   /** ファイル名をセットします */
-  public set file(v:string) {
+  public set file(v: string) {
     this._file = v;
   }
 
@@ -89,7 +88,7 @@ export default class Step
   }
 
   /** コードをセットします。 */
-  public set code(v:string) {
+  public set code(v: string) {
     this._code = v;
   }
 
@@ -110,7 +109,7 @@ export default class Step
   }
 
   /** 解説文をセットします */
-  public set desc(v:string) {
+  public set desc(v: string) {
     this._desc = v;
   }
 
@@ -120,7 +119,7 @@ export default class Step
   }
 
   /** 言語の種類をセットします */
-  public set lang(v:string) {
+  public set lang(v: string) {
     this._lang = v;
   }
 
@@ -131,12 +130,12 @@ export default class Step
    * 与えられたデータをプロパティに適用します。
    * @param data 1ステップに該当するデータ
    */
-  apply(data:any) {
-    this._title = _get(data, "title", "");
-    this._file  = _get(data, "file", "");
-    this._code  = _get(data, "code", "");
-    this._desc  = _get(data, "desc", "");
-    this._lang  = _get(data, "lang", "");
+  apply(data: any) {
+    this._title = _get(data, 'title', '');
+    this._file = _get(data, 'file', '');
+    this._code = _get(data, 'code', '');
+    this._desc = _get(data, 'desc', '');
+    this._lang = _get(data, 'lang', '');
   }
 
   /**
@@ -149,13 +148,13 @@ export default class Step
   /**
    * JSONに変換する
    */
-  public toJSON() :IJSON{
+  public toJSON(): IJSON {
     return {
       title: this._title,
-      file : this._file,
-      code : this._code,
-      desc : this._desc,
-      lang : this._lang
+      file: this._file,
+      code: this._code,
+      desc: this._desc,
+      lang: this._lang
     };
   }
 }
