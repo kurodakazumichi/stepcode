@@ -2,11 +2,11 @@
  * import
  *****************************************************************************/
 import * as Util from '@puyan/stepcode-util';
-import Core, { Step } from 'stepcode-core';
+//import Core, { Step } from 'stepcode-core';
 import * as StepCode from 'stepcode';
 import * as UI from './UI';
 import * as Config from './Config';
-
+import Store from './Store';
 
 enum KeyCode {
   ArrowLeft = 37,
@@ -19,24 +19,20 @@ enum KeyCode {
   Num7 = 55,
   Num8 = 56,
   Num9 = 57,
-  Num0 = 48,
-
+  Num0 = 48
 }
 /******************************************************************************
  * StepCodeEditorの本体
  *****************************************************************************/
 export default class StepCodeEditor {
-
   /**
    * StepCodeEditorを構築する
    * @param target ルート要素を取得するセレクター、またはHTML要素
    */
-  constructor(target:string | HTMLElement) 
-  {
+  constructor(target: string | HTMLElement) {
     (window as any).e = this;
-    this.core     = new Core({});
-    this.work     = new Step({});
-    this.ui       = new UI.default(target);
+    this.store = new Store();
+    this.ui = new UI.default(target);
     this.attachEvent();
     this.load(this.getInitData());
   }
@@ -44,26 +40,11 @@ export default class StepCodeEditor {
   //---------------------------------------------------------------------------
   // private プロパティ
 
-  /** StepCode本体 */
-  private core:Core;
-
   /** 全てのHTMLELementをもつUIインスタンス */
-  private ui:UI.default;
+  private ui: UI.default;
 
-  /** 作業中の内容 */
-  private work:Step;
-
-
-  //---------------------------------------------------------------------------
-  // public プロパティ
-
-  /**
-   * ステップが削除できるかどうか
-   * ステップ削除はステップが２つ以上ないとできない。
-   */
-  public get canDeleteStep() {
-    return (2 <= this.core.count);
-  }
+  /** ストア */
+  private store: Store;
 
   //---------------------------------------------------------------------------
   // public メソッド
@@ -79,53 +60,60 @@ export default class StepCodeEditor {
    * データをロードする。
    * @param data StepCodeのデータ
    */
-  public load(data:any) 
-  {
-    this.core.apply(data);
-    this.work.apply(this.core.current);
-
-    // セッションストレージにCoreを保存
-    Util.storage.save(this.core);
-
-    // UIを更新
-    this.ui.update(this.core);
+  public load(data: any) {
+    this.store.load(data);
+    this.ui.update(this.store.deprecatedCore);
   }
 
   /**
+   * TODO
    * ステップを末尾に追加する
    */
   public addStepLast() {
-    const addIndex = this.core.count - 1;
-    this.addStep(addIndex, this.work);
+    const addedIdx = this.store.addStepToLast();
+
+    // 追加されたステップとエディターに表示されている内容は一致するはずなので
+    // エディター以外のUIを更新する。
+    this.ui.addGuideItemAndUpdate(addedIdx, false);
+    this.ui.updateStepCode(this.store.deprecatedCore);
+    this.ui.footerInfo = this.store.current.no;
   }
 
   /**
+   * TODO
    * ステップを前に追加する
    */
   public addStepBefore() {
-    const addIndex = this.ui.stepcode.currentIdx;
-    this.addStep(addIndex, this.work, true);
+    const addedIdx = this.store.addStepBefore();
+
+    // 追加されたステップとエディターに表示されている内容は一致するはずなので
+    // エディター以外のUIを更新する。
+    this.ui.addGuideItemAndUpdate(addedIdx, false);
+    this.ui.updateStepCode(this.store.deprecatedCore);
+    this.ui.footerInfo = this.store.current.no;
   }
 
   /**
+   * TODO
    * ステップを後ろに追加する
    */
   public addStepAfter() {
-    const addIndex = this.ui.stepcode.currentIdx;
-    this.addStep(addIndex, this.work);
+    const addedIdx = this.store.addStepAfter();
+
+    // 追加されたステップとエディターに表示されている内容は一致するはずなので
+    // エディター以外のUIを更新する。
+    this.ui.addGuideItemAndUpdate(addedIdx, false);
+    this.ui.updateStepCode(this.store.deprecatedCore);
+    this.ui.footerInfo = this.store.current.no;
   }
 
   /**
    * 指定した[[Step]]を削除する
    * @param delIndex 削除するステップの位置
    */
-  public deleteStep(delIndex:number) {
-    if (!this.canDeleteStep) return false;
-
-    this.core.steps.remove(delIndex);
-    this.core.to(delIndex);
-    this.work.apply(this.core.current);
-    this.ui.update(this.core);
+  public deleteStep(delIndex: number) {
+    this.store.removeStep(delIndex);
+    this.ui.update(this.store.deprecatedCore);
     return true;
   }
 
@@ -133,19 +121,19 @@ export default class StepCodeEditor {
    * 指定したIndexにジャンプする
    * @param idx 異動先のIndex
    */
-  public jump(idx:number) {
+  public jump(idx: number) {
     this.ui.stepcode.jump(idx);
   }
 
   /** 前のステップへ移動 */
   public prev() {
-    this.jump(Math.max(0, this.core.currentIdx - 1));
+    this.jump(Math.max(0, this.store.current.idx - 1));
   }
 
-  /** 
+  /**
    * 次のステップへ移動 */
   public next() {
-    this.jump(Math.min(this.core.count - 1, this.core.currentIdx + 1));
+    this.jump(Math.min(this.store.last.idx, this.store.current.idx + 1));
   }
 
   //---------------------------------------------------------------------------
@@ -157,37 +145,12 @@ export default class StepCodeEditor {
   private getInitData() {
     // ストレージにデータがあればストレージのデータを、なければ初期データを使用する
     const savedata = Util.storage.load();
-    const data     = (savedata)? savedata : Config.INIT_DATA;
+    const data = savedata ? savedata : Config.INIT_DATA;
     return data;
   }
 
   //---------------------------------------------------------------------------
   // UI関連
-
-  /**
-   * ステップを追加しUIを更新する
-   * @param index ステップを追加する基準位置
-   * @param step 追加するステップ
-   * @param isBefore 要素を前に追加するフラグ
-   */
-  private addStep(index:number, step:Step, isBefore = false) 
-  {
-    // ステップを基準位置の後ろに追加する場合はindexを1加算する
-    const stepIndex = (isBefore)? index : index + 1;
-
-    // Coreに新しくStepを追加し、追加したStepを選択した状態にする
-    this.core.steps.add(stepIndex, step.clone());
-    this.core.to(stepIndex);
-
-    // Coreの内容をStorageに保存する
-    Util.storage.save(this.core);
-
-    // 追加されたステップとエディターに表示されている内容は一致するはずなので
-    // エディター以外のUIを更新する。
-    this.ui.addGuideItemAndUpdate(index, isBefore);
-    this.ui.updateStepCode(this.core);
-    this.ui.footerInfo = this.core.currentNo;
-  }
 
   //---------------------------------------------------------------------------
   // イベント関連
@@ -199,17 +162,29 @@ export default class StepCodeEditor {
     //-------------------------------------------------------------------------
     // タイトルが変更された時の処理
     this.ui.on(UI.ElementType.Title, 'input', this.onInputTitle.bind(this));
-    this.ui.on(UI.ElementType.Title, 'blur', this.reflectEditorToStepCode.bind(this));
+    this.ui.on(
+      UI.ElementType.Title,
+      'blur',
+      this.reflectEditorToStepCode.bind(this)
+    );
 
     //-------------------------------------------------------------------------
     // ファイル名が変更された時の処理
     this.ui.on(UI.ElementType.File, 'input', this.onInputFile.bind(this));
-    this.ui.on(UI.ElementType.File, 'blur', this.reflectEditorToStepCode.bind(this));
+    this.ui.on(
+      UI.ElementType.File,
+      'blur',
+      this.reflectEditorToStepCode.bind(this)
+    );
 
     //-------------------------------------------------------------------------
     // 言語変更時
     this.ui.on(UI.ElementType.Lang, 'change', this.onChangeLang.bind(this));
-    this.ui.on(UI.ElementType.Lang, 'blur', this.reflectEditorToStepCode.bind(this));
+    this.ui.on(
+      UI.ElementType.Lang,
+      'blur',
+      this.reflectEditorToStepCode.bind(this)
+    );
 
     //-------------------------------------------------------------------------
     // コードが変更された時の処理
@@ -219,17 +194,33 @@ export default class StepCodeEditor {
     //-------------------------------------------------------------------------
     // 解説文が変更された時の処理
     this.ui.on(UI.ElementType.Desc, 'input', this.onInputMarkdown.bind(this));
-    this.ui.on(UI.ElementType.Desc, 'blur', this.reflectEditorToStepCode.bind(this));
+    this.ui.on(
+      UI.ElementType.Desc,
+      'blur',
+      this.reflectEditorToStepCode.bind(this)
+    );
 
     //-------------------------------------------------------------------------
     // ステップ追加をクリック
-    this.ui.on(UI.ElementType.AddStepLast, 'click', this.addStepLast.bind(this));
+    this.ui.on(
+      UI.ElementType.AddStepLast,
+      'click',
+      this.addStepLast.bind(this)
+    );
 
     // ステップを前に追加する
-    this.ui.on(UI.ElementType.AddStepBefore, 'click', this.addStepBefore.bind(this));
+    this.ui.on(
+      UI.ElementType.AddStepBefore,
+      'click',
+      this.addStepBefore.bind(this)
+    );
 
     // ステップを後に追加する
-    this.ui.on(UI.ElementType.AddStepAfter, 'click', this.addStepAfter.bind(this));
+    this.ui.on(
+      UI.ElementType.AddStepAfter,
+      'click',
+      this.addStepAfter.bind(this)
+    );
 
     // ステップの削除
     this.ui.on(UI.ElementType.DelStep, 'click', this.onClickDelStep.bind(this));
@@ -238,22 +229,35 @@ export default class StepCodeEditor {
     this.ui.on(UI.ElementType.Reset, 'click', this.onClickReset.bind(this));
 
     // データのダウンロード
-    this.ui.on(UI.ElementType.Download, 'click', this.onClickDownload.bind(this));
+    this.ui.on(
+      UI.ElementType.Download,
+      'click',
+      this.onClickDownload.bind(this)
+    );
 
     // ファイルが読み込まれた時
     this.ui.on(UI.ElementType.LoadFile, 'change', this.onChangeFile.bind(this));
 
     // StepCodeのコールバックを設定
-    this.ui.stepcode.setCallback(StepCode.CallbackType.PrevAfter, this.onChangeStepCode.bind(this));
-    this.ui.stepcode.setCallback(StepCode.CallbackType.NextAfter, this.onChangeStepCode.bind(this));
-    this.ui.stepcode.setCallback(StepCode.CallbackType.JumpAfter, this.onChangeStepCode.bind(this));
+    this.ui.stepcode.setCallback(
+      StepCode.CallbackType.PrevAfter,
+      this.onChangeStepCode.bind(this)
+    );
+    this.ui.stepcode.setCallback(
+      StepCode.CallbackType.NextAfter,
+      this.onChangeStepCode.bind(this)
+    );
+    this.ui.stepcode.setCallback(
+      StepCode.CallbackType.JumpAfter,
+      this.onChangeStepCode.bind(this)
+    );
 
     // ガイドアイテムのコールバックを設定
     this.ui.setCbOnClickGuideItem(this.onClickGuideItem.bind(this));
     this.ui.setCbOnDragStartGuideItem(this.onDragStartGuideItem.bind(this));
     this.ui.setCbOnDragEnterGuideItem(this.onDragEnterGuideItem.bind(this));
     this.ui.setCbOnDropGuideItem(this.onDropGuideItem.bind(this));
-    
+
     // キーボードイベント
     document.body.addEventListener('keydown', this.onKeyDown.bind(this));
   }
@@ -262,11 +266,10 @@ export default class StepCodeEditor {
    * タイトルの入力内容が変更された時
    * @param e イベントオブジェクト
    */
-  private onInputTitle(e:Event) 
-  {
+  private onInputTitle(e: Event) {
     // work.title、プレビューを更新
-    this.work.title = Util.dom.get.value(e.target);
-    this.ui.stepcode.previewTitle(this.work.title);
+    this.store.deprecatedWork.title = Util.dom.get.value(e.target);
+    this.ui.stepcode.previewTitle(this.store.deprecatedWork.title);
 
     // セッションストレージに保存
     this.saveWorkToStorage();
@@ -276,20 +279,19 @@ export default class StepCodeEditor {
    * ファイルの入力内容が変更された時
    * @param e イベントオブジェクト
    */
-  private onInputFile(e:Event) {
-    this.work.file = Util.dom.get.value(e.target);
-    this.ui.stepcode.previewFile(this.work.file);
+  private onInputFile(e: Event) {
+    this.store.deprecatedWork.file = Util.dom.get.value(e.target);
+    this.ui.stepcode.previewFile(this.store.deprecatedWork.file);
   }
 
   /**
    * 言語の内容が変更された時
    * @param e イベントオブジェクト
    */
-  private onChangeLang(e:Event) 
-  {
+  private onChangeLang(e: Event) {
     // work.lang、プレビューを更新
-    this.work.lang = Util.dom.get.value(e.target);
-    this.ui.stepcode.previewCode(this.work);
+    this.store.deprecatedWork.lang = Util.dom.get.value(e.target);
+    this.ui.stepcode.previewCode(this.store.deprecatedWork);
 
     // セッションストレージに保存
     this.saveWorkToStorage();
@@ -298,12 +300,13 @@ export default class StepCodeEditor {
   /**
    * コードの内容が変更された時
    */
-  private onChangeAce() 
-  {
+  private onChangeAce() {
     // work.code、プレビューを更新
-    this.work.code = this.ui.ace.getValue();
-    this.ui.stepcode.previewCode(this.work);
-    this.ui.stepcode.setEditorScrollTop(this.ui.ace.getSession().getScrollTop());
+    this.store.deprecatedWork.code = this.ui.ace.getValue();
+    this.ui.stepcode.previewCode(this.store.deprecatedWork);
+    this.ui.stepcode.setEditorScrollTop(
+      this.ui.ace.getSession().getScrollTop()
+    );
 
     // セッションストレージに保存
     this.saveWorkToStorage();
@@ -313,11 +316,10 @@ export default class StepCodeEditor {
    * マークダウンの入力内容が変更された時
    * @param e イベントオブジェクト
    */
-  private onInputMarkdown(e:Event) 
-  {
+  private onInputMarkdown(e: Event) {
     // work.descとプレビューを更新
-    this.work.desc = Util.dom.get.value(e.target);
-    this.ui.stepcode.previewComment(this.work);
+    this.store.deprecatedWork.desc = Util.dom.get.value(e.target);
+    this.ui.stepcode.previewComment(this.store.deprecatedWork);
 
     // セッションステレーじに保存
     this.saveWorkToStorage();
@@ -327,24 +329,24 @@ export default class StepCodeEditor {
    * 現在のステップを削除する
    */
   public onClickDelStep() {
-    if (!this.canDeleteStep) {
-      alert("このステップは削除できません。");
+    if (!this.store.hasRemovableleSteps) {
+      alert('このステップは削除できません。');
       return;
     }
 
-    if (!confirm(`Step${this.core.currentNo}を削除します。`)){
+    if (!confirm(`Step${this.store.current.no}を削除します。`)) {
       return;
     }
-    
-    this.deleteStep(this.core.currentIdx);
+
+    this.deleteStep(this.store.current.idx);
   }
 
   /**
    * リセットボタンが押された時の処理
    * @param e イベントオブジェクト
    */
-  private onClickReset(e:Event) {
-    if(!confirm("内容を全てリセットします、よろしいですか？")) return;
+  private onClickReset(e: Event) {
+    if (!confirm('内容を全てリセットします、よろしいですか？')) return;
     this.reset();
   }
 
@@ -352,7 +354,7 @@ export default class StepCodeEditor {
    * ステップコードのページが変更された時の処理
    * @param stepcode ステップコード
    */
-  private onChangeStepCode(stepcode:StepCode.default) {
+  private onChangeStepCode(stepcode: StepCode.default) {
     this.reflectStepCodeToEditor(stepcode);
   }
 
@@ -360,16 +362,16 @@ export default class StepCodeEditor {
    * ダウンロードがクリックされた時の処理
    */
   private onClickDownload() {
-    const { core } = this;
-    const title = (core.first && core.first.title)? core.first.title : "notitle";
+    const { deprecatedCore: core } = this.store;
+    const title = core.first && core.first.title ? core.first.title : 'notitle';
     Util.file.download(title, core.toJSON());
   }
 
   /**
    * ファイルが選択された時の処理
    */
-  private onChangeFile(e:Event) {
-    Util.file.read(e, (file:any) => {
+  private onChangeFile(e: Event) {
+    Util.file.read(e, (file: any) => {
       this.load(JSON.parse(file));
     });
   }
@@ -377,7 +379,7 @@ export default class StepCodeEditor {
   /**
    * ガイドアイテムがクリックされた時の処理
    */
-  private onClickGuideItem(idx:number) {
+  private onClickGuideItem(idx: number) {
     // クリックされたガイドアイテムに対応するページへジャンプする
     this.jump(idx);
   }
@@ -385,8 +387,7 @@ export default class StepCodeEditor {
   /**
    * ドラッグ中のアイテムが重なった時の処理
    */
-  private onDragEnterGuideItem(idx:number) 
-  {
+  private onDragEnterGuideItem(idx: number) {
     /**
      * StepCodeの方だけページを切り替える。
      * Editorの方はドラッグ中の内容を表示させたいので
@@ -397,13 +398,13 @@ export default class StepCodeEditor {
   /**
    * ドラッグ開始時の処理
    */
-  private onDragStartGuideItem(idx:number) {
+  private onDragStartGuideItem(idx: number) {
     /**
      * Editorにはドラッグ開始したガイドアイテムのページ内容を表示する
      * StepCodeの内容はDragEnterの方で制御するのでここでは何もしない。
      */
-    this.core.to(idx);
-    this.ui.updateEditor(this.core);
+    this.store.atStep(idx);
+    this.ui.updateEditor(this.store.deprecatedCore);
 
     // ドラッグ開始したガイドアイテムを選択状態にする。
     this.ui.resetGuideItemClassAll();
@@ -413,26 +414,10 @@ export default class StepCodeEditor {
   /**
    * ステップがドロップされた時の処理
    */
-  public onDropGuideItem(dragIdx:number, dropIdx:number) 
-  {
-    // 入れ替え先が同じ場合はUIの更新だけ
-    if (dragIdx === dropIdx) {
-      console.log("skip");
-      this.ui.update(this.core);
-      return;
-    }
-
+  public onDropGuideItem(dragIdx: number, dropIdx: number) {
     // ドロップされた場所にドラッグされたステップを入れる
-    const step = this.core.steps.get(dragIdx);
-    if (step) {
-      this.core.steps.remove(dragIdx);
-      this.core.steps.add(dropIdx, step);
-    }
-
-    // 入れ替え先にフォーカスして全体を更新。
-    this.core.to(dropIdx);
-    this.work.apply(this.core.current);
-    this.ui.update(this.core);
+    this.store.moveStep(dragIdx, dropIdx);
+    this.ui.update(this.store.deprecatedCore);
   }
 
   /**
@@ -445,22 +430,40 @@ export default class StepCodeEditor {
    * Ctrl + Shift + ←:前ステップへ移動
    * Ctrl + Shift + →:右ステップへ移動
    */
-  private onKeyDown(ev:KeyboardEvent) {
-
+  private onKeyDown(ev: KeyboardEvent) {
     if (ev.ctrlKey) {
-      switch(ev.keyCode) {
-        case KeyCode.Num6: this.ui.ace.focus(); break;
-        case KeyCode.Num7: this.ui.md.focus(); break;
-        case KeyCode.Num8: this.syncWorkToCurrentOfCore(); this.addStepBefore(); break;
-        case KeyCode.Num9: this.syncWorkToCurrentOfCore(); this.addStepAfter(); break;
-        case KeyCode.Num0: this.syncWorkToCurrentOfCore(); this.addStepLast(); break;
+      switch (ev.keyCode) {
+        case KeyCode.Num6:
+          this.ui.ace.focus();
+          break;
+        case KeyCode.Num7:
+          this.ui.md.focus();
+          break;
+        case KeyCode.Num8:
+          this.syncWorkToCurrentOfCore();
+          this.addStepBefore();
+          break;
+        case KeyCode.Num9:
+          this.syncWorkToCurrentOfCore();
+          this.addStepAfter();
+          break;
+        case KeyCode.Num0:
+          this.syncWorkToCurrentOfCore();
+          this.addStepLast();
+          break;
       }
-    };
+    }
 
     if (ev.ctrlKey && ev.shiftKey) {
-      switch(ev.keyCode) {
-        case KeyCode.ArrowLeft : this.syncWorkToCurrentOfCore(); this.prev(); break;
-        case KeyCode.ArrowRight: this.syncWorkToCurrentOfCore(); this.next(); break;
+      switch (ev.keyCode) {
+        case KeyCode.ArrowLeft:
+          this.syncWorkToCurrentOfCore();
+          this.prev();
+          break;
+        case KeyCode.ArrowRight:
+          this.syncWorkToCurrentOfCore();
+          this.next();
+          break;
       }
     }
   }
@@ -471,29 +474,27 @@ export default class StepCodeEditor {
   /**
    * Editorの内容を[[StepCode]]に反映する。
    */
-  private reflectEditorToStepCode() 
-  {
+  private reflectEditorToStepCode() {
     // 入力されている内容(Work)をCoreに同期する
     this.syncWorkToCurrentOfCore();
 
     // StepCodeを更新
-    this.ui.updateStepCode(this.core);
+    this.ui.updateStepCode(this.store.deprecatedCore);
   }
 
   /**
    * [[StepCode]]の内容をEditorに反映する
-   * @param stepcode 
+   * @param stepcode
    */
-  private reflectStepCodeToEditor(stepcode:StepCode.default) 
-  {
+  private reflectStepCodeToEditor(stepcode: StepCode.default) {
     // StepCodeの現在位置をCoreに反映
+
     const idx = stepcode.currentIdx;
-    this.core.to(idx);
-    this.work.apply(this.core.current);
+    this.store.atStep(idx);
 
     // UIを更新
-    this.ui.updateEditor(this.core);
-    this.ui.updateGuide(this.core);
+    this.ui.updateEditor(this.store.deprecatedCore);
+    this.ui.updateGuide(this.store.deprecatedCore);
   }
 
   //---------------------------------------------------------------------------
@@ -503,16 +504,13 @@ export default class StepCodeEditor {
    * Workの内容をストレージに保存する。
    */
   private saveWorkToStorage() {
-    Util.storage.saveMeta(this.core);
-    Util.storage.saveStep(this.core.currentIdx, this.work);
+    this.store.saveWorkToStorage();
   }
 
   /**
    * Workの内容をCoreのcurrentステップに同期する
    */
   private syncWorkToCurrentOfCore() {
-    if (this.core.current) {
-      this.core.current.apply(this.work.toJSON());
-    }
+    this.store.sync();
   }
 }
