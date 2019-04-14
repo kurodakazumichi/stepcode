@@ -56,6 +56,9 @@ export default class Events {
     this.ui.on(UI.ElementType.Lang, 'blur', this.onBlurLang.bind(this));
     this.ui.ace.on('change', this.onChangeAce.bind(this));
     this.ui.ace.on('blur', this.onBlurAce.bind(this));
+    this.ui.ace
+      .getSession()
+      .on('changeScrollTop', this.onChangeScrollTopAce.bind(this));
     this.ui.on(UI.ElementType.Desc, 'input', this.onInputMarkdown.bind(this));
     this.ui.on(UI.ElementType.Desc, 'blur', this.onBlurMarkdown.bind(this));
   }
@@ -159,6 +162,10 @@ export default class Events {
 
   private onBlurAce(_: Event) {
     this.actions.syncStoreToPreview();
+  }
+
+  private onChangeScrollTopAce() {
+    this.actions.syncScrollTopEditorToPreview();
   }
 
   private onInputMarkdown(e: Event) {
