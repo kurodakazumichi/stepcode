@@ -4,26 +4,20 @@
 import _ from 'lodash';
 import hljs from 'highlight.js';
 import Core, { Step } from 'stepcode-core';
-import UI, { EventType } from './ui';
+import UI, { EventType as UIEventType } from './ui';
 
 /******************************************************************************
  * Enum
  *****************************************************************************/
-/** 設定可能なcallback関数の種類 */
-export enum CallbackType {
-  /** 前へボタンの処理が実行される直前に呼ばれるイベント */
-  PrevBefore,
-  /** 前へボタンの処理が実行される直後に呼ばれるイベント */
-  PrevAfter,
-  /** 次へボタンの処理が実行される直前に呼ばれるイベント */
-  NextBefore,
-  /** 次へボタンの処理が実行される直後に呼ばれるイベント */
-  NextAfter,
-  /** ページジャンプ処理が実行される直前に呼ばれるイベント */
-  JumpBefore,
-  /** ページジャンプ処理が実行される直後に呼ばれるイベント */
-  JumpAfter,
-  /** エディターのスクロールトップが変更された後に呼ばれるイベント */
+/** イベントの種類 */
+export enum EventType {
+  /** 前ページにに移動した時 */
+  Prev,
+  /** 次ページに移動した時 */
+  Next,
+  /** ページジャンプした時 */
+  Jump,
+  /** エディターがスクロールした時 */
   ScrollTopEditor
 }
 
@@ -65,10 +59,10 @@ export default class StepCode {
     this.updateUI();
 
     // イベントの割り当て
-    this.ui.setEvent(EventType.Prev, this.prev.bind(this));
-    this.ui.setEvent(EventType.Next, this.next.bind(this));
-    this.ui.setEvent(EventType.Jump, this.jump.bind(this));
-    this.ui.setEvent(EventType.ScrollTopEditor, this.scrollEditor.bind(this));
+    this.ui.setEvent(UIEventType.Prev, this.prev.bind(this));
+    this.ui.setEvent(UIEventType.Next, this.next.bind(this));
+    this.ui.setEvent(UIEventType.Jump, this.jump.bind(this));
+    this.ui.setEvent(UIEventType.ScrollTopEditor, this.scrollEditor.bind(this));
   }
 
   //---------------------------------------------------------------------------
@@ -134,11 +128,11 @@ export default class StepCode {
   }
 
   /**
-   * 指定したコールバック関数を設定します。
-   * @param type コールバックの種類
+   * イベントリスナー関数を設定します。
+   * @param type イベントの種類
    * @param func コールバック関数
    */
-  public setCallback(type: CallbackType, func: ICallbackFunc) {
+  public on(type: EventType, func: ICallbackFunc) {
     this.callbacks[type] = func;
   }
 
@@ -146,9 +140,8 @@ export default class StepCode {
    * ページを前へ進める処理
    */
   public prev() {
-    this.doCallback(CallbackType.PrevBefore);
     this.core.toPrev();
-    this.doCallback(CallbackType.PrevAfter);
+    this.doCallback(EventType.Prev);
     this.updateUI();
   }
 
@@ -156,9 +149,8 @@ export default class StepCode {
    * ページを次へ進める処理
    */
   public next() {
-    this.doCallback(CallbackType.NextBefore);
     this.core.toNext();
-    this.doCallback(CallbackType.NextAfter);
+    this.doCallback(EventType.Next);
     this.updateUI();
   }
 
@@ -167,9 +159,8 @@ export default class StepCode {
    * @param toIndex 異動先のページIndex
    */
   public jump(toIndex: number) {
-    this.doCallback(CallbackType.JumpBefore);
     this.core.at(toIndex);
-    this.doCallback(CallbackType.JumpAfter);
+    this.doCallback(EventType.Jump);
     this.updateUI();
   }
 
@@ -177,7 +168,7 @@ export default class StepCode {
    * スクロールが変化した時
    */
   private scrollEditor() {
-    this.doCallback(CallbackType.ScrollTopEditor);
+    this.doCallback(EventType.ScrollTopEditor);
   }
 
   //---------------------------------------------------------------------------
@@ -194,7 +185,7 @@ export default class StepCode {
    * 指定されたコールバック関数を実行する
    * @param type 実行するコールバックの種類
    */
-  private doCallback(type: CallbackType) {
+  private doCallback(type: EventType) {
     const func = this.callbacks[type];
     func && func(this);
   }

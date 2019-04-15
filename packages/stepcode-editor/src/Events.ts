@@ -64,21 +64,13 @@ export default class Events {
   }
 
   private initEventsForStepCode() {
+    const type = StepCode.EventType;
     // StepCodeのコールバックを設定
-    this.ui.stepcode.setCallback(
-      StepCode.CallbackType.PrevAfter,
-      this.onChangeStepCode.bind(this)
-    );
-    this.ui.stepcode.setCallback(
-      StepCode.CallbackType.NextAfter,
-      this.onChangeStepCode.bind(this)
-    );
-    this.ui.stepcode.setCallback(
-      StepCode.CallbackType.JumpAfter,
-      this.onChangeStepCode.bind(this)
-    );
-    this.ui.stepcode.setCallback(
-      StepCode.CallbackType.ScrollTopEditor,
+    this.ui.stepcode.on(type.Prev, this.onChangeStepCode.bind(this));
+    this.ui.stepcode.on(type.Next, this.onChangeStepCode.bind(this));
+    this.ui.stepcode.on(type.Jump, this.onChangeStepCode.bind(this));
+    this.ui.stepcode.on(
+      type.ScrollTopEditor,
       this.onChangeScrollTopStepCode.bind(this)
     );
   }
