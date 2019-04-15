@@ -22,7 +22,9 @@ export enum CallbackType {
   /** ページジャンプ処理が実行される直前に呼ばれるイベント */
   JumpBefore,
   /** ページジャンプ処理が実行される直後に呼ばれるイベント */
-  JumpAfter
+  JumpAfter,
+  /** エディターのスクロールトップが変更された後に呼ばれるイベント */
+  ScrollTopEditor
 }
 
 /******************************************************************************
@@ -66,6 +68,7 @@ export default class StepCode {
     this.ui.setEvent(EventType.Prev, this.prev.bind(this));
     this.ui.setEvent(EventType.Next, this.next.bind(this));
     this.ui.setEvent(EventType.Jump, this.jump.bind(this));
+    this.ui.setEvent(EventType.ScrollTopEditor, this.scrollEditor.bind(this));
   }
 
   //---------------------------------------------------------------------------
@@ -197,6 +200,13 @@ export default class StepCode {
     this.core.at(toIndex);
     this.doCallback(CallbackType.JumpAfter);
     this.updateUI();
+  }
+
+  /**
+   * スクロールが変化した時
+   */
+  private scrollEditor() {
+    this.doCallback(CallbackType.ScrollTopEditor);
   }
 
   //---------------------------------------------------------------------------

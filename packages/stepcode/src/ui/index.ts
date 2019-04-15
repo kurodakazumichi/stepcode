@@ -19,7 +19,9 @@ export enum EventType {
   /** 次へ進むイベント */
   Next,
   /** ページジャンプイベント */
-  Jump
+  Jump,
+  /** エディターのスクロールイベント */
+  ScrollTopEditor
 }
 
 /******************************************************************************
@@ -169,6 +171,11 @@ export default class UI {
         break;
       case EventType.Jump:
         this.footer.setEvent(FooterEventType.Jump, func);
+        break;
+      case EventType.ScrollTopEditor:
+        this.editor.node.addEventListener('scroll', (e: Event) => {
+          func();
+        });
         break;
     }
   }
