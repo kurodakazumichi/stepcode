@@ -92,9 +92,11 @@ export default class StepCode {
     };
   }
 
-  /** 最終ページの番号を返します。 */
-  public get lastNo() {
-    return this.core.lastNo;
+  public get last() {
+    return {
+      idx: this.core.lastIdx,
+      no: this.core.lastNo
+    };
   }
 
   //---------------------------------------------------------------------------
