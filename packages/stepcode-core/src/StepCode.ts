@@ -13,6 +13,47 @@ export interface IJSON {
   steps: StepsJSON;
 }
 
+/**
+ * 与えられた２つの[[Step]]の差分行を計算する
+ * @param base 比較元となるステップ
+ * @param target 比較先となるステップ
+ */
+export function calcDiffs(base: Step | null, target: Step | null) {
+  // 差分行番号の配列を生成する
+  const diffs: number[] = [];
+
+  // 比較対象がなければ空配列を返す
+  if (!target) return diffs;
+
+  // 比較元のステップがない(最初のページなど)の場合は、全行を変更扱い
+  if (!base) {
+    return target.codeArray.map((v, k) => k + 1);
+  }
+
+  // 前後の内容で差分を取り、差分行番号の配列を作成する
+  let line = 0;
+  const diff = Diff.diffArrays(base.codeArray, target.codeArray);
+
+  diff.map(data => {
+    // 削除された行は無視する
+    if (!data.count) return;
+    if (data.removed) return;
+
+    // 追加された行数を登録
+    if (data.added) {
+      for (let i = 0; i < data.count; ++i) {
+        diffs.push(++line);
+      }
+    }
+    // 変更がない場合は行数だけ加算する
+    else {
+      line += data.count;
+    }
+  });
+
+  return diffs;
+}
+
 /******************************************************************************
  * StepCodeで扱う全てのデータを制御するクラス
  *
@@ -150,47 +191,6 @@ export default class StepCode {
     return this.currentNo === this.lastNo;
   }
 
-  /**
-   * 与えられた２つの[[Step]]の差分行を計算する
-   * @param base 比較元となるステップ
-   * @param target 比較先となるステップ
-   */
-  public calcDiffs(base: Step | null, target: Step | null) {
-    // 差分行番号の配列を生成する
-    const diffs: number[] = [];
-
-    // 比較対象がなければ空配列を返す
-    if (!target) return diffs;
-
-    // 比較元のステップがない(最初のページなど)の場合は、全行を変更扱い
-    if (!base) {
-      return target.codeArray.map((v, k) => k + 1);
-    }
-
-    // 前後の内容で差分を取り、差分行番号の配列を作成する
-    let line = 0;
-    const diff = Diff.diffArrays(base.codeArray, target.codeArray);
-
-    diff.map(data => {
-      // 削除された行は無視する
-      if (!data.count) return;
-      if (data.removed) return;
-
-      // 追加された行数を登録
-      if (data.added) {
-        for (let i = 0; i < data.count; ++i) {
-          diffs.push(++line);
-        }
-      }
-      // 変更がない場合は行数だけ加算する
-      else {
-        line += data.count;
-      }
-    });
-
-    return diffs;
-  }
-
   //---------------------------------------------------------------------------
   // public メソッド
 
@@ -267,6 +267,6 @@ export default class StepCode {
     const cur = this._steps.get(stepIndex);
     const pre = this._steps.get(stepIndex - 1);
 
-    return this.calcDiffs(pre, cur);
+    return calcDiffs(pre, cur);
   }
 }
