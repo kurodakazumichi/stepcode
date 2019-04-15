@@ -3,7 +3,7 @@
  *****************************************************************************/
 import _ from 'lodash';
 import hljs from 'highlight.js';
-import Core, { Step } from 'stepcode-core';
+import Core, { Step } from '@puyan/stepcode-core';
 import UI, { EventType as UIEventType } from './ui';
 
 /******************************************************************************

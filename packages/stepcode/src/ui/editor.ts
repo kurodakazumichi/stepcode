@@ -3,7 +3,7 @@
  *****************************************************************************/
 import hljs from 'highlight.js';
 import * as Config from './config';
-import { Step, Util } from 'stepcode-core';
+import { Step, Util } from '@puyan/stepcode-core';
 import EscapeHtml from 'escape-html';
 
 /******************************************************************************

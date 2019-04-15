@@ -2,11 +2,10 @@
  * import
  *****************************************************************************/
 import Axios from 'axios';
-import DefaultData from '../datas/AboutStepCode';
-import StepCode from 'stepcode';
+import StepCode from '@puyan/stepcode';
 import Define from './define';
-
-import 'stepcode/styles/style.scss';
+import DefaultData from '../datas/AboutStepCode';
+import '@puyan/stepcode/styles/style.scss';
 import '../styles/index.scss';
 
 /******************************************************************************

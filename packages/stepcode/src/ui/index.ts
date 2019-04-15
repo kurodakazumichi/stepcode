@@ -7,7 +7,7 @@ import Editor from './editor';
 import Comment from './comment';
 import Footer, { EventType as FooterEventType } from './footer';
 import * as Config from './config';
-import Core, { Step } from 'stepcode-core';
+import Core, { Step } from '@puyan/stepcode-core';
 import * as Types from '../types';
 
 /******************************************************************************

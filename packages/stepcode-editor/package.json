@@ -1,5 +1,5 @@
 {
-  "name": "stepcode-editor",
+  "name": "@puyan/stepcode-editor",
   "version": "1.0.0",
   "license": "MIT",
   "main": "build/index.js",
@@ -12,8 +12,8 @@
     "ace-builds": "^1.4.3",
     "escape-html": "^1.0.3",
     "jest": "^24.5.0",
-    "stepcode": "1.0.0",
-    "stepcode-core": "1.0.0",
+    "@puyan/stepcode": "1.0.0",
+    "@puyan/stepcode-core": "1.0.0",
     "@puyan/stepcode-util": "0.0.0",
     "ts-jest": "^24.0.0",
     "typescript": "next"

@@ -2,7 +2,7 @@
  * import
  *****************************************************************************/
 import * as Util from '@puyan/stepcode-util';
-import * as StepCode from 'stepcode';
+import * as StepCode from '@puyan/stepcode';
 import * as UI from './UI';
 import Store from './Store';
 import Actions from './Actions';

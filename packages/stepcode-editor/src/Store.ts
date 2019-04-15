@@ -2,7 +2,7 @@
  * import
  *****************************************************************************/
 import * as Util from '@puyan/stepcode-util';
-import Core, { Step } from 'stepcode-core';
+import Core, { Step } from '@puyan/stepcode-core';
 
 type AddStepResult = { idx: number; ok: boolean };
 /******************************************************************************

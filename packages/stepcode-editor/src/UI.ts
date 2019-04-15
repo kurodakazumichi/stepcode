@@ -2,9 +2,9 @@
  * import
  *****************************************************************************/
 import Ace from 'ace-builds';
-import StepCode from 'stepcode';
-import * as Config from './Config';
 import * as Util from '@puyan/stepcode-util';
+import StepCode from '@puyan/stepcode';
+import * as Config from './Config';
 import Store from './Store';
 
 /******************************************************************************

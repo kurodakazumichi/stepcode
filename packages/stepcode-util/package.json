@@ -4,7 +4,7 @@
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "license": "MIT",
-  "files":[
+  "files": [
     "build",
     "package.json"
   ],
@@ -19,6 +19,6 @@
     "typescript": "next"
   },
   "peerDependencies": {
-    "stepcode-core":"1.0.0"
+    "@puyan/stepcode-core": "1.0.0"
   }
 }
