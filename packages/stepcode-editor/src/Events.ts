@@ -77,6 +77,10 @@ export default class Events {
       StepCode.CallbackType.JumpAfter,
       this.onChangeStepCode.bind(this)
     );
+    this.ui.stepcode.setCallback(
+      StepCode.CallbackType.ScrollTopEditor,
+      this.onChangeScrollTopStepCode.bind(this)
+    );
   }
 
   private initEventsForMenu() {
@@ -185,6 +189,10 @@ export default class Events {
    */
   private onChangeStepCode(_: StepCode.default) {
     this.actions.syncPreviewToEditor();
+  }
+
+  private onChangeScrollTopStepCode() {
+    this.actions.syncScrollTopPreviewToEditor();
   }
 
   //---------------------------------------------------------------------------
