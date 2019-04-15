@@ -1,9 +1,20 @@
 {
   "name": "@puyan/stepcode-core",
-  "version": "1.0.0",
+  "description": "This package handles step code data.",
+  "version": "0.0.1",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kurodakazumichi/stepcode/tree/master/packages/stepcode-core"
+  },
+  "files": [
+    "build",
+    "LICENSE",
+    "package.json",
+    "README.md"
+  ],
   "scripts": {
     "test": "jest --coverage --watch"
   },
@@ -19,5 +30,8 @@
   "dependencies": {
     "diff": "^4.0.1",
     "lodash": "^4.17.11"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
