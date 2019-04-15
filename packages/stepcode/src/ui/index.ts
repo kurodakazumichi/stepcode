@@ -55,7 +55,7 @@ export default class UI {
   private root: HTMLElement;
 
   /** UI Header要素 */
-  private header: Header;
+  public header: Header;
 
   /** UI Editor要素 */
   private editor: Editor;
@@ -72,7 +72,7 @@ export default class UI {
   /** リセット */
   public reset() {
     this.header.update('', '');
-    this.editor.update({ step: new Step(null), diffs: [] });
+    this.editor.update({ step: new Step(null), prev: null });
     this.comment.update('');
     this.footer.update({ currentNo: 0, totalNo: 0 });
   }
@@ -96,7 +96,7 @@ export default class UI {
     // エディターを更新
     this.editor.update({
       step: step,
-      diffs: core.diffs
+      prev: core.prev
     });
 
     // コメントを更新
@@ -109,38 +109,11 @@ export default class UI {
     });
   }
 
-  /**
-   * 指定されたタイトルテキストをプレビューします。(実際のデータは変更されません)
-   * @param title タイトルに設定するテキスト
-   */
-  previewTitle(title: string) {
-    if (this.header.titleText === title) return;
-    this.header.titleText = title;
-  }
-
-  /**
-   * 指定されたファイル名をプレビューします。(実際のデータは変更されません)
-   * @param name ファイル名テキスト
-   */
-  previewFile(name: string) {
-    if (this.header.fileText === name) return;
-    this.header.fileText = name;
-  }
-
-  /**
-   * 指定された[[Step]]のコードをプレビューします。(実際のデータは変更されません)
-   * @param step [[Step]]
-   */
-  previewCode(step: Step, diffs: number[]) {
-    this.editor.update({ step, diffs });
-  }
-
-  /**
-   * 指定された[[Step]]のコメントをプレビューします。(実際のデータは変更されません)
-   * @param step [[Step]]
-   */
-  previewComment(step: Step) {
-    this.comment.update(step.desc);
+  /** プレビュー */
+  public preview(step: Step, prev: Step | null) {
+    this.header.preview({ title: step.title, file: step.file });
+    this.editor.preview({ step, prev });
+    this.comment.preview({ comment: step.desc });
   }
 
   /**

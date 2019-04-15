@@ -122,20 +122,7 @@ export default class StepCode {
    * 保持している内部のデータに影響はない。
    */
   public preview(step: Step) {
-    this.ui.previewTitle(step.title);
-    this.ui.previewFile(step.file);
-    this.previewCode(step);
-    this.ui.previewComment(step);
-  }
-
-  /**
-   * 指定された[[Step]]のコードをプレビューします。(実際のデータは変更されません)
-   * @param step [[Step]]
-   */
-  private previewCode(step: Step) {
-    const { prev } = this.core;
-    const diffs = this.core.calcDiffs(prev, step);
-    this.ui.previewCode(step, diffs);
+    this.ui.preview(step, this.core.prev);
   }
 
   /**

@@ -3,14 +3,13 @@
  *****************************************************************************/
 import hljs from 'highlight.js';
 import * as Config from './config';
-import { Step } from 'stepcode-core';
+import { Step, Util } from 'stepcode-core';
 import EscapeHtml from 'escape-html';
 
 /******************************************************************************
  * Editor
  *****************************************************************************/
-export default class Editor 
-{
+export default class Editor {
   /**
    * コンストラクタ
    */
@@ -33,29 +32,33 @@ export default class Editor
   // public メソッド
 
   /** 更新 */
-  public update(data:{step:Step, diffs:number[]}) {
-
-    const {step, diffs} = data;
+  public update(data: { step: Step; prev: Step | null }) {
+    const { step, prev } = data;
+    const diffs = Util.calcDiffs(prev, step);
 
     // 行番号の更新
     this.lines.update(step.codeLineNum, diffs);
 
     // コードの更新
     this.codes.update(step.lang, step.code);
-    
+  }
+
+  /** プレビュー */
+  public preview(data: { step: Step; prev: Step | null }) {
+    this.update(data);
   }
 
   //---------------------------------------------------------------------------
   // private メンバ
 
   /** root要素 */
-  private root:HTMLElement;
+  private root: HTMLElement;
 
   /** 行番号要素 */
-  private lines:Lines;
+  private lines: Lines;
 
   /** ソースコード要素 */
-  private codes:Codes;
+  private codes: Codes;
 
   //---------------------------------------------------------------------------
   // private メソッド
@@ -72,8 +75,7 @@ export default class Editor
 /******************************************************************************
  * Lines
  *****************************************************************************/
-class Lines 
-{
+class Lines {
   /**
    * コンストラクタ
    */
@@ -96,21 +98,19 @@ class Lines
    * @param lineCount 行数
    * @param diffs 差分行リスト
    */
-  public update(lineCount:number, diffs:number[]) {
+  public update(lineCount: number, diffs: number[]) {
     this.adjustItem(lineCount);
     this.markingItem(diffs);
   }
-
-
 
   //---------------------------------------------------------------------------
   // private メンバ
 
   /** root要素 */
-  private root :HTMLElement;
+  private root: HTMLElement;
 
   /** 行リスト */
-  private items:HTMLElement[];
+  private items: HTMLElement[];
 
   //---------------------------------------------------------------------------
   // private メソッド
@@ -120,12 +120,11 @@ class Lines
    * @param startNo 開始行番号
    * @param count      作成する行数
    */
-  createItem(startNo:number, count:number) 
-  {
-    for(let i = startNo; i < startNo + count; ++i) {
+  createItem(startNo: number, count: number) {
+    for (let i = startNo; i < startNo + count; ++i) {
       // 行要素を生成し、行数を設定
       const item = Config.createElement(Config.UIType.EditorLinesItem);
-      item.innerHTML = (i).toString();
+      item.innerHTML = i.toString();
 
       // 親要素、およびアイテムリストに登録
       this.root.appendChild(item);
@@ -137,8 +136,8 @@ class Lines
    * アイテム(行要素)の末尾から指定した数だけ削除する
    * @param count 削除したい行の数
    */
-  popItem(count:number) {
-    for(let i = 0; i < count; ++i) {
+  popItem(count: number) {
+    for (let i = 0; i < count; ++i) {
       const item = this.items.pop() as HTMLElement;
       item.remove();
     }
@@ -148,8 +147,7 @@ class Lines
    * アイテム数が指定された数量になるように調整する
    * @param wantCount 求める行数
    */
-  private adjustItem(wantCount:number) 
-  {
+  private adjustItem(wantCount: number) {
     // 現在のリアルな数量
     const realCount = this.items.length;
 
@@ -174,15 +172,14 @@ class Lines
    * 指定された行をマーキングする
    * @param diffs 変更行のリスト
    */
-  private markingItem(diffs:number[]) 
-  {
-    // 行マークを解除する  
-    this.items.map((item) => {
+  private markingItem(diffs: number[]) {
+    // 行マークを解除する
+    this.items.map(item => {
       this.unmarked(item);
     });
 
     // 必要な行だけマークする
-    diffs.map((index) => {
+    diffs.map(index => {
       const item = this.items[index - 1];
       item && this.marked(item);
     });
@@ -192,7 +189,7 @@ class Lines
    * 指定された行をマークする
    * @param item 行要素
    */
-  private marked(item:HTMLElement) {
+  private marked(item: HTMLElement) {
     item.classList.add(Config.classNames.editorLinesItemMark);
   }
 
@@ -200,7 +197,7 @@ class Lines
    * 指定された行のマークを解除する
    * @param item 行要素
    */
-  private unmarked(item:HTMLElement) {
+  private unmarked(item: HTMLElement) {
     item.classList.remove(Config.classNames.editorLinesItemMark);
   }
 }
@@ -208,16 +205,14 @@ class Lines
 /******************************************************************************
  * Code
  *****************************************************************************/
-class Codes 
-{
+class Codes {
   /**
    * コンストラクタ
    */
-  constructor() 
-  {
+  constructor() {
     // 全体を包むrootとpre、codeタグを生成
     this.root = Config.createElement(Config.UIType.EditorCodes);
-    this.pre  = Config.createElement(Config.UIType.EditorCodesPre);
+    this.pre = Config.createElement(Config.UIType.EditorCodesPre);
     this.code = Config.createElement(Config.UIType.EditorCodesPreCode);
 
     // 親子関係の構築
@@ -233,13 +228,13 @@ class Codes
   }
 
   /** 言語を設定する */
-  public set lang(lang:string) {
-    this.code.className = (hljs.getLanguage(lang))? lang : "";
+  public set lang(lang: string) {
+    this.code.className = hljs.getLanguage(lang) ? lang : '';
   }
 
   /** ソースコードを設定する */
-  public set codetext(codetext:string) {
-    this.code.innerHTML = EscapeHtml(codetext+'\n');
+  public set codetext(codetext: string) {
+    this.code.innerHTML = EscapeHtml(codetext + '\n');
     hljs.highlightBlock(this.code as hljs.Node);
   }
 
@@ -250,10 +245,10 @@ class Codes
 
   //---------------------------------------------------------------------------
   // public メソッド
-  
+
   /** 更新 */
-  public update(lang:string, code:string) {
-    this.lang     = lang;
+  public update(lang: string, code: string) {
+    this.lang = lang;
     this.codetext = code;
   }
 
@@ -264,7 +259,7 @@ class Codes
   private root: HTMLElement;
 
   /** preタグ要素 */
-  private pre : HTMLElement;
+  private pre: HTMLElement;
 
   /** codeタグ要素 */
   private code: HTMLElement;
@@ -281,4 +276,3 @@ class Codes
     this.pre.appendChild(this.code);
   }
 }
-
