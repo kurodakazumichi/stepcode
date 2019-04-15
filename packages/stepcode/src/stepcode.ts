@@ -78,13 +78,14 @@ export default class StepCode {
   private core: Core;
 
   /** UI */
-  private ui: UI;
+  public ui: UI;
 
   /** コールバック関数を格納する配列 */
   private callbacks: ICallbackFunc[];
 
   //---------------------------------------------------------------------------
   // public プロパティ
+
   public get current() {
     return {
       idx: this.core.currentIdx,
@@ -139,21 +140,6 @@ export default class StepCode {
    */
   public setCallback(type: CallbackType, func: ICallbackFunc) {
     this.callbacks[type] = func;
-  }
-
-  /**
-   * Editorのスクロールトップの量を設定する
-   * @param value スクロール量
-   */
-  public setScrollTopToEditor(value: number) {
-    this.ui.setScrollTopToEditor(value);
-  }
-
-  /**
-   * Editorのスクロールトップの量を取得する
-   */
-  public getScrollTopOfEditor() {
-    return this.ui.getScrollTopOfEditor();
   }
 
   /**

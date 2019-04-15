@@ -29,6 +29,19 @@ export default class Comment {
     return this.root;
   }
 
+  public get scrollTop() {
+    return this.node.scrollTop;
+  }
+  public set scrollTop(v: number) {
+    this.node.scrollTop = v;
+  }
+  public get scrollLeft() {
+    return this.node.scrollLeft;
+  }
+  public set scrollLeft(v: number) {
+    this.node.scrollLeft = v;
+  }
+
   //---------------------------------------------------------------------------
   // public メソッド
 

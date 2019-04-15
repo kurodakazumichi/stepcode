@@ -84,11 +84,11 @@ export default class Actions {
 
   public syncScrollTopEditorToPreview() {
     const value = this.ui.ace.getSession().getScrollTop();
-    this.ui.stepcode.setScrollTopToEditor(value);
+    this.ui.stepcode.ui.setScroll(value);
   }
 
   public syncScrollTopPreviewToEditor() {
-    const value = this.ui.stepcode.getScrollTopOfEditor();
+    const value = this.ui.stepcode.ui.getScroll();
     this.ui.ace.getSession().setScrollTop(value);
   }
 

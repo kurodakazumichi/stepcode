@@ -8,6 +8,7 @@ import Comment from './comment';
 import Footer, { EventType as FooterEventType } from './footer';
 import * as Config from './config';
 import Core, { Step } from 'stepcode-core';
+import * as Types from '../types';
 
 /******************************************************************************
  * Enum
@@ -58,13 +59,13 @@ export default class UI {
   public header: Header;
 
   /** UI Editor要素 */
-  private editor: Editor;
+  public editor: Editor;
 
   /** UI Comment要素 */
-  private comment: Comment;
+  public comment: Comment;
 
   /** UI Footer要素 */
-  private footer: Footer;
+  public footer: Footer;
 
   //---------------------------------------------------------------------------
   // public メソッド
@@ -116,17 +117,38 @@ export default class UI {
     this.comment.preview({ comment: step.desc });
   }
 
-  /**
-   * Editorのスクロール量を設定する
-   * @param value スクロール量
-   */
-  public setScrollTopToEditor(value: number) {
-    this.editor.node.scrollTop = value;
+  public setScroll(
+    v: number,
+    where: Types.ScrollTarget = Types.ScrollTarget.Editor,
+    dir: Types.ScrollDir = Types.ScrollDir.Top
+  ) {
+    switch (where) {
+      case Types.ScrollTarget.Editor:
+        if (dir === Types.ScrollDir.Top) this.editor.scrollTop = v;
+        else this.editor.scrollLeft = v;
+        break;
+      case Types.ScrollTarget.Comment:
+        if (dir === Types.ScrollDir.Top) this.comment.scrollTop = v;
+        else this.comment.scrollLeft = v;
+        break;
+    }
   }
 
-  /** Editorのスクロール量を取得する */
-  public getScrollTopOfEditor() {
-    return this.editor.node.scrollTop;
+  public getScroll(
+    where: Types.ScrollTarget = Types.ScrollTarget.Editor,
+    dir: Types.ScrollDir = Types.ScrollDir.Top
+  ) {
+    switch (where) {
+      case Types.ScrollTarget.Editor:
+        return dir === Types.ScrollDir.Top
+          ? this.editor.scrollTop
+          : this.editor.scrollLeft;
+      case Types.ScrollTarget.Comment:
+        return dir === Types.ScrollDir.Top
+          ? this.comment.scrollTop
+          : this.comment.scrollLeft;
+    }
+    return 0;
   }
 
   /**
