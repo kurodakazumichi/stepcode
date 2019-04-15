@@ -1,6 +1,6 @@
 {
   "name": "@puyan/stepcode-util",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "license": "MIT",
@@ -19,6 +19,6 @@
     "typescript": "next"
   },
   "peerDependencies": {
-    "@puyan/stepcode-core": "1.0.0"
+    "@puyan/stepcode-core": "0.0.1"
   }
 }
