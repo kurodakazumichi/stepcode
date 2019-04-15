@@ -85,15 +85,11 @@ export default class StepCode {
 
   //---------------------------------------------------------------------------
   // public プロパティ
-
-  /** 現在ページのIndexを返します。 */
-  public get currentIdx() {
-    return Math.max(this.core.currentIdx, 0);
-  }
-
-  /** 現在ページの番号を返します。 */
-  public get currentNo() {
-    return this.core.currentNo;
+  public get current() {
+    return {
+      idx: this.core.currentIdx,
+      no: this.core.currentNo
+    };
   }
 
   /** 最終ページの番号を返します。 */

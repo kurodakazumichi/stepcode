@@ -177,7 +177,7 @@ export default class Actions {
   }
 
   public syncPreviewToEditor() {
-    const idx = this.ui.stepcode.currentIdx;
+    const idx = this.ui.stepcode.current.idx;
     this.store.atStep(idx);
     this.ui.updateEditor(this.store);
     this.ui.updateGuide(this.store);
