@@ -12,13 +12,14 @@
     "typescript": "next"
   },
   "dependencies": {
+    "@puyan/stepcode-core": "^0.0.1",
     "escape-html": "^1.0.3",
     "highlight.js": "^9.15.6",
     "markdown-it": "^8.4.2",
     "markdown-it-deflist": "^2.0.3",
+    "markdown-it-katex": "^2.0.3",
     "markdown-it-mark": "^2.0.0",
     "markdown-it-sub": "^1.0.0",
-    "markdown-it-sup": "^1.0.0",
-    "@puyan/stepcode-core": "^0.0.1"
+    "markdown-it-sup": "^1.0.0"
   }
 }
