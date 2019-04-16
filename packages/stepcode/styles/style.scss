@@ -37,6 +37,10 @@ $markColor: #81d674;
   }
 
   &-editor {
+    & .sc-comment {
+      border: none;
+      width: 100%;
+    }
     display: flex;
     font-size: 16px;
     line-height: 1.5em;
@@ -78,13 +82,7 @@ $markColor: #81d674;
     }
   }
 
-  &-comment {
-    border-top: 1px solid $borderColor;
-    border-bottom: 1px solid $borderColor;
-    padding: 0.5em;
-    overflow-y: auto;
-    box-sizing: border-box;
-    line-height: 1.6em;
+  &-markdown {
     p {
       padding: 0;
       margin: 0;
@@ -175,6 +173,15 @@ $markColor: #81d674;
         }
       }
     }
+  }
+
+  &-comment {
+    border-top: 1px solid $borderColor;
+    border-bottom: 1px solid $borderColor;
+    padding: 0.5em;
+    overflow-y: auto;
+    box-sizing: border-box;
+    line-height: 1.6em;
   }
 
   &-footer {

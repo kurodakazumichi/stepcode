@@ -5,6 +5,7 @@ import _ from 'lodash';
 import hljs from 'highlight.js';
 import Core, { Step } from '@puyan/stepcode-core';
 import UI, { EventType as UIEventType } from './ui';
+import * as Define from './define';
 
 /******************************************************************************
  * Enum
@@ -38,7 +39,11 @@ export default class StepCode {
    * サポートしている言語の一覧を返します。
    */
   public static get supportLanguages() {
-    return hljs.listLanguages();
+    const langs = hljs.listLanguages();
+    // 言語の種類ではないが、codeをmarkdonwとして評価した状態
+    // つまり実際に描画された状態を表す選択肢を追加
+    langs.unshift(Define.SUPPORT_LANG_DRAWING);
+    return langs;
   }
 
   //---------------------------------------------------------------------------
