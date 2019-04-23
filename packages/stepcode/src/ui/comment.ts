@@ -1,27 +1,30 @@
 /******************************************************************************
  * import
  *****************************************************************************/
-import MarkdownIt from 'markdown-it'
 import * as Config from './config';
+import Markdown from './markdown';
 
 /******************************************************************************
  * Comment
  *****************************************************************************/
-export default class Comment 
-{
+export default class Comment {
   /**
    * コンストラクタ
    */
   constructor() {
     this.root = Config.createElement(Config.UIType.Comment);
-
-    this.md = new MarkdownIt({
-      breaks:true,
-      linkify:true,
-      html:false,
-    })
-    .use(require('markdown-it-deflist'));
+    this.markdown = new Markdown();
+    this.root.appendChild(this.markdown.node);
   }
+
+  //---------------------------------------------------------------------------
+  // private メンバ
+
+  /** root要素 */
+  private root: HTMLElement;
+
+  /** Markdown要素 */
+  private markdown: Markdown;
 
   //---------------------------------------------------------------------------
   // public アクセッサ
@@ -31,21 +34,29 @@ export default class Comment
     return this.root;
   }
 
+  public get scrollTop() {
+    return this.node.scrollTop;
+  }
+  public set scrollTop(v: number) {
+    this.node.scrollTop = v;
+  }
+  public get scrollLeft() {
+    return this.node.scrollLeft;
+  }
+  public set scrollLeft(v: number) {
+    this.node.scrollLeft = v;
+  }
+
   //---------------------------------------------------------------------------
   // public メソッド
 
   /** 更新 */
-  public update(markdown:string) {
-    this.node.innerHTML = this.md.render(markdown);
+  public update(markdown: string) {
+    this.markdown.update(markdown);
   }
 
-  //---------------------------------------------------------------------------
-  // private メンバ
-
-  /** root要素 */
-  private root:HTMLElement;
-
-  /** MarkdownItのインスタンス */
-  private md:MarkdownIt;
+  /** プレビュー */
+  public preview(data: { comment?: string }) {
+    this.markdown.preview({ markdown: data.comment });
+  }
 }
-

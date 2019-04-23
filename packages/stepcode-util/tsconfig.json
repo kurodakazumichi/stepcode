@@ -5,8 +5,6 @@
     "outDir": "build",
   },
   "references": [
-    { "path": "../stepcode" },
-    { "path": "../stepcode-core" },
-    { "path": "../stepcode-util" }
+    { "path": "../stepcode-core" }
   ]
 }

@@ -7,14 +7,13 @@ import * as Config from './config';
 /******************************************************************************
  * Header
  *****************************************************************************/
-export default class Header 
-{
+export default class Header {
   /**
    * コンストラクタ
    */
   constructor() {
-    this.root     = Config.createElement(Config.UIType.Header);
-    this.title    = Config.createElement(Config.UIType.HeaderTitle);
+    this.root = Config.createElement(Config.UIType.Header);
+    this.title = Config.createElement(Config.UIType.HeaderTitle);
     this.filename = Config.createElement(Config.UIType.HeaderFileName);
     this.build();
   }
@@ -28,7 +27,10 @@ export default class Header
   }
 
   /** タイトルテキストを設定する */
-  public set titleText(title:string) {
+  public set titleText(title: string | undefined) {
+    if (typeof title === 'undefined') return;
+    if (title === this.titleText) return;
+
     this.title && (this.title.innerHTML = title);
   }
 
@@ -38,36 +40,44 @@ export default class Header
   }
 
   /** ファイル名テキストを設定する */
-  public set fileText(name:string) {
+  public set fileText(name: string | undefined) {
+    if (typeof name === 'undefined') return;
+    if (name === this.fileText) return;
 
     if (name) {
       this.filename.innerHTML = name;
-      this.filename.style.display = "block";
+      this.filename.style.display = 'block';
     } else {
-      this.filename.style.display = "none";
+      this.filename.style.display = 'none';
     }
   }
-  
+
   //---------------------------------------------------------------------------
   // public メンバ
 
   /** 更新 */
-  public update(title:string, filename:string) {
+  public update(title: string, filename: string) {
     this.titleText = title;
     this.fileText = filename;
+  }
+
+  /** プレビュー */
+  public preview(data: { title?: string; file?: string }) {
+    this.titleText = data.title;
+    this.fileText = data.file;
   }
 
   //---------------------------------------------------------------------------
   // private メンバ
 
   /** Header要素(root) */
-  private root : HTMLElement;
+  private root: HTMLElement;
 
   /** タイトル要素 */
-  private title : HTMLElement;
+  private title: HTMLElement;
 
   /** ファイル名要素 */
-  private filename : HTMLElement;
+  private filename: HTMLElement;
 
   //---------------------------------------------------------------------------
   // private メソッド
@@ -77,5 +87,4 @@ export default class Header
     this.root.appendChild(this.title);
     this.root.appendChild(this.filename);
   }
-
 }

@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "dependencies": {
     "axios": "^0.18.0",
-    "stepcode": "1.0.0",
-    "stepcode-editor": "1.0.0"
+    "@puyan/stepcode": "0.0.1",
+    "@puyan/stepcode-editor": "0.0.1"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",

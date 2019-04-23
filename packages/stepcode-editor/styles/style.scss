@@ -1,31 +1,32 @@
 $headerHeight: 20px;
 $editorHeight: 400px;
-$commentHeight:200px;
+$commentHeight: 200px;
 /* 色の定義 */
 $mainColor: #444;
-$mainColor2: #00A3C7;
+$mainColor2: #00a3c7;
 $borderColor: #718288;
 
 .sce {
   &-root {
-    width:80vw;
+    width: 80vw;
     margin: 0 auto;
   }
 
   &-main {
-    width:100%;
+    width: 100%;
     margin-bottom: 1em;
     display: flex;
     justify-content: space-between;
 
-    &__editor, &__preview {
-      width:48%;
+    &__editor,
+    &__preview {
+      width: 48%;
     }
 
     &__editor {
       border-radius: 6px;
       overflow: hidden;
-      border:1px solid $borderColor;
+      border: 1px solid $borderColor;
     }
 
     &__preview {
@@ -35,18 +36,21 @@ $borderColor: #718288;
 
       & .sc-editor {
         height: $editorHeight;
+
+        & .sc-comment {
+          height: $editorHeight;
+        }
       }
 
       & .sc-comment {
         height: $commentHeight;
       }
-
     }
   }
 
   &-editor {
     &-header {
-      height:$headerHeight;
+      height: $headerHeight;
       background-color: $mainColor;
       color: white;
       padding: 0.4em;
@@ -55,22 +59,22 @@ $borderColor: #718288;
       justify-content: space-between;
 
       input {
-        width:100%;
+        width: 100%;
         margin-right: 1em;
       }
 
-      input[name=filename] {
-        width:100px;
+      input[name='filename'] {
+        width: 100px;
       }
 
       select {
-        height:20px;
+        height: 20px;
       }
     }
 
     &-code {
       &__ace {
-        width:100%; 
+        width: 100%;
         height: $editorHeight;
       }
     }
@@ -78,25 +82,25 @@ $borderColor: #718288;
     &-md {
       height: $commentHeight;
       &__input {
-        resize:none;
-        width:100%;
-        height:100%;
+        resize: none;
+        width: 100%;
+        height: 100%;
         padding: 0.5em;
         box-sizing: border-box;
-        border:none;
-        border-top:1px solid $borderColor;
+        border: none;
+        border-top: 1px solid $borderColor;
         font-size: 16px;
       }
     }
 
     &-footer {
-      background-color:$mainColor;
-      height:45px;
-      color:white;
+      background-color: $mainColor;
+      height: 45px;
+      color: white;
       font-weight: bold;
       line-height: 45px;
       text-align: right;
-      padding:0 0.5em;
+      padding: 0 0.5em;
       display: flex;
       justify-content: space-between;
     }
@@ -104,60 +108,63 @@ $borderColor: #718288;
 
   &-menu {
     text-align: right;
-    display:flex;
+    display: flex;
     justify-content: space-between;
     input {
       display: none;
     }
-    button, a, label {
+    button,
+    a,
+    label {
       text-align: center;
       position: relative;
       display: inline-block;
       padding: 0.25em 0.5em;
       text-decoration: none;
-      background: #00BCD4;/*背景色*/
-      color: #eee;/*=背景色*/
-      box-shadow: inset 0 2px 0 rgba(255,255,255,0.2);
+      background: #00bcd4; /*背景色*/
+      color: #eee; /*=背景色*/
+      box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.2);
       border-bottom: solid 2px #118e9e;
       border-radius: 4px;
       font-weight: bold;
-      text-shadow: -1px -1px rgba(255, 255, 255, 0.44), 1px 1px rgba(0, 0, 0, 0.38);
+      text-shadow: -1px -1px rgba(255, 255, 255, 0.44),
+        1px 1px rgba(0, 0, 0, 0.38);
       outline: none;
       line-height: 1.5em;
-      cursor:pointer;
+      cursor: pointer;
 
       button:active {
-        border-bottom: solid 2px #00BCD4;
+        border-bottom: solid 2px #00bcd4;
         box-shadow: none;
-        text-shadow: -1px -1px rgba(255, 255, 255, 0.3), 1px 1px rgba(0, 0, 0, 0.3);
+        text-shadow: -1px -1px rgba(255, 255, 255, 0.3),
+          1px 1px rgba(0, 0, 0, 0.3);
       }
     }
   }
 
   &-guide {
-    margin-top:1em;
+    margin-top: 1em;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    
-    
+
     &__item {
       flex-shrink: 0;
       margin: 0 0.5em 0.5em 0;
-      width:60px;
-      height:40px;
+      width: 60px;
+      height: 40px;
       box-sizing: border-box;
       text-align: center;
       line-height: 40px;
-      background-color:#eee;
+      background-color: #eee;
       overflow: hidden;
       border-radius: 3px;
       cursor: pointer;
 
       &--selected {
-        background:$mainColor2;
-        color:white;
-        border:1px solid #3b86a3;
+        background: $mainColor2;
+        color: white;
+        border: 1px solid #3b86a3;
         box-shadow: 0 0 2px 1px #7fbcd4;
       }
       &--inserted {
@@ -165,16 +172,16 @@ $borderColor: #718288;
         animation-duration: 0.5s;
       }
       &--blink {
-        background:#c23b8e;
-        color:white;
-        border:1px solid #c23b8e;
+        background: #c23b8e;
+        color: white;
+        border: 1px solid #c23b8e;
         box-shadow: 0 0 2px 1px #d47fd0;
         animation-name: sce-blink;
-        animation-duration:1s;
+        animation-duration: 1s;
         animation-iteration-count: infinite;
       }
 
-      &:first-child{
+      &:first-child {
         margin-left: 0;
       }
     }
@@ -183,12 +190,12 @@ $borderColor: #718288;
 
 @keyframes sce-zoom {
   0% {
-    width:0;
+    width: 0;
     text-indent: -200px;
   }
 
   100% {
-    width:60px;
+    width: 60px;
     text-indent: 0;
   }
 }
@@ -201,6 +208,6 @@ $borderColor: #718288;
     opacity: 1;
   }
   100% {
-    opacity: 0.5
+    opacity: 0.5;
   }
 }

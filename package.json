@@ -18,6 +18,7 @@
     "clean:demo": "rm -rf ./examples/dist",
     "clean:docs": "rm -rf ./docs",
     "build": "tsc -b ./packages/stepcode/tsconfig.json",
+    "build:util": "tsc -b ./packages/stepcode-util/tsconfig.json",
     "build:core": "tsc -b ./packages/stepcode-core/tsconfig.json",
     "build:editor": "tsc -b ./packages/stepcode-editor/tsconfig.json",
     "build:docs": "yarn clean:docs && yarn demo:build && yarn copy:static:docs",

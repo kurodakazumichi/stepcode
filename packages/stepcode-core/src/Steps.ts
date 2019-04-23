@@ -13,13 +13,12 @@ export type IJSON = StepJSON[];
  * 全てのステップデータを管理するクラス。
  * [[Step]] クラスも参照してください。
  *****************************************************************************/
-export default class Steps 
-{
+export default class Steps {
   /**
    * コンストラクタ
    * @param datas ステップデータの配列
    */
-  constructor(datas:[] = []) {
+  constructor(datas: [] = []) {
     this.steps = [];
     this.apply(datas);
   }
@@ -28,11 +27,11 @@ export default class Steps
   // privatre プロパティ
 
   /** 全ステップデータ */
-  private steps:Step[];
+  private steps: Step[];
 
   //---------------------------------------------------------------------------
   // public アクセッサ
-  
+
   /** ステップの総数を取得します。 */
   public get count() {
     return this.steps.length;
@@ -59,11 +58,10 @@ export default class Steps
    * 与えられたステップデータをプロパティに適用する。
    * @param datas ステップデータの配列
    */
-  public apply(datas:[]) 
-  {
+  public apply(datas: []) {
     // データが配列じゃなかったらエラー
     if (!Array.isArray(datas)) {
-      console.warn("Error: Data must be array.");
+      console.warn('Error: Data must be array.');
       return;
     }
 
@@ -71,7 +69,7 @@ export default class Steps
     this.steps = [];
 
     // データの数だけStepクラスを生成
-    datas.map((data:any) => {
+    datas.map((data: any) => {
       this.steps.push(new Step(data));
     });
   }
@@ -79,31 +77,31 @@ export default class Steps
   /**
    * JSONに変換する
    */
-  public toJSON() : IJSON {
-    return this.steps.map((step:Step) => step.toJSON());
+  public toJSON(): IJSON {
+    return this.steps.map((step: Step) => step.toJSON());
   }
 
   /**
    * 指定されたindexに[[Step]]が存在するかを返します。
    * @param index 存在を確認するステップのIndex値
    */
-  public has(index:number):boolean{
-    return (!!this.steps[index]);
+  public has(index: number): boolean {
+    return !!this.steps[index];
   }
 
   /**
    * 指定されたindexに存在する[[Step]]を返します。
    * @param index 取得したいステップのIndex値
    */
-  public get(index:number) {
-    return (this.has(index))? this.steps[index] : null;
+  public get(index: number) {
+    return this.has(index) ? this.steps[index] : null;
   }
 
   /**
    * 先頭に[[Step]]を追加します。
    * @param step 追加する[[Step]]
    */
-  public unshift(step:Step) {
+  public unshift(step: Step) {
     this.steps.unshift(step);
   }
 
@@ -111,7 +109,7 @@ export default class Steps
    * 末尾に[[Step]]を追加します。
    * @param step 追加する[[Step]]
    */
-  public push(step:Step) {
+  public push(step: Step) {
     this.steps.push(step);
   }
 
@@ -120,7 +118,7 @@ export default class Steps
    * @param atIndex 追加する位置
    * @param step 追加する[[Step]]
    */
-  public add(atIndex:number, step:Step) {
+  public add(atIndex: number, step: Step) {
     this.steps.splice(atIndex, 0, step);
   }
 
@@ -142,7 +140,7 @@ export default class Steps
    * 指定した箇所の[[Step]]を削除します。
    * @param atIndex 削除する位置
    */
-  public remove(atIndex:number) {
+  public remove(atIndex: number) {
     this.steps.splice(atIndex, 1);
   }
 
@@ -151,15 +149,31 @@ export default class Steps
    * @param idx1 入れ替え元を指定
    * @param idx2 入れ替え先を指定
    */
-  public swap(idx1:number, idx2:number) {
+  public swap(idx1: number, idx2: number) {
     const from = this.get(idx1);
-    const to   = this.get(idx2);
+    const to = this.get(idx2);
 
     // 入れ替え対象が存在しない場合は入れ替え失敗
     if (!from || !to) return false;
 
     this.steps.splice(idx1, 1, to);
     this.steps.splice(idx2, 1, from);
+    return true;
+  }
+
+  /**
+   * fromをtoの位置へ移動する
+   * @param fromIdx
+   * @param toIdx
+   */
+  public move(fromIdx: number, toIdx: number) {
+    if (fromIdx === toIdx) return false;
+    const step = this.get(fromIdx);
+
+    if (!step) return false;
+
+    this.remove(fromIdx);
+    this.add(toIdx, step);
     return true;
   }
 }
