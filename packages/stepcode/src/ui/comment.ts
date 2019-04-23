@@ -1,8 +1,8 @@
 /******************************************************************************
  * import
  *****************************************************************************/
-import MarkdownIt from 'markdown-it';
 import * as Config from './config';
+import Markdown from './markdown';
 
 /******************************************************************************
  * Comment
@@ -13,13 +13,18 @@ export default class Comment {
    */
   constructor() {
     this.root = Config.createElement(Config.UIType.Comment);
-
-    this.md = new MarkdownIt({
-      breaks: true,
-      linkify: true,
-      html: false
-    }).use(require('markdown-it-deflist'));
+    this.markdown = new Markdown();
+    this.root.appendChild(this.markdown.node);
   }
+
+  //---------------------------------------------------------------------------
+  // private メンバ
+
+  /** root要素 */
+  private root: HTMLElement;
+
+  /** Markdown要素 */
+  private markdown: Markdown;
 
   //---------------------------------------------------------------------------
   // public アクセッサ
@@ -47,22 +52,11 @@ export default class Comment {
 
   /** 更新 */
   public update(markdown: string) {
-    this.node.innerHTML = this.md.render(markdown);
+    this.markdown.update(markdown);
   }
 
   /** プレビュー */
   public preview(data: { comment?: string }) {
-    const { comment } = data;
-    if (typeof comment === 'undefined') return;
-    this.node.innerHTML = this.md.render(comment);
+    this.markdown.preview({ markdown: data.comment });
   }
-
-  //---------------------------------------------------------------------------
-  // private メンバ
-
-  /** root要素 */
-  private root: HTMLElement;
-
-  /** MarkdownItのインスタンス */
-  private md: MarkdownIt;
 }
