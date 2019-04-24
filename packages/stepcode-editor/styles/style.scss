@@ -30,20 +30,20 @@ $borderColor: #718288;
     }
 
     &__preview {
-      & .sc-header {
-        height: $headerHeight;
-      }
-
       & .sc-editor {
         height: $editorHeight;
-
-        & .sc-comment {
-          height: $editorHeight;
-        }
+        font-size:16px;
       }
 
       & .sc-comment {
         height: $commentHeight;
+      }
+
+      & .sc-footer {
+        height:45px;
+        button {
+          font-size: 32px;
+        }
       }
     }
   }
