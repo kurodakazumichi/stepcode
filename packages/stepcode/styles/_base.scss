@@ -1,0 +1,13 @@
+/* css class of all prefix */
+$prefix: sc-;
+
+/* common font settings */
+$_font_codeblock: Monaco, Consolas, Menlo, 'Liberation Mono', Courier, monospace;
+
+$fonts: (
+  codeblock: $_font_codeblock,
+);
+
+@function fonts($key) {
+  @return map-get($fonts, $key)
+}

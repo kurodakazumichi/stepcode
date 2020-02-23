@@ -22,6 +22,19 @@ export default class Markdown implements Types.IUI {
     })
       .use(require('markdown-it-deflist'))
       .use(require('markdown-it-katex'));
+
+    this.md.renderer.rules.heading_open = function(tokens:any, idx:number) {
+      const token = tokens[idx];
+
+      switch(token.markup) {
+        case "#"    : return '<h2>';
+        case "##"   : return '<h3>';
+        case "###"  : return '<h4>';
+        case "####" : return '<h5>';
+        case "#####": return '<h6>';
+        default     : return '<h6>';
+      }
+    }
   }
 
   //---------------------------------------------------------------------------
